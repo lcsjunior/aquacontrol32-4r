@@ -1,4 +1,4 @@
-# Smart Aquarium - arduino-smart-aquarium
+# My Smart Aquarium
 
 This ESP32 T-Relay device is intended to monitor and control my two planted nano aquariums. It uses the ds18b20 sensor to measure the water temperature, has a thermostat function and also has an on/off schedule for lights and CO2 solenoid valve.
 
