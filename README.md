@@ -4,7 +4,7 @@ AquaControl32-4R is an intelligent [ESP32 T-Relay](https://lilygo.cc/en-us/produ
 
 The system sends data to ThingSpeak. View the dashboard here:
 
-[https://thingspeak.mathworks.com/channels/2421172](https://thingspeak.mathworks.com/channels/2421172)
+<a href="https://thingspeak.mathworks.com/channels/2421172" target="_blank" rel="noopener">ThingSpeak dashboard for channel 2421172</a>
 
 ### Pinout
 
