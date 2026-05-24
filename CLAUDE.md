@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ESP32 firmware for a smart aquarium controller running on a LILYGO T-Relay ESP32 board. Controls two planted nano aquariums via 4 relays: two heaters (K1, K2), LED bars (K3), and a CO2 solenoid valve (K4). Publishes sensor data to ThingSpeak via MQTT.
+ESP32 firmware for a smart aquarium controller running on a LILYGO T-Relay ESP32 board. Controls two planted nano aquariums via 4 relays: two heaters (K1, K2), LED bar (K3), and a CO2 solenoid valve (K4). Publishes sensor data to ThingSpeak via MQTT.
 
 ## Build & Flash (PlatformIO)
 
