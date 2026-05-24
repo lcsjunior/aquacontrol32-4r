@@ -35,7 +35,7 @@ pio run --target upload && pio device monitor
 ### Entry point
 `src/main.cpp` wires everything together: initializes sensors/relays/thermostat, connects WiFi+MQTT, sets up cron schedules and an HTTP server, then runs the main loop.
 
-### `lib/common/` — reusable hardware abstractions
+### `lib/commons/` — reusable hardware abstractions
 - **`relay.h/.cpp`** — `Relay` class: wraps a digital output pin, tracks on/off state, exposes `turnOn/turnOff/toggle`.
 - **`temp_sensor.h/.cpp`** — `TempSensor` (abstract) and `DSTempSensor` (DS18B20 via OneWire/DallasTemperature). Throttles `requestTemperatures()` to every 300 ms.
 - **`thermostat.h/.cpp`** — `Thermostat` class: state machine (`IDLE → COOLING → HEATING`) driven by temperature vs. setpoint±hysteresis. Takes a `Relay*` pointer and calls `turnOn/turnOff` accordingly. Enforces a 1-minute `IDLE_TIMEOUT` between state transitions.

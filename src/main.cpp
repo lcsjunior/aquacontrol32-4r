@@ -206,7 +206,7 @@ void initWS() {
   });
 
   server.onNotFound(
-      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("File not found")); });
+      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("Not found")); });
 
   server.begin();
   Serial.println(F("HTTP server started"));
