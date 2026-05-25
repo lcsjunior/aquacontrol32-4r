@@ -19,7 +19,7 @@
 #define DS_PIN_2 23
 
 #define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
-#define MQTT_PUB_TIMEOUT (MILLIS_PER_SECOND * 20)
+#define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
 
 const char *ssid = WIFI_SSID;
 const char *pass = WIFI_PASS;
@@ -122,9 +122,9 @@ void writeMsg() {
   getLocalTimeFmt(tbuf, sizeof(tbuf));
   snprintf_P(
       msg, sizeof(msg),
-      PSTR("field1=%.1f&field2=%.1f&field3=%d&field4=%d&field5=%d&field6=%d&"
+      PSTR("field1=%.1f&field3=%d&field4=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
-      tempSensor1.getCTemp(), tempSensor2.getCTemp(), heater1.isOn(),
+      tempSensor1.getCTemp(), heater1.isOn(),
       heater2.isOn(), lamp.isOn(), co2Valve.isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }
@@ -206,7 +206,7 @@ void initWS() {
   });
 
   server.onNotFound(
-      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("File not found")); });
+      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("Not found")); });
 
   server.begin();
   Serial.println(F("HTTP server started"));
