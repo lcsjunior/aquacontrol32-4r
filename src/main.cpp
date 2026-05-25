@@ -19,7 +19,7 @@
 #define DS_PIN_2 23
 
 #define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
-#define MQTT_PUB_TIMEOUT (MILLIS_PER_SECOND * 20)
+#define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
 
 const char *ssid = WIFI_SSID;
 const char *pass = WIFI_PASS;
