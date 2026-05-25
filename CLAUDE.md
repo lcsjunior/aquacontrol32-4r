@@ -1,34 +1,33 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Skills → Ações
+
+Consulte o `SKILL.md` em `.claude/skills/<nome>/` antes de implementar ou revisar.
+
+| Skill                | Acionar para…                                                                 | Não usar para:                                  |
+|----------------------|-------------------------------------------------------------------------------|-------------------------------------------------|
+| `embedded-cpp`       | C++, alocação de memória, ISR/callbacks, strings flash, relay, sensor         | tarefas de tooling, configs JSON, docs          |
+| `platformio-build`   | Build, flash, monitor, `secrets.h`, dependências em `platformio.ini`          | mudanças apenas de documentação                 |
+
+## Comandos Disponíveis
+
+| Comando           | O que faz                                                                        |
+|-------------------|----------------------------------------------------------------------------------|
+| `/new-feature`    | Fluxo SDD completo: planner (PRD → TechSpec → Tasks) → implementer → reviewer    |
+
+## Agentes SDD
+
+Documentos produzidos salvos em `tasks/prd-[slug]/`.
+
+| Agente            | Papel                                                              | Quando usar                                         |
+|-------------------|--------------------------------------------------------------------|-----------------------------------------------------|
+| `@sdd-planner`    | PRD → TechSpec → Tasks (Explore + Plan, sem código de produção)    | Início de qualquer feature ou correção              |
+| `@sdd-implementer`| Executa tasks aprovadas, roda `pio run`, marca tasks completas     | Após aprovação das tasks pelo usuário               |
+| `@sdd-reviewer`   | Revisa diff, roda `pio run`, aplica checklist embedded-cpp         | Após implementação, antes de commit                 |
 
 ## Project Overview
 
 ESP32 firmware for a smart aquarium controller running on a LILYGO T-Relay ESP32 board. Controls two planted nano aquariums via 4 relays: two heaters (K1, K2), LED bar (K3), and a CO2 solenoid valve (K4). Publishes sensor data to ThingSpeak via MQTT.
-
-## Build & Flash (PlatformIO)
-
-```bash
-# Build
-pio run
-
-# Upload to device
-pio run --target upload
-
-# Open serial monitor (115200 baud)
-pio device monitor
-
-# Build + upload + monitor
-pio run --target upload && pio device monitor
-```
-
-## Secrets
-
-`src/secrets.h` is git-ignored and must be created manually before building. It must define:
-- `WIFI_SSID`, `WIFI_PASS`
-- `OTA_PASS`, `AP_PASS`
-- `MQTT_CLIENT_ID`, `MQTT_USERNAME`, `MQTT_PASSWORD`
-- `SMART_AQUARIUM_WR_CH_ID` (ThingSpeak write channel ID)
 
 ## Architecture
 
