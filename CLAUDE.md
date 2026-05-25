@@ -1,29 +1,29 @@
 # CLAUDE.md
 
-## Skills → Actions
+## Skills → Ações
 
-Consult the `SKILL.md` in `.claude/skills/<name>/` before implementing or reviewing.
+Consulte o `SKILL.md` em `.claude/skills/<nome>/` antes de implementar ou revisar.
 
-| Skill                | Use for…                                                                      | Do not use for:                         |
-|----------------------|--------------------------------------------------------------------------------|-----------------------------------------|
-| `embedded-cpp`       | C++, memory allocation, ISR/callbacks, flash strings, relay, sensor           | tooling tasks, JSON configs, docs       |
-| `platformio-build`   | Build, flash, monitor, `secrets.h`, dependencies in `platformio.ini`          | documentation-only changes              |
+| Skill                | Acionar para…                                                                 | Não usar para:                                  |
+|----------------------|-------------------------------------------------------------------------------|-------------------------------------------------|
+| `embedded-cpp`       | C++, alocação de memória, ISR/callbacks, strings flash, relay, sensor         | tarefas de tooling, configs JSON, docs          |
+| `platformio-build`   | Build, flash, monitor, `secrets.h`, dependências em `platformio.ini`          | mudanças apenas de documentação                 |
 
-## Available Commands
+## Comandos Disponíveis
 
-| Command           | What it does                                                                    |
-|-------------------|---------------------------------------------------------------------------------|
-| `/new-feature`    | Full SDD flow: planner (PRD → TechSpec → Tasks) → implementer → reviewer        |
+| Comando           | O que faz                                                                        |
+|-------------------|----------------------------------------------------------------------------------|
+| `/new-feature`    | Fluxo SDD completo: planner (PRD → TechSpec → Tasks) → implementer → reviewer    |
 
-## SDD Agents
+## Agentes SDD
 
-Generated documents saved in `tasks/prd-[slug]/`.
+Documentos produzidos salvos em `tasks/prd-[slug]/`.
 
-| Agent             | Role                                                           | When to use                                    |
-|-------------------|----------------------------------------------------------------|------------------------------------------------|
-| `@sdd-planner`    | PRD → TechSpec → Tasks (Explore + Plan, no production code)    | Start of any feature or fix                    |
-| `@sdd-implementer`| Executes approved tasks, runs `pio run`, marks tasks complete  | After user approves tasks                      |
-| `@sdd-reviewer`   | Reviews diff, runs `pio run`, applies embedded-cpp checklist   | After implementation, before commit            |
+| Agente            | Papel                                                              | Quando usar                                         |
+|-------------------|--------------------------------------------------------------------|-----------------------------------------------------|
+| `@sdd-planner`    | PRD → TechSpec → Tasks (Explore + Plan, sem código de produção)    | Início de qualquer feature ou correção              |
+| `@sdd-implementer`| Executa tasks aprovadas, roda `pio run`, marca tasks completas     | Após aprovação das tasks pelo usuário               |
+| `@sdd-reviewer`   | Revisa diff, roda `pio run`, aplica checklist embedded-cpp         | Após implementação, antes de commit                 |
 
 ## Project Overview
 

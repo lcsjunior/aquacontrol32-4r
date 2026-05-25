@@ -1,21 +1,21 @@
-Start the full SDD flow for a new feature or fix in this ESP32 firmware project.
+Inicie o fluxo SDD completo para uma nova feature ou correção neste projeto de firmware ESP32.
 
-**Phase 1 — Planning (@sdd-planner):**
+**Fase 1 — Planejamento (@sdd-planner):**
 
-1. Invoke `@sdd-planner` — it will conduct all three planning phases in sequence:
-   - **PRD**: clarification → exploration → requirements document (`tasks/prd-[slug]/prd.md`)
-   - **TechSpec**: technical analysis → architecture spec (`tasks/prd-[slug]/techspec.md`)
-   - **Tasks**: list of deliverables + individual files (`tasks/prd-[slug]/tasks.md` and `[N]_task.md`)
-2. Wait for user approval at each phase before advancing
+1. Invoque `@sdd-planner` — ele conduzirá as três fases de planejamento em sequência:
+   - **PRD**: esclarecimento → exploração → documento de requisitos (`tasks/prd-[slug]/prd.md`)
+   - **TechSpec**: análise técnica → especificação de arquitetura (`tasks/prd-[slug]/techspec.md`)
+   - **Tasks**: lista de entregas + arquivos individuais (`tasks/prd-[slug]/tasks.md` e `[N]_task.md`)
+2. Aguarde aprovação do usuário em cada fase antes de avançar
 
-**Phase 2 — Implementation (@sdd-implementer):**
+**Fase 2 — Implementação (@sdd-implementer):**
 
-3. Invoke `@sdd-implementer` with the feature slug
-4. The implementer will read each `[N]_task.md`, implement, and run `pio run` after each task
-5. Completed tasks are marked in `tasks.md`
+3. Invoque `@sdd-implementer` com o slug da feature
+4. O implementer lerá cada `[N]_task.md`, implementará e rodará `pio run` após cada tarefa
+5. Tarefas concluídas são marcadas em `tasks.md`
 
-**Phase 3 — Review (@sdd-reviewer):**
+**Fase 3 — Revisão (@sdd-reviewer):**
 
-6. Invoke `@sdd-reviewer` with the feature slug
-7. The reviewer will check the diff, run `pio run`, and apply the embedded-cpp checklist
-8. Wait for the result (APPROVED / APPROVED WITH CAVEATS / REJECTED)
+6. Invoque `@sdd-reviewer` com o slug da feature
+7. O reviewer verificará o diff, rodará `pio run` e aplicará o checklist embedded-cpp
+8. Aguarde o resultado (APROVADO / APROVADO COM RESSALVAS / REPROVADO)
