@@ -1,50 +1,50 @@
 ---
 name: platformio-build
-description: Workflow de build, flash e configuração do PlatformIO para ESP32 — pio run (compilação), secrets.h obrigatório, dependências em platformio.ini, upload/monitor requerem USB físico.
+description: PlatformIO build, flash, and configuration workflow for ESP32 — pio run (compile), secrets.h required, dependencies in platformio.ini, upload/monitor require physical USB.
 ---
 
 # Skill: platformio-build
 
-Workflow de build, flash e configuração do PlatformIO para este projeto ESP32.
+PlatformIO build, flash, and configuration workflow for this ESP32 project.
 
-## Comandos Principais
+## Main Commands
 
 ```bash
-# Compilar (funciona em sessão remota)
+# Compile (works in a remote session)
 pio run
 
-# Upload para o dispositivo (requer USB físico — não funciona em sessão remota)
+# Upload to device (requires physical USB — does not work in a remote session)
 pio run --target upload
 
-# Monitor serial a 115200 baud (requer USB físico — não funciona em sessão remota)
+# Serial monitor at 115200 baud (requires physical USB — does not work in a remote session)
 pio device monitor
 
-# Build + upload + monitor de uma vez
+# Build + upload + monitor in one step
 pio run --target upload && pio device monitor
 ```
 
 ## secrets.h
 
-`src/secrets.h` está no `.gitignore` e deve existir localmente antes do build. Verifique a presença de todos os defines:
+`src/secrets.h` is in `.gitignore` and must exist locally before building. Verify all defines are present:
 
 - `WIFI_SSID`, `WIFI_PASS`
 - `OTA_PASS`, `AP_PASS`
 - `MQTT_CLIENT_ID`, `MQTT_USERNAME`, `MQTT_PASSWORD`
 - `SMART_AQUARIUM_WR_CH_ID`
 
-**Nunca exiba os valores** — apenas confirme a presença de cada `#define`. Se o arquivo estiver ausente, o build falha com erro de include.
+**Never display the values** — only confirm the presence of each `#define`. If the file is missing, the build fails with an include error.
 
-## Dependências
+## Dependencies
 
-Gerenciadas em `platformio.ini`. Não altere versões de bibliotecas sem verificar breaking changes no changelog de cada lib.
+Managed in `platformio.ini`. Do not change library versions without checking breaking changes in each lib's changelog.
 
-| Biblioteca         | Versão  | Uso                        |
+| Library            | Version | Usage                      |
 |--------------------|---------|----------------------------|
-| ArduinoJson        | 6.21.2  | Serialização de config      |
-| DallasTemperature  | 3.11.0  | Sensor DS18B20              |
-| OneWire            | 2.3.7   | Protocolo OneWire           |
-| CronAlarms         | 0.1.0   | Agendamento cron-style      |
-| NoDelay            | 2.1.1   | Timers não-bloqueantes      |
-| PubSubClient       | 2.8     | Cliente MQTT                |
+| ArduinoJson        | 6.21.2  | Config serialization        |
+| DallasTemperature  | 3.11.0  | DS18B20 sensor              |
+| OneWire            | 2.3.7   | OneWire protocol            |
+| CronAlarms         | 0.1.0   | Cron-style scheduling       |
+| NoDelay            | 2.1.1   | Non-blocking timers         |
+| PubSubClient       | 2.8     | MQTT client                 |
 
-**Diretriz para sessão local sem dispositivo:** Se compilação passa (`pio run` OK), o código está correto e pronto. Relate sucesso da build e indique que upload/monitor requerem ESP32 conectado via USB.
+**Guideline for local session without device:** If compilation passes (`pio run` OK), the code is correct and ready. Report build success and indicate that upload/monitor require ESP32 connected via USB.
