@@ -1,41 +1,41 @@
 ---
 name: embedded-cpp
-description: C++ rules for ESP32 embedded firmware — no malloc outside global constructors, flash strings with F()/PSTR(), no blocking in ISR/callbacks, fixed buffers, sensors via abstractions.
+description: C++ rules for embedded firmware (ESP32/Arduino) — fixed buffers, flash strings, no blocking in ISR/callbacks, sensor abstractions, non-blocking timers.
 ---
 
 # Skill: embedded-cpp
 
-C++ rules for ESP32 embedded firmware. Consult before implementing or reviewing any file in `src/` or `lib/`.
+C++ rules for embedded firmware development (ESP32/Arduino ecosystem). Consult before implementing or reviewing any firmware file.
 
 ## Memory
 
-- No `malloc()` or `new` outside global object constructors — heap fragmentation is fatal in embedded
-- Use fixed buffers: `char topic[32]`, `char msg[255]` (see main.cpp as reference)
-- Never use the Arduino `String` class — use `char[]` + `snprintf_P`
+- No `malloc()` or `new` at runtime — heap fragmentation is fatal in embedded; allocate only in global constructors
+- Use fixed-size buffers: `char buf[32]`, `char msg[255]` — size according to protocol/payload constraints
+- Never use the Arduino `String` class — use `char[]` + `snprintf` / `snprintf_P`
 
 ## Flash Strings
 
-- `F()` in `Serial.print()` — keeps literals in flash, not RAM
-- `PSTR()` + `snprintf_P` for format strings with arguments (see `writeMsg()` in main.cpp)
-- Prefer `FPSTR()` when passing PROGMEM strings to functions that accept `const __FlashStringHelper*`
+- `F()` in `Serial.print()` — keeps string literals in flash, not RAM
+- `PSTR()` + `snprintf_P` for format strings with runtime arguments
+- `FPSTR()` when passing PROGMEM strings to functions that accept `const __FlashStringHelper*`
 
 ## ISR / Callbacks
 
-- Cron callbacks: ONLY `relay.turnOn()` / `relay.turnOff()` — no `delay()`, no `Serial`, no sensor reads
-- Never block in an interrupt context or timer callback
-- Do not call `Wire`, `SPI`, or `Serial` outside the main loop
+- Timer and interrupt callbacks must be minimal: toggle outputs or set flags only
+- Never call `delay()`, `Serial`, or sensor reads inside an ISR or timer callback
+- Do not invoke `Wire`, `SPI`, or `Serial` outside the main loop
 
-## Sensors
+## Sensor Access
 
-- DS18B20 always via `DSTempSensor::getCTemp()` — never access `DallasTemperature` directly
-- `requestTemperatures()` is throttled internally in the class — do not call it externally
+- Access sensors only through their abstraction layer — never call driver methods directly from application code
+- Assume throttling and timing are handled inside the abstraction; do not replicate that logic externally
 
-## Relay
+## Output / Actuator Control
 
-- Relays driven only by `Thermostat::handleHeater()` or HTTP handlers registered in `initWS()`
-- Direct calls to `relay.turnOn/Off()` outside those points require a comment justifying the reason
+- Drive actuators only through the designated control layer (e.g., a thermostat or state machine handler)
+- Direct actuator calls outside that layer must include a comment explaining the reason
 
 ## Non-Blocking Timers
 
-- Use `noDelay` for timeouts (already present: `mqttConnTime`, `mqttPubTime`)
-- Never use `delay()` in `loop()` — it stalls WiFi, OTA, and MQTT
+- Use non-blocking timer patterns (elapsed-time checks against `millis()`) for all periodic tasks
+- Never use `delay()` in `loop()` — it stalls WiFi, OTA, MQTT, and all cooperative tasks
