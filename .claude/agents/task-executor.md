@@ -75,11 +75,3 @@ Riscos/Desafios: [Riscos ou desafios identificados]
 <critical>**VOCÊ DEVE** iniciar a implementação logo após o processo acima.</critical>
 <critical>Utilize o Context7 MCP para analisar a documentação da linguagem, frameworks e bibliotecas envolvidas na implementação</critical>
 <critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>
-<critical>Após completar a tarefa, marque como completa em tasks.md</critical>

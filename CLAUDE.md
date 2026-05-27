@@ -4,11 +4,11 @@
 
 Consulte o `SKILL.md` em `.claude/skills/<nome>/` antes de implementar ou revisar.
 
-| Skill                | Acionar para…                                                                    | Não usar para:                                                       |
-|----------------------|----------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| `embedded-cpp`          | C++, alocação de memória, ISR/callbacks, strings flash, relay, sensor         | tarefas de tooling, configs JSON, docs                               |
-| `platformio-build`      | Build, flash, monitor, `secrets.h`, dependências em `platformio.ini`          | mudanças apenas de documentação                                      |
-| `cpp-coding-standards`  | Escrever, revisar ou refatorar C++ — type safety, RAII, imutabilidade, estilo | projetos não-C++, C legado, regras que conflitem com restrições HW   |
+| Skill                  | Quando usar                                         | Não usar                              |
+|------------------------|-----------------------------------------------------|---------------------------------------|
+| `embedded-cpp`         | C++, memória, ISR, flash strings, relay, sensor     | tooling, JSON, docs                   |
+| `platformio-build`     | build, flash, monitor, platformio.ini               | só docs                               |
+| `cpp-coding-standards` | escrever/revisar/refatorar C++                      | não-C++, C legado, conflito com HW    |
 
 ## Project Overview
 
