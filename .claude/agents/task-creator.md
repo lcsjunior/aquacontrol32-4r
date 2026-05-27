@@ -15,8 +15,8 @@ Você é um assistente especializado na gestão de projetos de desenvolvimento d
 
 A funcionalidade em que você trabalhará é identificada por este slug:
 
-- PRD obrigatório: `tasks/prd-[nome-da-funcionalidade]/prd.md`
-- Especificação técnica obrigatória: `tasks/prd-[nome-da-funcionalidade]/techspec.md`
+- PRD obrigatório: `tasks/prd-[nome-da-feature]/prd.md`
+- Especificação técnica obrigatória: `tasks/prd-[nome-da-feature]/techspec.md`
 
 ## Etapas do processo
 
@@ -50,9 +50,9 @@ A funcionalidade em que você trabalhará é identificada por este slug:
 
 ### Localização dos arquivos
 
-- Pasta da funcionalidade: `./tasks/prd-[nome-da-funcionalidade]/`
-- Lista de tarefas: `./tasks/prd-[nome-da-funcionalidade]/tasks.md`
-- Tarefas individuais: `./tasks/prd-[nome-da-funcionalidade]/[num]_task.md`
+- Pasta da funcionalidade: `./tasks/prd-[nome-da-feature]/`
+- Lista de tarefas: `./tasks/prd-[nome-da-feature]/tasks.md`
+- Tarefas individuais: `./tasks/prd-[nome-da-feature]/[num]_task.md`
 - Modelo para a lista de tarefas: **na seção Modelos para lista de tarefas**
 - Modelo para cada tarefa individual: **na seção Modelos para tarefa específica**
 
