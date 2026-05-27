@@ -1,5 +1,5 @@
 ---
-name: create-techspec
+name: techspec-creator
 description: "Use este agente para criar a especificação técnica (Tech Spec) de uma feature a partir do PRD existente. O agente explora o projeto, faz esclarecimentos técnicos e gera o techspec.md no formato padronizado."
 model: inherit
 ---

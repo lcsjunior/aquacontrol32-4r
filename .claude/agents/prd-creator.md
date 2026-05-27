@@ -1,5 +1,5 @@
 ---
-name: create-prd
+name: prd-creator
 description: "Use este agente para criar um PRD (Documento de Requisitos do Produto) para uma nova feature no fluxo de spec-driven development. O agente faz perguntas de esclarecimento, planeja e gera o PRD no formato padronizado."
 model: inherit
 ---
