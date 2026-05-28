@@ -1,5 +1,21 @@
 # CLAUDE.md
 
+## Desenvolvimento Orientado a Especificação (SDD)
+
+Este projeto segue **estritamente** um fluxo Spec-Driven Development conduzido pelos agentes em `.claude/agents/`. Os artefatos de cada feature vivem em `tasks/prd-<nome-da-feature>/`.
+
+> **REGRA CRÍTICA:** NUNCA implemente uma nova feature ou mudança de comportamento direto no código. SEMPRE roteie o trabalho pelos agentes do SDD, na ordem abaixo. Começar a codar sem passar por PRD → Tech Spec → Tasks é violação do fluxo, mesmo que o usuário acione um único agente (ex.: `prd-creator`) — conclua aquela etapa e **pare**, aguardando aprovação para a próxima.
+
+### Pipeline (ordem obrigatória)
+
+| Etapa | Agente | Produz | Quando acionar |
+|-------|--------|--------|----------------|
+| 1 | `prd-creator` | `tasks/prd-<feature>/prd.md` | Início de qualquer nova feature/mudança |
+| 2 | `techspec-creator` | `tasks/prd-<feature>/techspec.md` | Após PRD aprovado |
+| 3 | `task-creator` | `tasks/prd-<feature>/tasks.md` + `N_task.md` | Após Tech Spec aprovada |
+| 4 | `task-executor` | implementação + tasks marcadas em `tasks.md` | Para cada task pendente |
+| 5 | `task-reviewer` | `codereview.md` | Após cada task implementada |
+
 ## Skills → Ações
 
 Consulte o `SKILL.md` em `.claude/skills/<nome>/` antes de implementar ou revisar.
