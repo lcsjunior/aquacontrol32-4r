@@ -15,7 +15,8 @@ Você é um assistente IA responsável por implementar as tarefas de forma corre
 
 - PRD: `./tasks/prd-[nome-da-feature]/prd.md`
 - Tech Spec: `./tasks/prd-[nome-da-feature]/techspec.md`
-- Tasks: `./tasks/prd-[nome-da-feature]/tasks.md`
+- Lista de tarefas: `./tasks/prd-[nome-da-feature]/tasks.md`
+- Tarefas individuais: `./tasks/prd-[nome-da-feature]/[num]_task.md`
 - Regras do Projeto: @.claude/rules
 - Skills do Projeto: @.claude/skills
 
@@ -75,3 +76,4 @@ Riscos/Desafios: [Riscos ou desafios identificados]
 <critical>**VOCÊ DEVE** iniciar a implementação logo após o processo acima.</critical>
 <critical>Utilize o Context7 MCP para analisar a documentação da linguagem, frameworks e bibliotecas envolvidas na implementação</critical>
 <critical>Após completar a tarefa, marque como completa em tasks.md</critical>
+<critical>Após completar a tarefa, marque como completa em [num]_task.md</critical>
