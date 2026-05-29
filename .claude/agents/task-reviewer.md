@@ -24,7 +24,8 @@ Você é um assistente IA especializado em Code Review. Sua tarefa é analisar o
 
 - PRD: `./tasks/prd-[nome-da-feature]/prd.md`
 - TechSpec: `./tasks/prd-[nome-da-feature]/techspec.md`
-- Tasks: `./tasks/prd-[nome-da-feature]/tasks.md`
+- Lista de tarefas: `./tasks/prd-[nome-da-feature]/tasks.md`
+- Tarefas individuais: `./tasks/prd-[nome-da-feature]/[num]_task.md`
 - Regras do Projeto: @.claude/rules
 - Skills do Projeto: @.claude/skills
 
