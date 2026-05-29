@@ -13,10 +13,8 @@
 #define LED_PIN 25
 #define RELAY_PIN_1 21
 #define RELAY_PIN_2 19
-#define RELAY_PIN_3 18
 #define RELAY_PIN_4 5
 #define DS_PIN_1 22
-#define DS_PIN_2 23
 
 #define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
 #define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
@@ -51,14 +49,11 @@ char topic[32];
 char msg[255];
 
 DSTempSensor tempSensor1;
-DSTempSensor tempSensor2;
 Relay heater1;
-Relay heater2;
 Relay lamp;
 Relay co2Valve;
 
 Thermostat thermostat1(&heater1);
-Thermostat thermostat2(&heater2);
 
 void writeMsg();
 boolean mqttConnect();
@@ -75,9 +70,7 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
 
   tempSensor1.begin(DS_PIN_1);
-  tempSensor2.begin(DS_PIN_2);
   heater1.begin(RELAY_PIN_1);
-  heater2.begin(RELAY_PIN_3);
   lamp.begin(RELAY_PIN_2);
   co2Valve.begin(RELAY_PIN_4);
 
@@ -90,7 +83,6 @@ void setup() {
   }
 
   thermostat1.begin(config.setpoint, config.hysteresis, 0, 30);
-  thermostat2.begin(config.setpoint, config.hysteresis, 0, 30);
 
   WiFi.mode(WIFI_AP_STA);
   Wifi.initAP(apPass);
@@ -107,10 +99,8 @@ void loop() {
   Cron.delay();
 
   tempSensor1.requestTemperatures();
-  tempSensor2.requestTemperatures();
 
   thermostat1.handleHeater(tempSensor1.getCTemp());
-  thermostat2.handleHeater(tempSensor2.getCTemp());
 
   mqttReconnect();
   pubSubClient.loop();
