@@ -8,26 +8,22 @@ The system sends data to ThingSpeak. View the dashboard here:
 
 ### Pinout
 
-| Signal                          | GPIO |
-|---------------------------------|------|
-| Heater 1 relay (K1)             | 21   |
-| ~~Heater 2 relay (K2)~~         | 18   |
-| LED bar relay (K3)              | 19   |
-| CO2 solenoid relay (K4)         | 5    |
-| DS18B20 sensor 1                | 22   |
-| ~~DS18B20 sensor 2~~            | 23   |
-| On-board status LED             | 25   |
+| Signal                          | GPIO     |
+|---------------------------------|----------|
+| Heater 1 relay (K1)             | 21       |
+| LED bar relay (K3)              | 19       |
+| CO2 solenoid relay (K4)         | 5        |
+| DS18B20 sensor 1                | 22       |
+| On-board status LED             | 25       |
 
 ### ThingSpeak field mapping
 
-| Field | Data                        |
-|-------|-----------------------------|
-| 1     | DS18B20 sensor 1            |
-| 2     | ~~DS18B20 sensor 2~~        |
-| 3     | Heater 1 relay state        |
-| 4     | ~~Heater 2 relay state~~    |
-| 5     | LED bar relay state         |
-| 6     | CO2 solenoid relay state    |
+| Field | Data                            |
+|-------|---------------------------------|
+| 1     | DS18B20 sensor 1                |
+| 3     | Heater 1 relay state            |
+| 5     | LED bar relay state             |
+| 6     | CO2 solenoid relay state        |
 
 ## Screenshots
 

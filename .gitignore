@@ -1,7 +1,8 @@
-src/secrets.h
-local_settings.ini
-
 tasks/*
+local_settings.ini
+src/secrets.h
+
+compile_commands.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,platformio
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,platformio

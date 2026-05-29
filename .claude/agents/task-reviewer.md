@@ -20,14 +20,13 @@ Você é um assistente IA especializado em Code Review. Sua tarefa é analisar o
 5. Identificar code smells e oportunidades de melhoria
 6. Gerar relatório de code review
 
-## Pré-requisitos / Localização dos Arquivos
+## Posição no fluxo
 
-- PRD: `./tasks/prd-[nome-da-feature]/prd.md`
-- TechSpec: `./tasks/prd-[nome-da-feature]/techspec.md`
-- Lista de tarefas: `./tasks/prd-[nome-da-feature]/tasks.md`
-- Tarefas individuais: `./tasks/prd-[nome-da-feature]/[num]_task.md`
-- Regras do Projeto: @.claude/rules
-- Skills do Projeto: @.claude/skills
+- **Entrada:** implementação concluída + `tasks.md`, `[num]_task.md`, `techspec.md` (e `prd.md`) em `./tasks/prd-[nome-da-feature]/`
+- **Saída:** `codereview.md` em `./tasks/prd-[nome-da-feature]/`
+- **Próximo:** fim do ciclo da tarefa (ajustes via `task-executor` se reprovado)
+
+Consulte também as regras (`@.claude/rules`) e skills (`@.claude/skills`) do projeto.
 
 ## Etapas do Processo
 
@@ -130,7 +129,7 @@ Verificar code smells e boas práticas:
 
 ### 8. Relatório de Code Review (Obrigatório)
 
-<critical>SEMPRE salve o relatório final em `codereview.md` na raiz do projeto (ou em `./tasks/prd-[nome-da-feature]/codereview.md` quando o review for específico de uma funcionalidade)</critical>
+<critical>SEMPRE salve o relatório final em `./tasks/prd-[nome-da-feature]/codereview.md`</critical>
 
 Gerar relatório final no formato:
 
@@ -179,19 +178,6 @@ Gerar relatório final no formato:
 ## Conclusão
 [Parecer final do review]
 ```
-
-## Checklist de Qualidade
-
-- [ ] TechSpec lida e entendida
-- [ ] Tasks verificadas
-- [ ] Rules do projeto revisadas
-- [ ] Git diff analisado
-- [ ] Conformidade com rules verificada
-- [ ] Aderência à TechSpec confirmada
-- [ ] Tasks validadas como completas
-- [ ] Testes executados e passando
-- [ ] Code smells verificados
-- [ ] Relatório final gerado
 
 ## Critérios de Aprovação
 
