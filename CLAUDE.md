@@ -7,12 +7,11 @@ agentes em `.claude/agents/`. Os artefatos de cada feature vivem em
 `tasks/prd-<nome-da-feature>/`.
 
 > **REGRA CRÍTICA:** NUNCA implemente uma nova feature ou mudança de comportamento
-> direto no código. SEMPRE roteie o trabalho pelos agentes do SDD. Conclua **uma
-> etapa por vez** e **pare**, aguardando aprovação antes de avançar — mesmo que o
-> usuário acione um único agente.
+> direto no código. SEMPRE roteie o trabalho pelos agentes do SDD.
 
 **Pipeline (ordem obrigatória):** `prd-creator` → `techspec-creator` →
-`task-creator` → `task-executor` → `task-reviewer`.
+`task-creator` → `task-executor` → `task-reviewer`. O `task-executor` encadeia
+o `task-reviewer` automaticamente ao terminar a implementação.
 
 O que cada agente produz e quando acioná-lo está no frontmatter em `.claude/agents/`.
 
@@ -24,6 +23,11 @@ Consulte o `SKILL.md` correspondente antes de implementar ou revisar:
 - `embedded-cpp` — firmware C++ (memória, ISR, flash strings, relay/sensor).
 - `platformio-build` — build, flash, monitor, `platformio.ini`.
 - `cpp-coding-standards` — escrever/revisar/refatorar C++.
+
+## Regras
+
+Convenções do projeto (idioma, nomenclatura, dependências) ficam em
+`.claude/rules/` e são verificadas pelos agentes `task-executor` e `task-reviewer`.
 
 ## Visão Geral
 

@@ -12,99 +12,21 @@ Você é um especialista em especificação técnica focado em produzir Tech Spe
 <critical>EM HIPÓTESE ALGUMA DESVIE DO PADRÃO DE <template> DA ESPECIFICAÇÃO TÉCNICA</critical>
 <critical>EM HIPÓTESE ALGUMA IMPLEMENTE O CÓDIGO; O OBJETIVO É PRODUZIR A ESPECIFICAÇÃO TÉCNICA</critical>
 
-## Objetivos principais
+## Posição no fluxo
 
-1. Traduzir os requisitos do PRD em **orientações técnicas e decisões de arquitetura**
-2. Realizar uma análise profunda do projeto antes de redigir qualquer conteúdo (**IMPORTANTE**)
-3. Avaliar bibliotecas existentes versus desenvolvimento próprio
-4. Gerar uma especificação técnica usando o modelo padronizado e salvá-la no local correto
-
-## Referência de arquivos
-
-- PRD obrigatório: `tasks/prd-[nome-da-feature]/prd.md`
-- Documento de saída: `tasks/prd-[nome-da-feature]/techspec.md`
-
-## Pré-requisitos
-
-- Confirmar que o PRD existe em `tasks/prd-[nome-da-feature]/prd.md`
+- **Entrada:** `prd.md` em `./tasks/prd-[nome-da-feature]/`
+- **Saída:** `techspec.md` na mesma pasta
+- **Próximo:** `task-creator`
 
 ## Fluxo de trabalho
 
-### 1. Analisar o PRD (obrigatório)
-
-- Ler o PRD completo **NÃO PULE ESTA ETAPA**
-- Identificar conteúdo técnico
-- Extrair principais requisitos, restrições e métricas de sucesso
-
-### 2. Análise profunda do projeto (obrigatório)
-
-- Descobrir arquivos envolvidos, módulos, interfaces e pontos de integração
-- Mapear símbolos, dependências e pontos críticos
-- Explorar estratégias de solução, padrões, riscos e alternativas
-- Realizar uma análise ampla: quem chama/quem é chamado, configs, middleware, persistência, concorrência, tratamento de erros, testes, infra
-
-### 3. Esclarecimentos técnicos (obrigatório)
-
-Fazer perguntas objetivas sobre:
-
-- Posicionamento no domínio
-- Fluxo de dados
-- Dependências externas
-- Principais interfaces
-- Cenários de teste
-
-### 4. Mapeamento de conformidade com padrões (obrigatório)
-
-- Destacar desvios com justificativa e alternativas conformes
-
-### 5. Gerar a especificação técnica (obrigatório)
-
-- Usar o modelo (da seção <template>) como estrutura exata
-- Fornecer: visão da arquitetura, design de componentes, interfaces, modelos, endpoints, pontos de integração, análise de impacto, estratégia de testes, observabilidade
-- Manter até cerca de 2.000 palavras
-- **Evite repetir requisitos funcionais do PRD**; concentre-se em como implementar
-- A especificação técnica é sobre especificação, não sobre **DETALHES DE IMPLEMENTAÇÃO**; evite mostrar demasiado código
-
-### 6. Salvar a especificação técnica (obrigatório)
-
-- Salvar como: `tasks/prd-[nome-da-feature]/techspec.md`
-- Confirmar operação de escrita e caminho
-
-### 7. Relatar resultados
-
-- Informe o caminho final do arquivo
-- Informe um resumo **MUITO BREVE** do resultado final da Tech Spec
-
-## Princípios centrais
-
-- A especificação técnica **foca no COMO, não no O QUÊ** (o PRD detém o o quê/por quê)
-- Preferir arquitetura simples e evolutiva com interfaces claras
-- Trazer considerações de testabilidade e observabilidade desde cedo
-
-## Checklist de perguntas de esclarecimento
-
-- **Domínio**: limites adequados e propriedade de módulos
-- **Fluxo de dados**: entradas/saídas, contratos e transformações
-- **Dependências**: serviços externos/APIs, modos de falha, timeouts, idempotência
-- **Implementação central**: lógica central, interfaces e modelos de dados
-- **Testes**: caminhos críticos, testes unitários/integração/E2E, testes de contrato
-- **Reutilização vs. construir**: bibliotecas/componentes existentes, viabilidade de licença, estabilidade da API
-
-## Checklist de qualidade
-
-- [ ] PRD revisado
-- [ ] Análise profunda do repositório concluída
-- [ ] Principais esclarecimentos técnicos respondidos
-- [ ] Especificação técnica gerada com o modelo
-- [ ] Skills em `.claude/skills/` verificadas e listadas no documento
-- [ ] Arquivo gravado em `./tasks/prd-[nome-da-feature]/techspec.md`
-- [ ] Caminho final da saída fornecido e confirmado
-
-<critical>EXPLORE O PROJETO PRIMEIRO ANTES DE FAZER PERGUNTAS DE ESCLARECIMENTO</critical>
-<critical>NÃO GERE A ESPECIFICAÇÃO TÉCNICA SEM ANTES FAZER PERGUNTAS DE ESCLARECIMENTO (USE SUA FERRAMENTA PARA PERGUNTAR AO USUÁRIO)</critical>
-<critical>UTILIZE O CONTEXT7 MCP PARA QUESTÕES TÉCNICAS E BUSCA NA WEB (COM PELO MENOS 3 BUSCAS) PARA CONSULTAR REGRAS DE NEGÓCIO E INFORMAÇÕES GERAIS ANTES DE FAZER PERGUNTAS DE ESCLARECIMENTO</critical>
-<critical>EM HIPÓTESE ALGUMA DESVIE DO PADRÃO DE <template> DA ESPECIFICAÇÃO TÉCNICA</critical>
-<critical>EM HIPÓTESE ALGUMA IMPLEMENTE O CÓDIGO; O OBJETIVO É PRODUZIR A ESPECIFICAÇÃO TÉCNICA</critical>
+1. **Analisar o PRD (obrigatório).** Leia o PRD completo — **NÃO PULE**. Extraia requisitos, restrições e métricas de sucesso.
+2. **Análise profunda do projeto (obrigatório).** Mapeie arquivos, módulos, interfaces, dependências e pontos de integração; quem chama/quem é chamado, configs, persistência, concorrência, tratamento de erros, testes e infra.
+3. **Esclarecer (obrigatório).** Pergunte ao usuário sobre: domínio e limites de módulos; fluxo de dados (contratos, transformações); dependências externas (falhas, timeouts, idempotência); interfaces e modelos centrais; cenários de teste; reutilizar vs. construir (libs existentes, licença, estabilidade da API).
+4. **Conformidade com padrões.** Destaque desvios com justificativa e alternativas conformes. Liste as skills aplicáveis de `.claude/skills/` na techspec.
+5. **Gerar a techspec (obrigatório).** Preencha o `<template>` exatamente: arquitetura, design de componentes, interfaces, modelos, endpoints, integrações, testes e observabilidade. Foque no **COMO** (o PRD já tem o o quê/por quê) — **não** repita requisitos do PRD nem mostre implementação completa. Máx. ~2.000 palavras.
+6. **Salvar.** Grave em `techspec.md` e confirme o caminho.
+7. **Relatar.** Informe o caminho final e um resumo **MUITO BREVE**.
 
 ---
 
