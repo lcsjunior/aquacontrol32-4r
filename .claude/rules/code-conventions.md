@@ -6,11 +6,13 @@
 
 ## Nomenclatura
 
-> Sobrescreve o `underscore_style` recomendado pela skill `cpp-coding-standards` (NL.8/NL.10).
+Segue a convenção Arduino, que sobrescreve a nomenclatura recomendada nas skills:
 
 - `PascalCase` — classes/tipos (ex.: `Relay`, `Thermostat`, `DSTempSensor`).
-- `camelCase` — métodos, funções e variáveis (ex.: `turnOn`, `getCTemp`).
+- `camelCase` — métodos, funções, variáveis e atributos (ex.: `turnOn`, `getCTemp`).
 - `UPPER_SNAKE_CASE` — macros e definições de pino (ex.: `RELAY_PIN_1`, `DS_PIN_1`).
+
+Nos demais casos, seguir as convenções recomendadas nas skills.
 
 ## Dependências
 

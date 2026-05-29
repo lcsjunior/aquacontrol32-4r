@@ -6,33 +6,10 @@ Este projeto segue **estritamente** um fluxo Spec-Driven Development conduzido p
 agentes em `.claude/agents/`. Os artefatos de cada feature vivem em
 `tasks/prd-<nome-da-feature>/`.
 
-> **REGRA CRÍTICA:** NUNCA implemente uma nova feature ou mudança de comportamento
-> direto no código. SEMPRE roteie o trabalho pelos agentes do SDD.
-
-**Pipeline (ordem obrigatória):** `prd-creator` → `techspec-creator` →
-`task-creator` → `task-executor` → `task-reviewer`. O `task-executor` encadeia
-o `task-reviewer` automaticamente ao terminar a implementação.
-
-O que cada agente produz e quando acioná-lo está no frontmatter em `.claude/agents/`.
-
-## Skills
-
-Ficam em `.claude/skills/` e são selecionadas automaticamente pela descrição.
-Consulte o `SKILL.md` correspondente antes de implementar ou revisar:
-
-- `embedded-cpp` — firmware C++ (memória, ISR, flash strings, relay/sensor).
-- `platformio-build` — build, flash, monitor, `platformio.ini`.
-- `cpp-coding-standards` — escrever/revisar/refatorar C++.
-
-## Regras
-
-Convenções do projeto (idioma, nomenclatura, dependências) ficam em
-`.claude/rules/` e são verificadas pelos agentes `task-executor` e `task-reviewer`.
-
 ## Visão Geral
 
 Firmware ESP32 para um controlador de aquário plantado, em placa LILYGO T-Relay.
-Hardware (pinout), mapeamento de fields do ThingSpeak e fotos do build: ver `README.md`.
+Hardware (pinout) e mapeamento de fields do ThingSpeak: ver `README.md`.
 
 ## Arquitetura (onde as coisas vivem)
 
