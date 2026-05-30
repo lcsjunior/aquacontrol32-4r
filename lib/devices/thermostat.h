@@ -26,8 +26,7 @@ public:
   char *getStatus() const;
   void begin(const float setpoint, const float hysteresis,
              const float lowerLimit, const float upperLimit);
-  void handleCooler(float cTemp);
-  void handleHeater(float cTemp);
+  void update(float cTemp);
 };
 
 #endif // THERMOSTAT_H

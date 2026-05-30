@@ -35,9 +35,7 @@ char *Thermostat::getStatus() const {
   }
 }
 
-void Thermostat::handleCooler(float cTemp) {}
-
-void Thermostat::handleHeater(float cTemp) {
+void Thermostat::update(float cTemp) {
   if (isnan(cTemp) || cTemp < _lowerLimit || cTemp > _upperLimit) {
     _k->turnOff();
     setState(IDLE);

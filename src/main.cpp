@@ -11,10 +11,10 @@
 #include <thermostat.h>
 
 #define LED_PIN 25
-#define RELAY_PIN_1 21
-#define RELAY_PIN_2 19
-#define RELAY_PIN_4 5
-#define DS_PIN_1 22
+#define K1_PIN 21
+#define K2_PIN 19
+#define K4_PIN 5
+#define ONEWIRE_PIN_1 22
 
 #define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
 #define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
@@ -69,10 +69,10 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  tempSensor1.begin(DS_PIN_1);
-  heater1.begin(RELAY_PIN_1);
-  lamp.begin(RELAY_PIN_2);
-  co2Valve.begin(RELAY_PIN_4);
+  tempSensor1.begin(ONEWIRE_PIN_1);
+  heater1.begin(K1_PIN);
+  lamp.begin(K2_PIN);
+  co2Valve.begin(K4_PIN);
 
   mountFS();
   if (!loadConfigFile()) {
@@ -100,7 +100,7 @@ void loop() {
 
   tempSensor1.requestTemperatures();
 
-  thermostat1.handleHeater(tempSensor1.getCTemp());
+  thermostat1.update(tempSensor1.getTemperatureC());
 
   mqttReconnect();
   pubSubClient.loop();
@@ -114,7 +114,7 @@ void writeMsg() {
       msg, sizeof(msg),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
-      tempSensor1.getCTemp(), heater1.isOn(),
+      tempSensor1.getTemperatureC(), heater1.isOn(),
       lamp.isOn(), co2Valve.isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }

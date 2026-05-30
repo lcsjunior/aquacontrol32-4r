@@ -12,7 +12,6 @@ private:
 public:
   void begin(const byte pin);
   bool isOn() const;
-  bool isOff() const;
   void turnOn();
   void turnOff();
   void toggle();

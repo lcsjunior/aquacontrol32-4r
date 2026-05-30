@@ -10,8 +10,6 @@ void Relay::begin(const byte pin) {
 
 bool Relay::isOn() const { return _isOn; }
 
-bool Relay::isOff() const { return !_isOn; }
-
 void Relay::turnOn() {
   if (!_isOn) {
     _isOn = true;

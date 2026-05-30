@@ -11,7 +11,7 @@ class TempSensor {
 public:
   virtual void begin(const byte pin) = 0;
   virtual void requestTemperatures() = 0;
-  virtual float getCTemp() = 0;
+  virtual float getTemperatureC() = 0;
 };
 
 class DSTempSensor : public TempSensor {
@@ -22,7 +22,7 @@ private:
 public:
   void begin(const byte pin);
   void requestTemperatures();
-  float getCTemp();
+  float getTemperatureC();
 };
 
 #endif // TEMP_SENSOR_H

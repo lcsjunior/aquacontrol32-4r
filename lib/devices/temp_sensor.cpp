@@ -12,7 +12,7 @@ void DSTempSensor::requestTemperatures() {
   }
 }
 
-float DSTempSensor::getCTemp() {
+float DSTempSensor::getTemperatureC() {
   float cTemp = _sensors.getTempCByIndex(0);
   if (cTemp == DEVICE_DISCONNECTED_C) {
     Serial.println(F("Error: Could not read temperature data"));
