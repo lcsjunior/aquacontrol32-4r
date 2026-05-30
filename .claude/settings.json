@@ -4,7 +4,8 @@
 			"Skill(embedded-cpp)",
 			"Skill(platformio-build)",
 			"Bash(pio run*)",
-			"Bash(pio device monitor*)"
+			"Bash(pio device monitor*)",
+			"WebSearch"
 		]
 	}
 }

@@ -19,6 +19,11 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 - Bibliotecas ficam fixadas por versão em `platformio.ini`.
 - Não adicionar, remover ou atualizar dependências sem aprovação explícita.
 
+## Comentários de código
+
+- Não adicionar comentários ao código. Identificadores bem nomeados são suficientes.
+- Nomes de métodos, funções e variáveis devem ser **sugestivos**: revelar intenção e comportamento sem precisar de explicação adicional.
+
 ## Hardware como fonte de verdade
 
 Quando um guideline de C++ conflitar com uma restrição de hardware (pinagem,
