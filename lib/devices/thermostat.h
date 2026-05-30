@@ -3,10 +3,9 @@
 
 #include <Arduino.h>
 #include "relay.h"
-#include "temp_sensor.h"
-#include "espx_wifi.h"
 
-#define IDLE_TIMEOUT MILLIS_PER_MINUTE
+#define MILLIS_PER_SECOND 1000UL
+#define IDLE_TIMEOUT (MILLIS_PER_SECOND * 60)
 
 enum ThermostatState { IDLE, COOLING, HEATING };
 
