@@ -2,18 +2,19 @@
 #define RELAY_H
 
 #include <Arduino.h>
+#include "actuator.h"
 
-class Relay {
+class Relay : public Actuator {
 private:
-  byte _pin;
-  bool _isOn = false;
+  byte pin_;
+  bool isOn_ = false;
   void write();
 
 public:
   void begin(const byte pin);
-  bool isOn() const;
-  void turnOn();
-  void turnOff();
+  bool isOn() const override;
+  void turnOn() override;
+  void turnOff() override;
   void toggle();
 };
 

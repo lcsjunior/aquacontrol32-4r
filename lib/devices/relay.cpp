@@ -1,27 +1,27 @@
 #include "relay.h"
 
-void Relay::write() { digitalWrite(_pin, _isOn ? HIGH : LOW); }
+void Relay::write() { digitalWrite(pin_, isOn_ ? HIGH : LOW); }
 
 void Relay::begin(const byte pin) {
-  _pin = pin;
-  pinMode(_pin, OUTPUT);
+  pin_ = pin;
+  pinMode(pin_, OUTPUT);
   write();
 }
 
-bool Relay::isOn() const { return _isOn; }
+bool Relay::isOn() const { return isOn_; }
 
 void Relay::turnOn() {
-  if (!_isOn) {
-    _isOn = true;
+  if (!isOn_) {
+    isOn_ = true;
     write();
   }
 }
 
 void Relay::turnOff() {
-  if (_isOn) {
-    _isOn = false;
+  if (isOn_) {
+    isOn_ = false;
     write();
   }
 }
 
-void Relay::toggle() { _isOn ? turnOff() : turnOn(); }
+void Relay::toggle() { isOn_ ? turnOff() : turnOn(); }

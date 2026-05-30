@@ -1,32 +1,34 @@
 #ifndef THERMOSTAT_H
 #define THERMOSTAT_H
 
-#include <Arduino.h>
-#include "relay.h"
-
-#define MILLIS_PER_SECOND 1000UL
-#define IDLE_TIMEOUT (MILLIS_PER_SECOND * 60)
-
-enum ThermostatState { IDLE, COOLING, HEATING };
+#include "actuator.h"
+#include "thermostat_state.h"
+#include "arduino_clock.h"
 
 class Thermostat {
-private:
-  ThermostatState _state = IDLE;
-  Relay *_k;
-  float _setpoint;
-  float _hysteresis;
-  float _lowerLimit;
-  float _upperLimit;
-  unsigned long _stateExitTime = 0;
-
 public:
-  Thermostat(Relay *k) : _k(k){};
-  ThermostatState getState() const;
-  void setState(ThermostatState newState);
-  char *getStatus() const;
+  explicit Thermostat(Actuator* actuator, Clock* clock = &ArduinoClock);
+
   void begin(const float setpoint, const float hysteresis,
              const float lowerLimit, const float upperLimit);
-  void update(float cTemp);
+  void update(float currentTemperatureC);
+
+  void transitionTo(ThermostatState* nextState);
+  void forceTransitionToIdle();
+
+  Actuator* actuator() const;
+  float setpoint() const;
+  float hysteresis() const;
+
+private:
+  Actuator* actuator_;
+  Clock* clock_;
+  ThermostatState* currentState_;
+  float setpoint_;
+  float hysteresis_;
+  float lowerLimit_;
+  float upperLimit_;
+  unsigned long lastTransitionMs_ = 0;
 };
 
 #endif // THERMOSTAT_H

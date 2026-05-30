@@ -7,7 +7,7 @@
 #include <config.h>
 #include <espx_wifi.h>
 #include <relay.h>
-#include <temp_sensor.h>
+#include <dallas_temperature_sensor.h>
 #include <thermostat.h>
 
 #define LED_PIN 25
@@ -48,7 +48,7 @@ noDelay mqttPubTime(MQTT_PUB_TIMEOUT);
 char topic[32];
 char msg[255];
 
-DSTempSensor tempSensor1;
+DallasTemperatureSensor tempSensor1;
 Relay heater1;
 Relay lamp;
 Relay co2Valve;

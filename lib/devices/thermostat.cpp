@@ -1,64 +1,60 @@
+#include <Arduino.h>
 #include "thermostat.h"
+#include "idle_state.h"
+#include "arduino_clock.h"
+
+#define THERMOSTAT_DEBOUNCE_MS 60000UL
+
+extern IdleState idleStateSingleton;
+
+Thermostat::Thermostat(Actuator* actuator, Clock* clock)
+    : actuator_(actuator),
+      clock_(clock),
+      currentState_(&idleStateSingleton) {}
 
 void Thermostat::begin(const float setpoint, const float hysteresis,
                        const float lowerLimit, const float upperLimit) {
-  _setpoint = setpoint;
-  _hysteresis = hysteresis;
-  _lowerLimit = lowerLimit;
-  _upperLimit = upperLimit;
+  setpoint_ = setpoint;
+  hysteresis_ = hysteresis;
+  lowerLimit_ = lowerLimit;
+  upperLimit_ = upperLimit;
+
+  lastTransitionMs_ = (clock_->millis() >= THERMOSTAT_DEBOUNCE_MS) ? clock_->millis() - THERMOSTAT_DEBOUNCE_MS : 0;
+
+  currentState_ = &idleStateSingleton;
+  currentState_->enter(*this);
 }
 
-ThermostatState Thermostat::getState() const { return _state; }
-
-void Thermostat::setState(ThermostatState state) {
-  if (_state == state) {
+void Thermostat::update(float currentTemperatureC) {
+  if (isnan(currentTemperatureC) || currentTemperatureC < lowerLimit_ ||
+      currentTemperatureC > upperLimit_) {
+    forceTransitionToIdle();
     return;
   }
-  _stateExitTime = millis();
-  Serial.print(F("Thermostat changed from "));
-  Serial.print(getStatus());
-  _state = state;
-  Serial.print(F(" to "));
-  Serial.println(getStatus());
+  currentState_->update(*this, currentTemperatureC);
 }
 
-char *Thermostat::getStatus() const {
-  switch (_state) {
-  case IDLE:
-    return (char *)"Idle";
-  case COOLING:
-    return (char *)"C";
-  case HEATING:
-    return (char *)"H";
-  default:
-    return (char *)"Undef";
-  }
-}
-
-void Thermostat::update(float cTemp) {
-  if (isnan(cTemp) || cTemp < _lowerLimit || cTemp > _upperLimit) {
-    _k->turnOff();
-    setState(IDLE);
+void Thermostat::transitionTo(ThermostatState* nextState) {
+  if (nextState == currentState_) {
     return;
   }
-
-  switch (_state) {
-  case IDLE:
-    _k->turnOff();
-    if ((millis() - _stateExitTime) >= IDLE_TIMEOUT) {
-      setState(COOLING);
-    }
-    break;
-  case COOLING:
-    _k->turnOff();
-    if (cTemp < _setpoint) {
-      setState(HEATING);
-    }
-    break;
-  case HEATING:
-    _k->turnOn();
-    if (cTemp > _setpoint + _hysteresis) {
-      setState(IDLE);
-    }
+  if ((clock_->millis() - lastTransitionMs_) < THERMOSTAT_DEBOUNCE_MS) {
+    return;
   }
+  ThermostatState* prev = currentState_;
+  currentState_ = nextState;
+  lastTransitionMs_ = clock_->millis();
+  log_i("[Thermostat] %s -> %s", prev->name(), currentState_->name());
+  currentState_->enter(*this);
 }
+
+void Thermostat::forceTransitionToIdle() {
+  actuator_->turnOff();
+  currentState_ = &idleStateSingleton;
+}
+
+Actuator* Thermostat::actuator() const { return actuator_; }
+
+float Thermostat::setpoint() const { return setpoint_; }
+
+float Thermostat::hysteresis() const { return hysteresis_; }
