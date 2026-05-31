@@ -10,7 +10,7 @@ Segue a convenção Arduino, que sobrescreve a nomenclatura recomendada nas skil
 
 - `PascalCase` — classes/tipos (ex.: `Relay`, `Thermostat`, `DSTempSensor`).
 - `camelCase` — métodos, funções, variáveis e atributos (ex.: `turnOn`, `getCTemp`).
-- `UPPER_SNAKE_CASE` — macros e definições de pino (ex.: `K1_PIN`, `ONEWIRE_PIN_1`).
+- `UPPER_SNAKE_CASE` — macros e definições de pino (ex.: `K1_PIN`, `DS18B20_PIN_1`).
 
 ### Interfaces (classes abstratas puras)
 

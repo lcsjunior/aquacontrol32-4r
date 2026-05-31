@@ -14,7 +14,7 @@
 #define K1_PIN 21
 #define K2_PIN 19
 #define K4_PIN 5
-#define ONEWIRE_PIN 22
+#define DS18B20_PIN 22
 
 #define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
 #define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
@@ -68,7 +68,7 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  temperatureSensor->begin(ONEWIRE_PIN);
+  temperatureSensor->begin(DS18B20_PIN);
   heater->begin(K1_PIN);
   lamp->begin(K2_PIN);
   co2Valve->begin(K4_PIN);
