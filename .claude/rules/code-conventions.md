@@ -38,6 +38,11 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 
 - Usar as macros do ESP-IDF (`log_i`, `log_w`, `log_e`, `log_d`) em vez de `Serial.print`/`Serial.println`.
 - Nunca usar `Serial` diretamente para log.
+- Prefixar mensagens com o nome da classe entre colchetes (ex.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
+
+## Fluxo de controle
+
+- Preferir early return e operador ternário a blocos `if/else` aninhados.
 
 ## Hardware como fonte de verdade
 
