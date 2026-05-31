@@ -16,8 +16,8 @@
 #define K4_PIN 5
 #define DS18B20_PIN 22
 
-#define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
-#define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
+#define MQTT_CONN_TIMEOUT_MS 5000UL
+#define MQTT_PUB_INTERVAL_MS 60000UL
 
 const char *ssid = WIFI_SSID;
 const char *pass = WIFI_PASS;
@@ -42,8 +42,8 @@ WebServer server(80);
 WiFiClient espClient;
 PubSubClient pubSubClient(mqttServer, mqttPort, espClient);
 
-noDelay mqttConnTime(MQTT_CONN_TIMEOUT);
-noDelay mqttPubTime(MQTT_PUB_TIMEOUT);
+noDelay mqttConnTime(MQTT_CONN_TIMEOUT_MS);
+noDelay mqttPubTime(MQTT_PUB_INTERVAL_MS);
 
 char topic[32];
 char msg[255];
@@ -134,7 +134,7 @@ boolean mqttReconnect() {
       Serial.print(F("failed, rc="));
       Serial.print(pubSubClient.state());
       Serial.print(F(" try again in "));
-      Serial.print(MQTT_CONN_TIMEOUT / 1000);
+      Serial.print(MQTT_CONN_TIMEOUT_MS / 1000);
       Serial.println(F(" seconds"));
     }
   };
