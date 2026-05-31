@@ -42,18 +42,20 @@ void test_polling_allows_after_1000ms() {
 
 void test_get_temperature_propagates_stub_value() {
   DallasTemperature::setStubTempC(28.5f);
+  sensor.requestTemperatures();
   TEST_ASSERT_EQUAL_FLOAT(28.5f, sensor.getTemperatureC());
 }
 
 void test_disconnected_sensor_returns_sentinel() {
   DallasTemperature::setStubTempC(DEVICE_DISCONNECTED_C);
+  sensor.requestTemperatures();
   float result = sensor.getTemperatureC();
   TEST_ASSERT_EQUAL_FLOAT(DEVICE_DISCONNECTED_C, result);
 }
 
 void test_disconnected_sensor_logs_error() {
   DallasTemperature::setStubTempC(DEVICE_DISCONNECTED_C);
-  sensor.getTemperatureC();
+  sensor.requestTemperatures();
   TEST_ASSERT_GREATER_THAN(0, logECallCount_);
 }
 

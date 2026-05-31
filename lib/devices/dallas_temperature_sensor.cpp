@@ -11,6 +11,7 @@ void DallasTemperatureSensor::begin(const byte pin) {
   oneWire_ = new OneWire(pin);
   sensors_ = DallasTemperature(oneWire_);
   sensors_.begin();
+  lastRequestMs_ = millis() - TEMPERATURE_POLL_INTERVAL_MS;
 }
 
 void DallasTemperatureSensor::requestTemperatures() {
