@@ -13,6 +13,7 @@ compile_commands.json
 .clang_complete
 .gcc-flags.json
 .pio
+.cache
 
 ### VisualStudioCode ###
 .vscode/*
