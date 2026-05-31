@@ -7,23 +7,23 @@
 #include <config.h>
 #include <espx_wifi.h>
 #include <relay.h>
-#include <temp_sensor.h>
+#include <dallas_temperature_sensor.h>
 #include <thermostat.h>
 
 #define LED_PIN 25
-#define RELAY_PIN_1 21
-#define RELAY_PIN_2 19
-#define RELAY_PIN_4 5
-#define DS_PIN_1 22
+#define K1_PIN 21
+#define K2_PIN 19
+#define K4_PIN 5
+#define DS18B20_PIN 22
 
-#define MQTT_CONN_TIMEOUT (MILLIS_PER_SECOND * 5)
-#define MQTT_PUB_TIMEOUT MILLIS_PER_MINUTE
+#define MQTT_CONN_TIMEOUT_MS 5000UL
+#define MQTT_PUB_INTERVAL_MS 60000UL
 
 const char *ssid = WIFI_SSID;
 const char *pass = WIFI_PASS;
 const char *otaPass = OTA_PASS;
 const char *apPass = AP_PASS;
-const char *myTz = SAO_PAULO_TZ;
+const char *tz = SAO_PAULO_TZ;
 const char *hostname = "smart-aquarium";
 
 const char *mqttServer = "mqtt3.thingspeak.com";
@@ -42,18 +42,17 @@ WebServer server(80);
 WiFiClient espClient;
 PubSubClient pubSubClient(mqttServer, mqttPort, espClient);
 
-noDelay mqttConnTime(MQTT_CONN_TIMEOUT);
-noDelay mqttPubTime(MQTT_PUB_TIMEOUT);
+noDelay mqttConnTime(MQTT_CONN_TIMEOUT_MS);
+noDelay mqttPubTime(MQTT_PUB_INTERVAL_MS);
 
 char topic[32];
 char msg[255];
 
-DSTempSensor tempSensor1;
-Relay heater1;
-Relay lamp;
-Relay co2Valve;
-
-Thermostat thermostat1(&heater1);
+TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
+Actuator* heater = new Relay();
+Actuator* lamp = new Relay();
+Actuator* co2Valve = new Relay();
+Thermostat thermostat(heater);
 
 void writeMsg();
 boolean mqttConnect();
@@ -69,10 +68,10 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  tempSensor1.begin(DS_PIN_1);
-  heater1.begin(RELAY_PIN_1);
-  lamp.begin(RELAY_PIN_2);
-  co2Valve.begin(RELAY_PIN_4);
+  temperatureSensor->begin(DS18B20_PIN);
+  heater->begin(K1_PIN);
+  lamp->begin(K2_PIN);
+  co2Valve->begin(K4_PIN);
 
   mountFS();
   if (!loadConfigFile()) {
@@ -82,11 +81,11 @@ void setup() {
     saveConfigFile();
   }
 
-  thermostat1.begin(config.setpoint, config.hysteresis, 0, 30);
+  thermostat.begin(config.setpoint, config.hysteresis, 0, 30);
 
   WiFi.mode(WIFI_AP_STA);
   Wifi.initAP(apPass);
-  Wifi.initSTA(ssid, pass, otaPass, myTz, hostname);
+  Wifi.initSTA(ssid, pass, otaPass, tz, hostname);
 
   initWS();
   initCrons();
@@ -98,9 +97,9 @@ void loop() {
   server.handleClient();
   Cron.delay();
 
-  tempSensor1.requestTemperatures();
+  temperatureSensor->requestTemperatures();
 
-  thermostat1.handleHeater(tempSensor1.getCTemp());
+  thermostat.update(temperatureSensor->getTemperatureC());
 
   mqttReconnect();
   pubSubClient.loop();
@@ -114,8 +113,8 @@ void writeMsg() {
       msg, sizeof(msg),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
-      tempSensor1.getCTemp(), heater1.isOn(),
-      lamp.isOn(), co2Valve.isOn(), tbuf, WiFi.RSSI(),
+      temperatureSensor->getTemperatureC(), heater->isOn(),
+      lamp->isOn(), co2Valve->isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }
 
@@ -135,7 +134,7 @@ boolean mqttReconnect() {
       Serial.print(F("failed, rc="));
       Serial.print(pubSubClient.state());
       Serial.print(F(" try again in "));
-      Serial.print(MQTT_CONN_TIMEOUT / 1000);
+      Serial.print(MQTT_CONN_TIMEOUT_MS / 1000);
       Serial.println(F(" seconds"));
     }
   };
@@ -162,10 +161,10 @@ void mqttPub() {
 }
 
 void initCrons() {
-  Cron.create((char *)cronstr_at_07_30, []() { co2Valve.turnOn(); }, false);
-  Cron.create((char *)cronstr_at_08_00, []() { lamp.turnOn(); }, false);
-  Cron.create((char *)cronstr_at_14_30, []() { co2Valve.turnOff(); }, false);
-  Cron.create((char *)cronstr_at_15_00, []() { lamp.turnOff(); }, false);
+  Cron.create((char *)cronstr_at_07_30, []() { co2Valve->turnOn(); }, false);
+  Cron.create((char *)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
+  Cron.create((char *)cronstr_at_14_30, []() { co2Valve->turnOff(); }, false);
+  Cron.create((char *)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
 }
 
 void initWS() {
@@ -186,12 +185,12 @@ void initWS() {
   });
 
   server.on(F("/lamp/toggle"), HTTP_GET, []() {
-    lamp.toggle();
+    lamp->toggle();
     server.send(200);
   });
 
   server.on(F("/co2/toggle"), HTTP_GET, []() {
-    co2Valve.toggle();
+    co2Valve->toggle();
     server.send(200);
   });
 

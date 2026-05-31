@@ -1,0 +1,34 @@
+#ifndef THERMOSTAT_H
+#define THERMOSTAT_H
+
+#include "actuator.h"
+#include "thermostat_state.h"
+#include "arduino_clock.h"
+
+class Thermostat {
+public:
+  explicit Thermostat(Actuator* actuator, Clock* clock = &ArduinoClock);
+
+  void begin(const float setpoint, const float hysteresis,
+             const float lowerLimit, const float upperLimit);
+  void update(float currentTemperatureC);
+
+  void transitionTo(ThermostatState* nextState);
+  void forceTransitionToIdle();
+
+  Actuator* actuator() const;
+  float setpoint() const;
+  float hysteresis() const;
+
+private:
+  Actuator* actuator_;
+  Clock* clock_;
+  ThermostatState* currentState_;
+  float setpoint_;
+  float hysteresis_;
+  float lowerLimit_;
+  float upperLimit_;
+  unsigned long lastTransitionMs_ = 0;
+};
+
+#endif // THERMOSTAT_H

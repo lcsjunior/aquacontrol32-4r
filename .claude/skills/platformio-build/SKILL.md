@@ -1,8 +1,8 @@
 ---
 name: platformio-build
 description: >
-  PlatformIO build, flash, and configuration workflow for ESP32 —
-  `pio run` (compile), OTA and USB upload support.
+  PlatformIO build, flash, test, and configuration workflow for ESP32 —
+  `pio run` (compile), `pio test -e native` (host tests), OTA and USB upload support.
 ---
 
 # Skill: platformio-build
@@ -12,6 +12,21 @@ PlatformIO build, flash, and configuration workflow for this ESP32 project.
 ---
 
 ## Main Commands
+
+```bash
+# Compile/build code (works anywhere)
+pio run
+
+# Run all native (host) tests
+pio test -e native
+
+# Run a specific test runner
+pio test -e native -f <runner_name>
+```
+
+---
+
+## Build Commands
 
 ```bash
 # Compile/build code (works anywhere)
