@@ -99,7 +99,7 @@ void loop() {
 
   temperatureSensor->requestTemperatures();
 
-  thermostat.update(temperatureSensor->getTemperatureC());
+  thermostat.update(temperatureSensor->temperatureC());
 
   mqttReconnect();
   pubSubClient.loop();
@@ -113,7 +113,7 @@ void writeMsg() {
       msg, sizeof(msg),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
-      temperatureSensor->getTemperatureC(), heater->isOn(),
+      temperatureSensor->temperatureC(), heater->isOn(),
       lamp->isOn(), co2Valve->isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }

@@ -26,6 +26,6 @@ void DallasTemperatureSensor::requestTemperatures() {
   lastRequestMs_ = millis();
 }
 
-float DallasTemperatureSensor::getTemperatureC() {
+float DallasTemperatureSensor::temperatureC() {
   return lastTemperatureC_;
 }

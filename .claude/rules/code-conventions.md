@@ -34,6 +34,11 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 - Não adicionar comentários ao código. Identificadores bem nomeados são suficientes.
 - Nomes de métodos, funções e variáveis devem ser **sugestivos**: revelar intenção e comportamento sem precisar de explicação adicional.
 
+## Logging
+
+- Usar as macros do ESP-IDF (`log_i`, `log_w`, `log_e`, `log_d`) em vez de `Serial.print`/`Serial.println`.
+- Nunca usar `Serial` diretamente para log.
+
 ## Hardware como fonte de verdade
 
 Quando um guideline de C++ conflitar com uma restrição de hardware (pinagem,

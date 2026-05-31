@@ -13,15 +13,15 @@ public:
     void requestTemperatures() {}
 
     float getTempCByIndex(uint8_t) {
-        return stubTempC_;
+        return stubTemperatureC_;
     }
 
-    static void setStubTempC(float value) {
-        stubTempC_ = value;
+    static void stubTemperatureC(float value) {
+        stubTemperatureC_ = value;
     }
 
 private:
-    static float stubTempC_;
+    static float stubTemperatureC_;
 };
 
-inline float DallasTemperature::stubTempC_ = 25.0f;
+inline float DallasTemperature::stubTemperatureC_ = 25.0f;

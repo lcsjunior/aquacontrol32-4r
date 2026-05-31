@@ -8,7 +8,7 @@ public:
   virtual ~TemperatureSensor() = default;
   virtual void begin(const byte pin) = 0;
   virtual void requestTemperatures() = 0;
-  virtual float getTemperatureC() = 0;
+  virtual float temperatureC() = 0;
 };
 
 #endif // TEMPERATURE_SENSOR_H

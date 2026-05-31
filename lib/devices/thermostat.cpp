@@ -55,3 +55,5 @@ Actuator* Thermostat::actuator() const { return actuator_; }
 float Thermostat::setpoint() const { return setpoint_; }
 
 float Thermostat::hysteresis() const { return hysteresis_; }
+
+const char* Thermostat::stateName() const { return currentState_->name(); }
