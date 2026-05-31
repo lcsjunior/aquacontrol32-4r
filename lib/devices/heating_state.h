@@ -10,4 +10,6 @@ public:
   const char* name() const override;
 };
 
+extern HeatingState heatingStateSingleton;
+
 #endif // HEATING_STATE_H

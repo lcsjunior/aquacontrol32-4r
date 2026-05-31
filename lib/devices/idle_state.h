@@ -10,4 +10,6 @@ public:
   const char* name() const override;
 };
 
+extern IdleState idleStateSingleton;
+
 #endif // IDLE_STATE_H

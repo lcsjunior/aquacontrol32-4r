@@ -12,14 +12,15 @@ Segue a convenção Arduino, que sobrescreve a nomenclatura recomendada nas skil
 - `camelCase` — métodos, funções, variáveis e atributos (ex.: `turnOn`, `getCTemp`).
 - `UPPER_SNAKE_CASE` — macros e definições de pino (ex.: `K1_PIN`, `ONEWIRE_PIN_1`).
 
+### Interfaces (classes abstratas puras)
+
+- Usar estilo C++ idiomático: nome direto **sem prefixo `I`** (ex.: `TemperatureSensor`, `ThermostatState`).
+- Quando o nome da interface colidir com uma classe concreta, a **concreta recebe sufixo `Impl`** (ex.: `ThermostatImpl`).
+
 ### Singletons globais
 
 Seguindo o estilo das libs do core Arduino (`Serial`, `Wire`, `SPI`, `EEPROM`), instâncias
-globais únicas usam **PascalCase** (não camelCase). Quando o nome desejado para a instância
-colidir com o nome da classe concreta, sufixar a classe com `Impl`:
-
-- Classe concreta: `class ArduinoClockImpl : public Clock { ... };`.
-- Instância: `extern ArduinoClockImpl ArduinoClock;` (PascalCase, nome curto e distintivo).
+globais únicas usam **PascalCase** (não camelCase).
 
 Nos demais casos, seguir as convenções recomendadas nas skills.
 

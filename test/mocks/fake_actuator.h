@@ -4,6 +4,8 @@
 
 class FakeActuator : public Actuator {
 public:
+  void begin(byte) override {}
+
   void turnOn() override {
     isOn_ = true;
     turnOnCount_++;
@@ -13,6 +15,8 @@ public:
     isOn_ = false;
     turnOffCount_++;
   }
+
+  void toggle() override { isOn_ ? turnOff() : turnOn(); }
 
   bool isOn() const override { return isOn_; }
 

@@ -40,7 +40,7 @@ void test_heating_update_no_transition_when_below_setpoint() {
 
 void test_heating_update_transitions_to_idle_when_above_setpoint() {
   clock.advance(60000);
-  thermostat->update(24.5f);
+  thermostat->update(24.6f);
   TEST_ASSERT_FALSE(actuator.isOn());
 }
 

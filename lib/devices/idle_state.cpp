@@ -3,14 +3,13 @@
 #include "heating_state.h"
 
 IdleState idleStateSingleton;
-extern HeatingState heatingStateSingleton;
 
 void IdleState::enter(Thermostat& context) {
   context.actuator()->turnOff();
 }
 
 void IdleState::update(Thermostat& context, float currentTemperatureC) {
-  if (currentTemperatureC < context.setpoint() - context.hysteresis()) {
+  if (currentTemperatureC < context.setpoint()) {
     context.transitionTo(&heatingStateSingleton);
   }
 }

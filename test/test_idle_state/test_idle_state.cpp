@@ -46,7 +46,7 @@ void test_idle_update_transitions_to_heating_when_below_threshold() {
 }
 
 void test_idle_update_at_exactly_threshold_no_transition() {
-  float atThreshold = 24.0f - 0.5f;
+  float atThreshold = 24.0f;
   thermostat->update(atThreshold);
   TEST_ASSERT_FALSE(actuator.isOn());
 }

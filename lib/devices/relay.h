@@ -11,7 +11,7 @@ private:
   void write();
 
 public:
-  void begin(const byte pin);
+  void begin(const byte pin) override;
   bool isOn() const override;
   void turnOn() override;
   void turnOff() override;

@@ -57,3 +57,14 @@ Riscos/Desafios: [identificados]
 1. Execute o agente `@task-reviewer`
 2. Ajuste os problemas indicados
 3. Não finalize a tarefa até resolvê-los
+
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
+

@@ -1,11 +1,8 @@
 #include <Arduino.h>
 #include "thermostat.h"
 #include "idle_state.h"
-#include "arduino_clock.h"
 
 #define THERMOSTAT_DEBOUNCE_MS 60000UL
-
-extern IdleState idleStateSingleton;
 
 Thermostat::Thermostat(Actuator* actuator, Clock* clock)
     : actuator_(actuator),

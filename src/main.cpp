@@ -23,7 +23,7 @@ const char *ssid = WIFI_SSID;
 const char *pass = WIFI_PASS;
 const char *otaPass = OTA_PASS;
 const char *apPass = AP_PASS;
-const char *myTz = SAO_PAULO_TZ;
+const char *tz = SAO_PAULO_TZ;
 const char *hostname = "smart-aquarium";
 
 const char *mqttServer = "mqtt3.thingspeak.com";
@@ -48,11 +48,11 @@ noDelay mqttPubTime(MQTT_PUB_TIMEOUT);
 char topic[32];
 char msg[255];
 
-DallasTemperatureSensor tempSensor;
-Relay heater;
-Relay lamp;
-Relay co2Valve;
-Thermostat thermostat(&heater);
+TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
+Actuator* heater = new Relay();
+Actuator* lamp = new Relay();
+Actuator* co2Valve = new Relay();
+Thermostat thermostat(heater);
 
 void writeMsg();
 boolean mqttConnect();
@@ -68,10 +68,10 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  tempSensor.begin(ONEWIRE_PIN);
-  heater.begin(K1_PIN);
-  lamp.begin(K2_PIN);
-  co2Valve.begin(K4_PIN);
+  temperatureSensor->begin(ONEWIRE_PIN);
+  heater->begin(K1_PIN);
+  lamp->begin(K2_PIN);
+  co2Valve->begin(K4_PIN);
 
   mountFS();
   if (!loadConfigFile()) {
@@ -85,7 +85,7 @@ void setup() {
 
   WiFi.mode(WIFI_AP_STA);
   Wifi.initAP(apPass);
-  Wifi.initSTA(ssid, pass, otaPass, myTz, hostname);
+  Wifi.initSTA(ssid, pass, otaPass, tz, hostname);
 
   initWS();
   initCrons();
@@ -97,9 +97,9 @@ void loop() {
   server.handleClient();
   Cron.delay();
 
-  tempSensor.requestTemperatures();
+  temperatureSensor->requestTemperatures();
 
-  thermostat.update(tempSensor.getTemperatureC());
+  thermostat.update(temperatureSensor->getTemperatureC());
 
   mqttReconnect();
   pubSubClient.loop();
@@ -113,8 +113,8 @@ void writeMsg() {
       msg, sizeof(msg),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
-      tempSensor.getTemperatureC(), heater.isOn(),
-      lamp.isOn(), co2Valve.isOn(), tbuf, WiFi.RSSI(),
+      temperatureSensor->getTemperatureC(), heater->isOn(),
+      lamp->isOn(), co2Valve->isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }
 
@@ -161,10 +161,10 @@ void mqttPub() {
 }
 
 void initCrons() {
-  Cron.create((char *)cronstr_at_07_30, []() { co2Valve.turnOn(); }, false);
-  Cron.create((char *)cronstr_at_08_00, []() { lamp.turnOn(); }, false);
-  Cron.create((char *)cronstr_at_14_30, []() { co2Valve.turnOff(); }, false);
-  Cron.create((char *)cronstr_at_15_00, []() { lamp.turnOff(); }, false);
+  Cron.create((char *)cronstr_at_07_30, []() { co2Valve->turnOn(); }, false);
+  Cron.create((char *)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
+  Cron.create((char *)cronstr_at_14_30, []() { co2Valve->turnOff(); }, false);
+  Cron.create((char *)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
 }
 
 void initWS() {
@@ -185,12 +185,12 @@ void initWS() {
   });
 
   server.on(F("/lamp/toggle"), HTTP_GET, []() {
-    lamp.toggle();
+    lamp->toggle();
     server.send(200);
   });
 
   server.on(F("/co2/toggle"), HTTP_GET, []() {
-    co2Valve.toggle();
+    co2Valve->toggle();
     server.send(200);
   });
 
