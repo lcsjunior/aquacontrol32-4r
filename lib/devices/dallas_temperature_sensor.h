@@ -10,6 +10,7 @@ private:
   OneWire* oneWire_ = nullptr;
   DallasTemperature sensors_;
   unsigned long lastRequestMs_ = 0;
+  float lastTemperatureC_ = DEVICE_DISCONNECTED_C;
 
 public:
   ~DallasTemperatureSensor();
