@@ -6,7 +6,6 @@ IdleState idleStateSingleton;
 
 void IdleState::enter(Thermostat& context) {
   context.actuator()->turnOff();
-  log_i("[IdleState] Actuator off");
 }
 
 void IdleState::update(Thermostat& context, float currentTemperatureC) {
