@@ -40,6 +40,10 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 - Nunca usar `Serial` diretamente para log.
 - Prefixar mensagens com o nome da classe entre colchetes (ex.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
 
+## Constantes de tempo
+
+- Timeouts e intervalos de tempo devem ser definidos como macros `UPPER_SNAKE_CASE` com sufixo `_MS` e literal `UL` (ex.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
+
 ## Fluxo de controle
 
 - Preferir early return e operador ternário a blocos `if/else` aninhados.
