@@ -6,6 +6,7 @@ HeatingState heatingStateSingleton;
 
 void HeatingState::enter(Thermostat& context) {
   context.actuator()->turnOn();
+  log_i("[HeatingState] Actuator on");
 }
 
 void HeatingState::update(Thermostat& context, float currentTemperatureC) {

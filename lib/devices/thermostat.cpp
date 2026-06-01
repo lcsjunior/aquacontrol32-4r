@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "thermostat.h"
 #include "idle_state.h"
 
@@ -46,8 +45,9 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
 }
 
 void Thermostat::forceTransitionToIdle() {
-  actuator_->turnOff();
+  log_w("[Thermostat] Forcing transition to idle");
   currentState_ = &idleStateSingleton;
+  currentState_->enter(*this);
 }
 
 Actuator* Thermostat::actuator() const { return actuator_; }

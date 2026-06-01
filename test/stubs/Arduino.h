@@ -45,4 +45,6 @@ inline SerialStub Serial;
 inline int logECallCount_ = 0;
 
 #define log_i(fmt, ...) ((void)0)
+#define log_w(fmt, ...) ((void)0)
+#define log_d(fmt, ...) ((void)0)
 #define log_e(fmt, ...) (logECallCount_++)
