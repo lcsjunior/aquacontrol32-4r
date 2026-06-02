@@ -14,9 +14,7 @@ void Thermostat::begin(const float setpoint, const float hysteresis,
   hysteresis_ = hysteresis;
   lowerLimit_ = lowerLimit;
   upperLimit_ = upperLimit;
-
-  lastTransitionMs_ = (clock_->millis() >= THERMOSTAT_DEBOUNCE_MS) ? clock_->millis() - THERMOSTAT_DEBOUNCE_MS : 0;
-
+  lastTransitionMs_ = clock_->millis() - THERMOSTAT_DEBOUNCE_MS;
   currentState_ = &idleStateSingleton;
   currentState_->enter(*this);
 }
