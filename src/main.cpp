@@ -31,6 +31,12 @@ constexpr const char* mqttClientId = MQTT_CLIENT_ID;
 constexpr const char* mqttUsername = MQTT_USERNAME;
 constexpr const char* mqttPassword = MQTT_PASSWORD;
 
+constexpr const char* publishTopic  = "channels/2421172/publish";
+constexpr const char* subscribeTopic = "channels/2421172/subscribe";
+
+noDelay publishInterval(MQTT_PUB_INTERVAL_MS);
+char payload[255];
+
 constexpr const char* cronstr_at_07_30 = "0 30 7 * * *";
 constexpr const char* cronstr_at_08_00 = "0 0 8 * * *";
 constexpr const char* cronstr_at_14_30 = "0 30 14 * * *";
@@ -38,12 +44,6 @@ constexpr const char* cronstr_at_15_00 = "0 0 15 * * *";
 
 WebServer server(80);
 WiFiClient espClient;
-
-noDelay publishInterval(MQTT_PUB_INTERVAL_MS);
-
-constexpr const char* publishTopic  = "channels/2421172/publish";
-constexpr const char* subscribeTopic = "channels/2421172/subscribe";
-char payload[255];
 
 TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
