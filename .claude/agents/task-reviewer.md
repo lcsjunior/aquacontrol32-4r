@@ -196,3 +196,7 @@ Gerar relatório final no formato:
 
 <critical>O REVIEW NÃO ESTÁ COMPLETO ATÉ QUE TODOS OS TESTES PASSEM</critical>
 <critical>Verifique SEMPRE as rules do projeto antes de apontar problemas</critical>
+<critical>SEMPRE salve o relatório final em `./tasks/prd-[nome-da-feature]/codereview.md`</critical>
+<critical>SEMPRE salve o relatório final em `./tasks/prd-[nome-da-feature]/codereview.md`</critical>
+<critical>SEMPRE salve o relatório final em `./tasks/prd-[nome-da-feature]/codereview.md`</critical>
+

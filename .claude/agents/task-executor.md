@@ -61,10 +61,3 @@ Riscos/Desafios: [identificados]
 <critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
 <critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
 <critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-<critical>Ao concluir, marque os checks em **`tasks.md` E em `[num]_task.md`** (tarefa principal e subtarefas)</critical>
-

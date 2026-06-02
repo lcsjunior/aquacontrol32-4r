@@ -12,9 +12,7 @@ bool mountFS() {
 #else
   ret = LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED);
 #endif
-  if (!ret) {
-    Serial.println(F("Failed to mount LittleFS"));
-  }
+  if (!ret) Serial.println(F("Failed to mount LittleFS"));
   return ret;
 }
 
@@ -167,9 +165,7 @@ void WifiClass::loop() {
 }
 
 uint32_t WifiClass::getChipId() {
-  if (_chipId > 0) {
-    return _chipId;
-  }
+  if (_chipId > 0) return _chipId;
 #if defined(ESP8266)
   _chipId = ESP.getChipId();
 #else

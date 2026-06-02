@@ -15,8 +15,12 @@ Hardware (pinout) e mapeamento de fields do ThingSpeak: ver `README.md`.
 
 - `src/main.cpp` — wiring geral: inicializa sensores, relés e thermostat; conecta
   WiFi+MQTT; registra crons e o servidor HTTP; roda o loop principal.
-- `lib/commons/` — abstrações de hardware: `relay`, `temp_sensor` (DS18B20),
-  `thermostat` (máquina de estados), `espx_wifi` (STA+AP, OTA, NTP, utilidades).
+- `lib/commons/` — utilitários de plataforma: `espx_wifi` (STA+AP, OTA, NTP),
+  `clock.h` (interface `Clock`), `arduino_clock` (impl concreta).
+- `lib/devices/` — abstrações de hardware: `Relay` (atuador GPIO), `DallasTemperatureSensor`
+  (DS18B20), `Thermostat` + `ThermostatState` (máquina de estados: `IdleState`,
+  `HeatingState`), interfaces `Actuator` e `TemperatureSensor`.
+- `lib/mqtt/` — `MQTTClient` (publicação de dados ao broker MQTT).
 - `lib/config/` — `Config` (setpoint, hysteresis) persistido em LittleFS.
 
 Detalhes que mudam (horários dos crons, endpoints HTTP, fields MQTT, versões de libs)

@@ -31,22 +31,19 @@ void Thermostat::update(float currentTemperatureC) {
 }
 
 void Thermostat::transitionTo(ThermostatState* nextState) {
-  if (nextState == currentState_) {
-    return;
-  }
-  if ((clock_->millis() - lastTransitionMs_) < THERMOSTAT_DEBOUNCE_MS) {
-    return;
-  }
+  if (nextState == currentState_) return;
+  if ((clock_->millis() - lastTransitionMs_) < THERMOSTAT_DEBOUNCE_MS) return;
   ThermostatState* prev = currentState_;
   currentState_ = nextState;
   lastTransitionMs_ = clock_->millis();
-  log_i("[Thermostat] %s -> %s", prev->name(), currentState_->name());
   currentState_->enter(*this);
+  log_i("[Thermostat] %s -> %s", prev->name(), currentState_->name());
 }
 
 void Thermostat::forceTransitionToIdle() {
   log_w("[Thermostat] Forcing transition to idle");
   currentState_ = &idleStateSingleton;
+  lastTransitionMs_ = clock_->millis();
   currentState_->enter(*this);
 }
 

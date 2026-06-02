@@ -29,9 +29,7 @@ void saveConfigFile() {
   DynamicJsonDocument doc(JSON_DOC_SIZE);
   doc.set(config);
   bool serialized = serializeJsonPretty(doc, file) > 0;
-  if (!serialized) {
-    Serial.println(F("Failed to serialize configuration"));
-  }
+  if (!serialized) Serial.println(F("Failed to serialize configuration"));
 }
 
 void removeConfigFile() { LittleFS.remove(filename); }
