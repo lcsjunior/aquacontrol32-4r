@@ -22,7 +22,7 @@ constexpr const char* ssid = WIFI_SSID;
 constexpr const char* pass = WIFI_PASS;
 constexpr const char* otaPass = OTA_PASS;
 constexpr const char* apPass = AP_PASS;
-constexpr const char* tz = "<-03>3";
+constexpr const char* timezone = "<-03>3";
 constexpr const char* hostname = "smart-aquarium";
 
 constexpr const char* mqttServer = "mqtt3.thingspeak.com";
@@ -48,7 +48,7 @@ WiFiClient espClient;
 TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
 Actuator* lamp = new Relay();
-Actuator* co2Valve = new Relay();
+Actuator* co2 = new Relay();
 Thermostat thermostat(heater);
 
 void buildPayload();
@@ -65,7 +65,7 @@ void setup() {
   temperatureSensor->begin(DS18B20_PIN);
   heater->begin(K1_PIN);
   lamp->begin(K2_PIN);
-  co2Valve->begin(K4_PIN);
+  co2->begin(K4_PIN);
 
   mountFS();
   if (!loadConfigFile()) {
@@ -79,7 +79,7 @@ void setup() {
 
   WiFi.mode(WIFI_AP_STA);
   Wifi.initAP(apPass);
-  Wifi.initSTA(ssid, pass, otaPass, tz, hostname);
+  Wifi.initSTA(ssid, pass, otaPass, timezone, hostname);
 
   initWS();
   initCrons();
@@ -110,7 +110,7 @@ void buildPayload() {
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
            "status=PUB %s RSSI %d dBm (%d pcent)"),
       temperatureSensor->temperatureC(), heater->isOn(),
-      lamp->isOn(), co2Valve->isOn(), tbuf, WiFi.RSSI(),
+      lamp->isOn(), co2->isOn(), tbuf, WiFi.RSSI(),
       dBm2Quality(WiFi.RSSI()));
 }
 
@@ -122,9 +122,9 @@ void mqttPublish() {
 }
 
 void initCrons() {
-  Cron.create((char *)cronstr_at_07_30, []() { co2Valve->turnOn(); }, false);
+  Cron.create((char *)cronstr_at_07_30, []() { co2->turnOn(); }, false);
   Cron.create((char *)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
-  Cron.create((char *)cronstr_at_14_30, []() { co2Valve->turnOff(); }, false);
+  Cron.create((char *)cronstr_at_14_30, []() { co2->turnOff(); }, false);
   Cron.create((char *)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
 }
 
@@ -151,7 +151,7 @@ void initWS() {
   });
 
   server.on(F("/co2/toggle"), HTTP_GET, []() {
-    co2Valve->toggle();
+    co2->toggle();
     server.send(200);
   });
 
