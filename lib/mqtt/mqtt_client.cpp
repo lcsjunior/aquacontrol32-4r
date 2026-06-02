@@ -48,14 +48,15 @@ void MQTTClient::publish(const char* topic, const char* payload) {
 }
 
 bool MQTTClient::reconnect() {
-  if (pubSubClient_.connected()) return true;
   if (millis() - lastConnectAttempt_ < MQTT_CONN_TIMEOUT_MS) return false;
   lastConnectAttempt_ = millis();
   return connect();
 }
 
 void MQTTClient::loop() {
-  reconnect();
+  if (!pubSubClient_.connected()) {
+    reconnect();
+  }
   pubSubClient_.loop();
 }
 
