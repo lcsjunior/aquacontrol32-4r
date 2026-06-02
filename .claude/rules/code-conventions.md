@@ -40,9 +40,12 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 - Nunca usar `Serial` diretamente para log.
 - Prefixar mensagens com o nome da classe entre colchetes (ex.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
 
-## Constantes de tempo
+## Constantes
 
-- Timeouts e intervalos de tempo devem ser definidos como macros `UPPER_SNAKE_CASE` com sufixo `_MS` e literal `UL` (ex.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
+- Constantes em geral devem ser declaradas como `constexpr const char*` (ou tipo equivalente, ex.: `constexpr int`), para garantir avaliação em tempo de compilação e imutabilidade do ponteiro/valor.
+- Exceções permitidas como `#define` (`UPPER_SNAKE_CASE`):
+  - **Pinos** (ex.: `#define K1_PIN 21`).
+  - **Timeouts e intervalos de tempo**: sufixo `_MS` e literal `UL` (ex.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
 
 ## Fluxo de controle
 

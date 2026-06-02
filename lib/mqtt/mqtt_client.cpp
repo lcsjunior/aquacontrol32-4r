@@ -4,13 +4,13 @@
 
 MQTTClient MQTT;
 
-void MQTTClient::begin(Client& netClient,
+void MQTTClient::begin(Client& espClient,
                        const char* server,
                        int port,
                        const char* clientId,
                        const char* username,
                        const char* password) {
-  pubSubClient_.setClient(netClient);
+  pubSubClient_.setClient(espClient);
   pubSubClient_.setServer(server, port);
   server_   = server;
   clientId_ = clientId;

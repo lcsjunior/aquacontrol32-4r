@@ -1,7 +1,7 @@
 #include "config.h"
 
 Config config;
-const char *filename = "/config.json";
+constexpr const char* filename = "/config.json";
 
 bool loadConfigFile() {
   File file = LittleFS.open(filename, "r");

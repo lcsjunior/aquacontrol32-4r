@@ -18,31 +18,31 @@
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
 
-const char *ssid = WIFI_SSID;
-const char *pass = WIFI_PASS;
-const char *otaPass = OTA_PASS;
-const char *apPass = AP_PASS;
-const char *tz = SAO_PAULO_TZ;
-const char *hostname = "smart-aquarium";
+constexpr const char* ssid = WIFI_SSID;
+constexpr const char* pass = WIFI_PASS;
+constexpr const char* otaPass = OTA_PASS;
+constexpr const char* apPass = AP_PASS;
+constexpr const char* tz = "<-03>3";
+constexpr const char* hostname = "smart-aquarium";
 
-const char *mqttServer = "mqtt3.thingspeak.com";
-const int mqttPort = 1883;
-const char *mqttClientId = MQTT_CLIENT_ID;
-const char *mqttUsername = MQTT_USERNAME;
-const char *mqttPassword = MQTT_PASSWORD;
+constexpr const char* mqttServer = "mqtt3.thingspeak.com";
+constexpr int mqttPort = 1883;
+constexpr const char* mqttClientId = MQTT_CLIENT_ID;
+constexpr const char* mqttUsername = MQTT_USERNAME;
+constexpr const char* mqttPassword = MQTT_PASSWORD;
 
-const char *cronstr_at_07_30 = "0 30 7 * * *";
-const char *cronstr_at_08_00 = "0 0 8 * * *";
-const char *cronstr_at_14_30 = "0 30 14 * * *";
-const char *cronstr_at_15_00 = "0 0 15 * * *";
+constexpr const char* cronstr_at_07_30 = "0 30 7 * * *";
+constexpr const char* cronstr_at_08_00 = "0 0 8 * * *";
+constexpr const char* cronstr_at_14_30 = "0 30 14 * * *";
+constexpr const char* cronstr_at_15_00 = "0 0 15 * * *";
 
 WebServer server(80);
 WiFiClient espClient;
 
 noDelay publishInterval(MQTT_PUB_INTERVAL_MS);
 
-const char *publishTopic  = "channels/2421172/publish";
-const char *subscribeTopic = "channels/2421172/subscribe";
+constexpr const char* publishTopic  = "channels/2421172/publish";
+constexpr const char* subscribeTopic = "channels/2421172/subscribe";
 char payload[255];
 
 TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();

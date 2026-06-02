@@ -7,7 +7,7 @@
 
 class MQTTClient {
 public:
-  void begin(Client& netClient,
+  void begin(Client& espClient,
              const char* server,
              int port,
              const char* clientId,
