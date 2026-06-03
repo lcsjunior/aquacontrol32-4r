@@ -3,6 +3,7 @@ name: platformio-build
 description: >
   PlatformIO build, flash, test, and configuration workflow for ESP32 —
   `pio run` (compile), `pio test -e native` (host tests), OTA and USB upload support.
+allowed-tools: Bash, Read
 ---
 
 # Skill: platformio-build
