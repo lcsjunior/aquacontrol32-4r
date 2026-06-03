@@ -3,6 +3,7 @@ name: platformio-build
 description: >
   PlatformIO build, flash, test, and configuration workflow for ESP32 —
   `pio run` (compile), `pio test -e native` (host tests), OTA and USB upload support.
+allowed-tools: Bash, Read
 ---
 
 # Skill: platformio-build
@@ -65,3 +66,4 @@ Default behavior when OTA is not configured. Requires the ESP32 to be physically
 ## Notes
 
 - **Local session without device:** if compilation passes (`pio run` OK), the code is correct and ready to flash.
+- **Upload requires user confirmation:** before running any upload/flash command (`pio run --target upload`, OTA or equivalent), always ask the user for explicit permission first.

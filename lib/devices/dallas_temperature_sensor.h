@@ -16,7 +16,7 @@ public:
   ~DallasTemperatureSensor();
   void begin(const byte pin) override;
   void requestTemperatures() override;
-  float getTemperatureC() override;
+  float temperatureC() override;
 };
 
 #endif // DALLAS_TEMPERATURE_SENSOR_H

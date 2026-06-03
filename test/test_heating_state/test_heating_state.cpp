@@ -24,6 +24,7 @@ void tearDown() {
 
 void test_heating_enter_turns_on_actuator() {
   TEST_ASSERT_TRUE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
 void test_heating_name_returns_heating() {
@@ -32,22 +33,24 @@ void test_heating_name_returns_heating() {
 }
 
 void test_heating_update_no_transition_when_below_setpoint() {
-  TEST_ASSERT_TRUE(actuator.isOn());
   clock.advance(60000);
   thermostat->update(23.5f);
   TEST_ASSERT_TRUE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
 void test_heating_update_transitions_to_idle_when_above_setpoint() {
   clock.advance(60000);
   thermostat->update(24.6f);
   TEST_ASSERT_FALSE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 void test_heating_update_at_exactly_setpoint_no_transition() {
   clock.advance(60000);
   thermostat->update(24.0f);
   TEST_ASSERT_TRUE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
 int main() {

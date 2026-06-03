@@ -26,6 +26,7 @@ void test_idle_enter_turns_off_actuator() {
   IdleState idle;
   idle.enter(*thermostat);
   TEST_ASSERT_FALSE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 void test_idle_name_returns_idle() {
@@ -34,21 +35,23 @@ void test_idle_name_returns_idle() {
 }
 
 void test_idle_update_no_transition_when_above_threshold() {
-  TEST_ASSERT_FALSE(actuator.isOn());
   thermostat->update(24.0f);
   TEST_ASSERT_FALSE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 void test_idle_update_transitions_to_heating_when_below_threshold() {
   float belowThreshold = 24.0f - 0.5f - 0.1f;
   thermostat->update(belowThreshold);
   TEST_ASSERT_TRUE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
 void test_idle_update_at_exactly_threshold_no_transition() {
   float atThreshold = 24.0f;
   thermostat->update(atThreshold);
   TEST_ASSERT_FALSE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 int main() {

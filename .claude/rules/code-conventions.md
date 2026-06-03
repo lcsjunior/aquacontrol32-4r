@@ -34,6 +34,23 @@ Nos demais casos, seguir as convenções recomendadas nas skills.
 - Não adicionar comentários ao código. Identificadores bem nomeados são suficientes.
 - Nomes de métodos, funções e variáveis devem ser **sugestivos**: revelar intenção e comportamento sem precisar de explicação adicional.
 
+## Logging
+
+- Usar as macros do ESP-IDF (`log_i`, `log_w`, `log_e`, `log_d`) em vez de `Serial.print`/`Serial.println`.
+- Nunca usar `Serial` diretamente para log.
+- Prefixar mensagens com o nome da classe entre colchetes (ex.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
+
+## Constantes
+
+- Constantes em geral devem ser declaradas como `constexpr const char*` (ou tipo equivalente, ex.: `constexpr int`), para garantir avaliação em tempo de compilação e imutabilidade do ponteiro/valor.
+- Exceções permitidas como `#define` (`UPPER_SNAKE_CASE`):
+  - **Pinos** (ex.: `#define K1_PIN 21`).
+  - **Timeouts e intervalos de tempo**: sufixo `_MS` e literal `UL` (ex.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
+
+## Fluxo de controle
+
+- Preferir early return e operador ternário a blocos `if/else` aninhados.
+
 ## Hardware como fonte de verdade
 
 Quando um guideline de C++ conflitar com uma restrição de hardware (pinagem,

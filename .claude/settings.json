@@ -6,7 +6,9 @@
 			"mcp__context7__query-docs",
 			"Skill(embedded-cpp)",
 			"Skill(platformio-build)",
-			"Bash(pio *)",
+			"Bash(pio run *)",
+			"Bash(pio test *)",
+			"Bash(pio device monitor)",
 			"Bash(g++ *)"
 		]
 	}

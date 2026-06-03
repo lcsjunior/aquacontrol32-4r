@@ -19,6 +19,7 @@ public:
   Actuator* actuator() const;
   float setpoint() const;
   float hysteresis() const;
+  const char* stateName() const;
 
 private:
   Actuator* actuator_;
