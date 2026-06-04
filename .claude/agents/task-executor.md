@@ -54,7 +54,7 @@ Riscos/Desafios: [identificados]
 
 ### 5. Revisão
 
-1. Execute o agente `@task-reviewer`
+1. <critical>Execute o agente `@task-reviewer`</critical>
 2. Ajuste os problemas indicados
 3. Não finalize a tarefa até resolvê-los
 

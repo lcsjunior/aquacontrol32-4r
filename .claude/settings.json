@@ -8,7 +8,6 @@
 			"Skill(platformio-build)",
 			"Bash(pio run *)",
 			"Bash(pio test *)",
-			"Bash(pio device monitor)",
 			"Bash(g++ *)"
 		]
 	}
