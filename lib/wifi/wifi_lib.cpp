@@ -1,54 +1,11 @@
 #include "wifi_lib.h"
+#include <arduino_clock.h>
+
+constexpr const char* NTP_SERVER = "pool.ntp.org";
 
 WiFiLib WIFI;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress subnet(255, 255, 255, 0);
-
-bool mountFS() {
-  delay(1000);
-  bool ret;
-#if defined(ESP8266)
-  ret = LittleFS.begin();
-#else
-  ret = LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED);
-#endif
-  if (!ret) Serial.println(F("Failed to mount LittleFS"));
-  return ret;
-}
-
-time_t now() { return time(nullptr); }
-
-time_t uptime() { return (time_t)(millis() / 1000); }
-
-void getLocalTimeFmt(char *buf, size_t len) {
-  time_t now = time(nullptr);
-  struct tm *timeinfo;
-  timeinfo = localtime(&now);
-  strftime(buf, len, DATETIME_FORMAT, timeinfo);
-}
-
-void printLocalTime() {
-  char buf[32];
-  getLocalTimeFmt(buf, sizeof(buf));
-  Serial.println(buf);
-}
-
-void printMAC(const uint8_t *mac_addr) {
-  char macStr[18];
-  snprintf_P(macStr, sizeof(macStr), PSTR("%02x:%02x:%02x:%02x:%02x:%02x"),
-             mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4],
-             mac_addr[5]);
-  Serial.print(macStr);
-}
-
-int strToMAC(const char *mac, uint8_t *values) {
-  if (6 == sscanf(mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &values[0], &values[1],
-                  &values[2], &values[3], &values[4], &values[5])) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
 
 uint8_t dBmToQuality(const int16_t dBm) {
   if (dBm <= -100)
@@ -64,27 +21,17 @@ void WiFiLib::initAP(const char *apPass) {
   char apSsid[32];
   sprintf_P(apSsid, "ESPsoftAP-%06x", getChipId());
 
-  Serial.print(F("Setting soft-AP configuration... "));
-  Serial.println(WiFi.softAPConfig(apIP, apIP, subnet) ? F("Ready")
-                                                       : F("Failed!"));
+  bool apConfigOk = WiFi.softAPConfig(apIP, apIP, subnet);
+  if (!apConfigOk) log_w("[WiFiLib] softAPConfig failed");
 
-  Serial.print(F("Setting soft-AP... "));
-  Serial.println(WiFi.softAP(apSsid, apPass) ? F("Ready") : F("Failed!"));
+  bool apStartOk = WiFi.softAP(apSsid, apPass);
+  if (!apStartOk) log_e("[WiFiLib] softAP start failed");
 
-  Serial.print(F("AP IP Address:      "));
-  Serial.println(WiFi.softAPIP());
-
-  Serial.print(F("SSID:               "));
-  Serial.println(WiFi.softAPSSID());
-
-  Serial.print(F("AP MAC Address:     "));
-  Serial.println(WiFi.softAPmacAddress());
-
-  Serial.print(F("Board MAC Address:  "));
-  Serial.println(WiFi.macAddress());
-
-  Serial.print(F("Channel:            "));
-  Serial.println(WiFi.channel());
+  log_i("[WiFiLib] AP IP Address: %s", WiFi.softAPIP().toString().c_str());
+  log_i("[WiFiLib] SSID: %s", WiFi.softAPSSID().c_str());
+  log_i("[WiFiLib] AP MAC Address: %s", WiFi.softAPmacAddress().c_str());
+  log_i("[WiFiLib] Board MAC Address: %s", WiFi.macAddress().c_str());
+  log_i("[WiFiLib] Channel: %d", (int)WiFi.channel());
   _apChannel = WiFi.channel();
 
   delay(1000);
@@ -100,63 +47,51 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
   WiFi.setHostname(hostname);
 
   WiFi.begin(_ssid, _pass);
-  Serial.print(F("Connecting"));
   unsigned long currentMillis = millis();
   while (!WiFi.isConnected() &&
-         (millis() - currentMillis) <= WIFI_CONNECT_TIMEOUT) {
-    Serial.print(F("."));
+         (millis() - currentMillis) <= WIFI_CONNECT_TIMEOUT_MS) {
     delay(300);
   }
   _isSTAEnabled = true;
 
-  configTzTime(tz, _ntpServer);
+  configTzTime(tz, NTP_SERVER);
   currentMillis = millis();
-  while ((millis() - currentMillis) <= CONFIG_TZ_DELAY) {
-    Serial.print(F("."));
+  while ((millis() - currentMillis) <= CONFIG_TZ_DELAY_MS) {
     delay(300);
   }
   delay(1000);
-  Serial.println();
-  Serial.print(F("Local Time:         "));
-  printLocalTime();
+
+  char buf[32];
+  ArduinoClock.formatLocalDateTime(buf, sizeof(buf));
+  log_i("[WiFiLib] Local time: %s", buf);
 
   ArduinoOTA.setHostname((const char *)hostname);
   ArduinoOTA.setPassword((const char *)otaPass);
   ArduinoOTA.begin();
 
-  Serial.print(F("IP Address:         "));
-  Serial.println(WiFi.localIP());
-
-  Serial.print(F("Hostname:           "));
-  Serial.println(WiFi.getHostname());
-
-  Serial.print(F("Board MAC Address:  "));
-  Serial.println(WiFi.macAddress());
-
-  Serial.print(F("Wi-Fi Channel:      "));
-  Serial.println(WiFi.channel());
+  log_i("[WiFiLib] IP Address: %s", WiFi.localIP().toString().c_str());
+  log_i("[WiFiLib] Hostname: %s", WiFi.getHostname());
+  log_i("[WiFiLib] Board MAC Address: %s", WiFi.macAddress().c_str());
+  log_i("[WiFiLib] Wi-Fi Channel: %d", (int)WiFi.channel());
   _channel = WiFi.channel();
 
-  Serial.print(F("Signal Strength:    "));
-  Serial.print(WiFi.RSSI());
-  Serial.print(F(" dBm / "));
-  Serial.print(dBmToQuality(WiFi.RSSI()));
-  Serial.println(F("%"));
+  int16_t rssi = WiFi.RSSI();
+  log_i("[WiFiLib] Signal Strength: %d dBm / %u%%", (int)rssi, (unsigned)dBmToQuality(rssi));
 
   delay(1000);
 }
 
 void WiFiLib::loop() {
   if (_shouldReboot) {
-    Serial.println(F("Rebooting..."));
+    log_w("[WiFiLib] Rebooting...");
     delay(100);
     ESP.restart();
   }
   if (_isSTAEnabled) {
     if (!WiFi.isConnected() &&
-        (millis() - _lastWiFiRetryConnectTime) >= WIFI_CONNECT_TIMEOUT) {
+        (millis() - _lastWiFiRetryConnectTime) >= WIFI_CONNECT_TIMEOUT_MS) {
       _lastWiFiRetryConnectTime = millis();
-      Serial.println(F("Reconnecting to WiFi..."));
+      log_w("[WiFiLib] Reconnecting to WiFi...");
       WiFi.disconnect();
       WiFi.begin(_ssid, _pass);
     }
@@ -166,13 +101,9 @@ void WiFiLib::loop() {
 
 uint32_t WiFiLib::getChipId() {
   if (_chipId > 0) return _chipId;
-#if defined(ESP8266)
-  _chipId = ESP.getChipId();
-#else
   for (int i = 0; i < 17; i = i + 8) {
     _chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
   }
-#endif
   return _chipId;
 }
 

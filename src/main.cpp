@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include <CronAlarms.h>
+#include <LittleFS.h>
 #include <NoDelay.h>
 #include <WebServer.h>
 #include <secrets.h>
 #include <config.h>
 #include <wifi_lib.h>
+#include <arduino_clock.h>
 #include <relay.h>
 #include <dallas_temperature_sensor.h>
 #include <thermostat.h>
@@ -17,6 +19,10 @@
 #define DS18B20_PIN 22
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
+
+constexpr int SERIAL_BAUD_RATE = 115200;
+constexpr const char* TEXT_PLAIN = "text/plain";
+constexpr const char* APPLICATION_JSON = "application/json";
 
 constexpr const char* ssid = WIFI_SSID;
 constexpr const char* pass = WIFI_PASS;
@@ -67,7 +73,7 @@ void setup() {
   lamp->begin(K2_PIN);
   co2->begin(K4_PIN);
 
-  mountFS();
+  if (!LittleFS.begin(true)) log_e("[main] Failed to mount LittleFS");
   if (!loadConfigFile()) {
     log_i("[main] Using default config");
     config.setpoint = 24;
@@ -104,7 +110,7 @@ void loop() {
 
 void buildPayload() {
   char tbuf[64];
-  getLocalTimeFmt(tbuf, sizeof(tbuf));
+  ArduinoClock.formatLocalDateTime(tbuf, sizeof(tbuf));
   snprintf_P(
       payload, sizeof(payload),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
@@ -130,7 +136,7 @@ void initCrons() {
 
 void initWS() {
   server.on(F("/"), []() {
-    server.send(200, FPSTR(TEXT_PLAIN), FPSTR("Hello from ESP!"));
+    server.send(200, TEXT_PLAIN, "Hello from ESP!");
   });
 
   server.on(F("/reboot"), HTTP_GET, []() {
@@ -142,7 +148,7 @@ void initWS() {
     char buf[sizeof(payload) + 32];
     size_t len = strnlen_P(payload, sizeof(payload));
     snprintf_P(buf, sizeof(buf), PSTR("%s (%zd bytes)"), payload, len);
-    server.send(200, FPSTR(TEXT_PLAIN), buf);
+    server.send(200, TEXT_PLAIN, buf);
   });
 
   server.on(F("/lamp/toggle"), HTTP_GET, []() {
@@ -156,7 +162,7 @@ void initWS() {
   });
 
   server.onNotFound(
-      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("Not found")); });
+      []() { server.send(404, TEXT_PLAIN, "Not found"); });
 
   server.begin();
   log_i("[main] HTTP server started");
