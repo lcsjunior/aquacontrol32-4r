@@ -2,10 +2,6 @@
 
 #define TEMPERATURE_POLL_INTERVAL_MS 1000UL
 
-DallasTemperatureSensor::~DallasTemperatureSensor() {
-  delete oneWire_;
-}
-
 void DallasTemperatureSensor::begin(const byte pin) {
   delete oneWire_;
   oneWire_ = new OneWire(pin);
@@ -18,9 +14,7 @@ void DallasTemperatureSensor::requestTemperatures() {
   if ((millis() - lastRequestMs_) < TEMPERATURE_POLL_INTERVAL_MS) return;
   sensors_.requestTemperatures();
   lastTemperatureC_ = sensors_.getTempCByIndex(0);
-  if (lastTemperatureC_ == DEVICE_DISCONNECTED_C) {
-    log_e("[DallasTemperatureSensor] Could not read temperature");
-  }
+  if (lastTemperatureC_ == DEVICE_DISCONNECTED_C) log_e("[DallasTemperatureSensor] Could not read temperature");
   lastRequestMs_ = millis();
 }
 

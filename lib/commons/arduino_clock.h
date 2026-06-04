@@ -4,13 +4,11 @@
 #include <Arduino.h>
 #include "clock.h"
 
-class ArduinoClockImpl : public Clock {
+void formatLocalDateTime(char *buf, size_t len);
+
+class ArduinoClock : public Clock {
 public:
   unsigned long millis() const override { return ::millis(); }
 };
-
-void formatLocalDateTime(char *buf, size_t len);
-
-extern ArduinoClockImpl ArduinoClock;
 
 #endif // ARDUINO_CLOCK_H

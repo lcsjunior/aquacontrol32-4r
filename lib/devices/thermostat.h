@@ -3,11 +3,11 @@
 
 #include "actuator.h"
 #include "thermostat_state.h"
-#include "arduino_clock.h"
+#include "clock.h"
 
 class Thermostat {
 public:
-  explicit Thermostat(Actuator* actuator, Clock* clock = &ArduinoClock);
+  explicit Thermostat(Actuator* actuator, Clock* clock);
 
   void begin(const float setpoint, const float hysteresis,
              const float lowerLimit, const float upperLimit);

@@ -55,7 +55,8 @@ TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
 Actuator* lamp = new Relay();
 Actuator* co2 = new Relay();
-Thermostat thermostat(heater);
+ArduinoClock arduinoClock;
+Thermostat thermostat(heater, &arduinoClock);
 
 void buildPayload();
 void mqttPublish();
@@ -114,7 +115,7 @@ void buildPayload() {
   snprintf_P(
       payload, sizeof(payload),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
-           "status=PUB %s RSSI %d dBm (%d pcent)"),
+           "status=PUB %s RSSI %d dBm (%d pct)"),
       temperatureSensor->temperatureC(), heater->isOn(),
       lamp->isOn(), co2->isOn(), tbuf, WiFi.RSSI(),
       dBmToQuality(WiFi.RSSI()));

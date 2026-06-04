@@ -102,8 +102,4 @@ uint32_t WiFiLib::getChipId() {
   return _chipId;
 }
 
-uint8_t WiFiLib::getAPChannel() const { return _apChannel; }
-
-uint8_t WiFiLib::getChannel() const { return _channel; }
-
 void WiFiLib::reboot() { _shouldReboot = true; }

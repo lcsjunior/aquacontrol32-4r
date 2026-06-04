@@ -3,8 +3,6 @@
 
 #define DATETIME_FORMAT "%Y-%m-%d %H:%M:%S"
 
-ArduinoClockImpl ArduinoClock;
-
 void formatLocalDateTime(char *buf, size_t len) {
   time_t now = time(nullptr);
   struct tm *timeinfo = localtime(&now);

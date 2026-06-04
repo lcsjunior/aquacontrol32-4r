@@ -5,7 +5,6 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <ArduinoOTA.h>
-#include "../commons/clock.h"
 
 #define WIFI_CONNECT_TIMEOUT_MS 60000UL
 #define CONFIG_TZ_DELAY_MS 3000UL
@@ -29,10 +28,9 @@ public:
                const char *tz, const char *hostname);
   void loop();
   uint32_t getChipId();
-  uint8_t getAPChannel() const;
-  uint8_t getChannel() const;
   void reboot();
 };
+
 extern WiFiLib WIFI;
 
 #endif // WIFI_LIB_H

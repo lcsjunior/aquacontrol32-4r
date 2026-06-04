@@ -13,7 +13,6 @@ private:
   float lastTemperatureC_ = DEVICE_DISCONNECTED_C;
 
 public:
-  ~DallasTemperatureSensor();
   void begin(const byte pin) override;
   void requestTemperatures() override;
   float temperatureC() override;
