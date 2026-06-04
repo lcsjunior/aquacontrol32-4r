@@ -28,7 +28,7 @@ constexpr const char* ssid = WIFI_SSID;
 constexpr const char* pass = WIFI_PASS;
 constexpr const char* otaPass = OTA_PASS;
 constexpr const char* apPass = AP_PASS;
-constexpr const char* timezone = "<-03>3";
+constexpr const char* tz = "<-03>3";
 constexpr const char* hostname = "smart-aquarium";
 
 constexpr const char* mqttServer = "mqtt3.thingspeak.com";
@@ -85,7 +85,7 @@ void setup() {
 
   WiFi.mode(WIFI_AP_STA);
   WIFI.initAP(apPass);
-  WIFI.initSTA(ssid, pass, otaPass, timezone, hostname);
+  WIFI.initSTA(ssid, pass, otaPass, tz, hostname);
 
   initWS();
   initCrons();

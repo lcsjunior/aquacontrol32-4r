@@ -7,8 +7,9 @@
 class ArduinoClockImpl : public Clock {
 public:
   unsigned long millis() const override { return ::millis(); }
-  void formatLocalDateTime(char *buf, size_t len) const override;
 };
+
+void formatLocalDateTime(char *buf, size_t len);
 
 extern ArduinoClockImpl ArduinoClock;
 
