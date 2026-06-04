@@ -1,6 +1,6 @@
-#include "espx_wifi.h"
+#include "wifi_lib.h"
 
-WifiClass Wifi;
+WiFiLib WIFI;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress subnet(255, 255, 255, 0);
 
@@ -41,7 +41,7 @@ void printMAC(const uint8_t *mac_addr) {
   Serial.print(macStr);
 }
 
-int str2mac(const char *mac, uint8_t *values) {
+int strToMAC(const char *mac, uint8_t *values) {
   if (6 == sscanf(mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &values[0], &values[1],
                   &values[2], &values[3], &values[4], &values[5])) {
     return 1;
@@ -50,7 +50,7 @@ int str2mac(const char *mac, uint8_t *values) {
   }
 }
 
-uint8_t dBm2Quality(const int16_t dBm) {
+uint8_t dBmToQuality(const int16_t dBm) {
   if (dBm <= -100)
     return 0;
   else if (dBm >= -50)
@@ -58,7 +58,7 @@ uint8_t dBm2Quality(const int16_t dBm) {
   return 2 * (dBm + 100);
 }
 
-void WifiClass::initAP(const char *apPass) {
+void WiFiLib::initAP(const char *apPass) {
   delay(1000);
 
   char apSsid[32];
@@ -90,7 +90,7 @@ void WifiClass::initAP(const char *apPass) {
   delay(1000);
 }
 
-void WifiClass::initSTA(const char *ssid, const char *pass, const char *otaPass,
+void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
                         const char *tz, const char *hostname) {
   delay(1000);
 
@@ -140,13 +140,13 @@ void WifiClass::initSTA(const char *ssid, const char *pass, const char *otaPass,
   Serial.print(F("Signal Strength:    "));
   Serial.print(WiFi.RSSI());
   Serial.print(F(" dBm / "));
-  Serial.print(dBm2Quality(WiFi.RSSI()));
+  Serial.print(dBmToQuality(WiFi.RSSI()));
   Serial.println(F("%"));
 
   delay(1000);
 }
 
-void WifiClass::loop() {
+void WiFiLib::loop() {
   if (_shouldReboot) {
     Serial.println(F("Rebooting..."));
     delay(100);
@@ -164,7 +164,7 @@ void WifiClass::loop() {
   }
 }
 
-uint32_t WifiClass::getChipId() {
+uint32_t WiFiLib::getChipId() {
   if (_chipId > 0) return _chipId;
 #if defined(ESP8266)
   _chipId = ESP.getChipId();
@@ -176,8 +176,8 @@ uint32_t WifiClass::getChipId() {
   return _chipId;
 }
 
-uint8_t WifiClass::getAPChannel() const { return _apChannel; }
+uint8_t WiFiLib::getAPChannel() const { return _apChannel; }
 
-uint8_t WifiClass::getChannel() const { return _channel; }
+uint8_t WiFiLib::getChannel() const { return _channel; }
 
-void WifiClass::reboot() { _shouldReboot = true; }
+void WiFiLib::reboot() { _shouldReboot = true; }

@@ -4,7 +4,7 @@
 #include <WebServer.h>
 #include <secrets.h>
 #include <config.h>
-#include <espx_wifi.h>
+#include <wifi_lib.h>
 #include <relay.h>
 #include <dallas_temperature_sensor.h>
 #include <thermostat.h>
@@ -78,8 +78,8 @@ void setup() {
   thermostat.begin(config.setpoint, config.hysteresis, 0, 30);
 
   WiFi.mode(WIFI_AP_STA);
-  Wifi.initAP(apPass);
-  Wifi.initSTA(ssid, pass, otaPass, timezone, hostname);
+  WIFI.initAP(apPass);
+  WIFI.initSTA(ssid, pass, otaPass, timezone, hostname);
 
   initWS();
   initCrons();
@@ -90,7 +90,7 @@ void setup() {
 }
 
 void loop() {
-  Wifi.loop();
+  WIFI.loop();
   server.handleClient();
   Cron.delay();
 
@@ -111,7 +111,7 @@ void buildPayload() {
            "status=PUB %s RSSI %d dBm (%d pcent)"),
       temperatureSensor->temperatureC(), heater->isOn(),
       lamp->isOn(), co2->isOn(), tbuf, WiFi.RSSI(),
-      dBm2Quality(WiFi.RSSI()));
+      dBmToQuality(WiFi.RSSI()));
 }
 
 void mqttPublish() {
@@ -134,7 +134,7 @@ void initWS() {
   });
 
   server.on(F("/reboot"), HTTP_GET, []() {
-    Wifi.reboot();
+    WIFI.reboot();
     server.send(200);
   });
 

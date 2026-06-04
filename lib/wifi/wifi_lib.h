@@ -1,5 +1,5 @@
-#ifndef ESPX_WIFI_H
-#define ESPX_WIFI_H
+#ifndef WIFI_LIB_H
+#define WIFI_LIB_H
 
 #include <Arduino.h>
 #if defined(ESP8266)
@@ -11,6 +11,7 @@
 #endif
 #include <ArduinoOTA.h>
 #include <LittleFS.h>
+#include "../commons/clock.h"
 
 #define SERIAL_BAUD_RATE 115200
 #define FORMAT_LITTLEFS_IF_FAILED true
@@ -21,7 +22,6 @@
 #define NTP_SERVER "pool.ntp.org"
 // https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
 #define SAO_PAULO_TZ "<-03>3"
-#define DATETIME_FORMAT "%Y-%m-%d %H:%M:%S"
 
 static const char TEXT_PLAIN[] PROGMEM = "text/plain";
 static const char TEXT_HTML[] PROGMEM = "text/html";
@@ -33,10 +33,10 @@ time_t uptime();
 void getLocalTimeFmt(char *buf, size_t len);
 void printLocalTime();
 void printMAC(const uint8_t *mac_addr);
-int str2mac(const char *mac, uint8_t *values);
-uint8_t dBm2Quality(const int16_t dBm);
+int strToMAC(const char *mac, uint8_t *values);
+uint8_t dBmToQuality(const int16_t dBm);
 
-class WifiClass {
+class WiFiLib {
 private:
   char _ssid[32];
   char _pass[32];
@@ -58,6 +58,6 @@ public:
   uint8_t getChannel() const;
   void reboot();
 };
-extern WifiClass Wifi;
+extern WiFiLib WIFI;
 
-#endif // ESPX_WIFI_H
+#endif // WIFI_LIB_H
