@@ -1,5 +1,4 @@
 #include "wifi_lib.h"
-#include <arduino_clock.h>
 
 constexpr const char* NTP_SERVER = "pool.ntp.org";
 
@@ -60,10 +59,6 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
     delay(300);
   }
   delay(1000);
-
-  char buf[32];
-  ArduinoClock.formatLocalDateTime(buf, sizeof(buf));
-  log_i("[WiFiLib] Local time: %s", buf);
 
   ArduinoOTA.setHostname((const char *)hostname);
   ArduinoOTA.setPassword((const char *)otaPass);

@@ -110,7 +110,7 @@ void loop() {
 
 void buildPayload() {
   char tbuf[64];
-  ArduinoClock.formatLocalDateTime(tbuf, sizeof(tbuf));
+  formatLocalDateTime(tbuf, sizeof(tbuf));
   snprintf_P(
       payload, sizeof(payload),
       PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
