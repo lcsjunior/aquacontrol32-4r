@@ -14,4 +14,6 @@ void IdleState::update(Thermostat& context, float currentTemperatureC) {
   }
 }
 
-const char* IdleState::name() const { return "Idle"; }
+const char* IdleState::name() const {
+  return "Idle";
+}

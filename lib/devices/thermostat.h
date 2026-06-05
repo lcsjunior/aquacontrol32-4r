@@ -6,11 +6,11 @@
 #include "clock.h"
 
 class Thermostat {
-public:
+ public:
   explicit Thermostat(Actuator* actuator, Clock* clock);
 
-  void begin(const float setpoint, const float hysteresis,
-             const float lowerLimit, const float upperLimit);
+  void begin(const float setpoint, const float hysteresis, const float lowerLimit,
+             const float upperLimit);
   void update(float currentTemperatureC);
 
   void transitionTo(ThermostatState* nextState);
@@ -21,7 +21,7 @@ public:
   float hysteresis() const;
   const char* stateName() const;
 
-private:
+ private:
   Actuator* actuator_;
   Clock* clock_;
   ThermostatState* currentState_;
@@ -32,4 +32,4 @@ private:
   unsigned long lastTransitionMs_ = 0;
 };
 
-#endif // THERMOSTAT_H
+#endif  // THERMOSTAT_H

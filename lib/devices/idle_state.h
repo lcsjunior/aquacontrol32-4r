@@ -4,7 +4,7 @@
 #include "thermostat_state.h"
 
 class IdleState : public ThermostatState {
-public:
+ public:
   void enter(Thermostat& context) override;
   void update(Thermostat& context, float currentTemperatureC) override;
   const char* name() const override;
@@ -12,4 +12,4 @@ public:
 
 extern IdleState idleStateSingleton;
 
-#endif // IDLE_STATE_H
+#endif  // IDLE_STATE_H

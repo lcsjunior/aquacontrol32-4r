@@ -2,9 +2,9 @@
 #define CLOCK_H
 
 class Clock {
-public:
+ public:
   virtual ~Clock() = default;
   virtual unsigned long millis() const = 0;
 };
 
-#endif // CLOCK_H
+#endif  // CLOCK_H

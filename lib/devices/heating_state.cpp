@@ -14,4 +14,6 @@ void HeatingState::update(Thermostat& context, float currentTemperatureC) {
   }
 }
 
-const char* HeatingState::name() const { return "Heating"; }
+const char* HeatingState::name() const {
+  return "Heating";
+}

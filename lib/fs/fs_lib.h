@@ -3,4 +3,4 @@
 
 bool mountLittleFS();
 
-#endif // FS_LIB_H
+#endif  // FS_LIB_H

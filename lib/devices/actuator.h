@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 class Actuator {
-public:
+ public:
   virtual ~Actuator() = default;
   virtual void begin(byte pin) = 0;
   virtual void turnOn() = 0;
@@ -13,4 +13,4 @@ public:
   virtual bool isOn() const = 0;
 };
 
-#endif // ACTUATOR_H
+#endif  // ACTUATOR_H

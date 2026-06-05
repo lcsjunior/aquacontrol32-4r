@@ -38,7 +38,7 @@ constexpr const char* mqttClientId = MQTT_CLIENT_ID;
 constexpr const char* mqttUsername = MQTT_USERNAME;
 constexpr const char* mqttPassword = MQTT_PASSWORD;
 
-constexpr const char* publishTopic  = "channels/2421172/publish";
+constexpr const char* publishTopic = "channels/2421172/publish";
 constexpr const char* subscribeTopic = "channels/2421172/subscribe";
 
 noDelay publishInterval(MQTT_PUB_INTERVAL_MS);
@@ -113,13 +113,11 @@ void loop() {
 void buildPayload() {
   char tbuf[64];
   formatLocalDateTime(tbuf, sizeof(tbuf));
-  snprintf_P(
-      payload, sizeof(payload),
-      PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
-           "status=PUB %s RSSI %d dBm (%d pct)"),
-      temperatureSensor->temperatureC(), heater->isOn(),
-      lamp->isOn(), co2->isOn(), tbuf, WiFi.RSSI(),
-      dBmToQuality(WiFi.RSSI()));
+  snprintf_P(payload, sizeof(payload),
+             PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
+                  "status=PUB %s RSSI %d dBm (%d pct)"),
+             temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(), co2->isOn(), tbuf,
+             WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
 }
 
 void mqttPublish() {
@@ -130,16 +128,14 @@ void mqttPublish() {
 }
 
 void initCrons() {
-  Cron.create((char *)cronstr_at_07_30, []() { co2->turnOn(); }, false);
-  Cron.create((char *)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
-  Cron.create((char *)cronstr_at_14_30, []() { co2->turnOff(); }, false);
-  Cron.create((char *)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
+  Cron.create((char*)cronstr_at_07_30, []() { co2->turnOn(); }, false);
+  Cron.create((char*)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
+  Cron.create((char*)cronstr_at_14_30, []() { co2->turnOff(); }, false);
+  Cron.create((char*)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
 }
 
 void initWS() {
-  server.on(F("/"), []() {
-    server.send(200, TEXT_PLAIN, "Hello from ESP!");
-  });
+  server.on(F("/"), []() { server.send(200, TEXT_PLAIN, "Hello from ESP!"); });
 
   server.on(F("/reboot"), HTTP_GET, []() {
     WIFI.reboot();
@@ -163,8 +159,7 @@ void initWS() {
     server.send(200);
   });
 
-  server.onNotFound(
-      []() { server.send(404, TEXT_PLAIN, "Not found"); });
+  server.onNotFound([]() { server.send(404, TEXT_PLAIN, "Not found"); });
 
   server.begin();
   log_i("[main] HTTP server started");

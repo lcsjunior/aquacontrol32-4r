@@ -29,10 +29,13 @@ void saveConfigFile() {
   DynamicJsonDocument doc(JSON_DOC_SIZE);
   doc.set(config);
   bool serialized = serializeJsonPretty(doc, file) > 0;
-  if (!serialized) Serial.println(F("Failed to serialize configuration"));
+  if (!serialized)
+    Serial.println(F("Failed to serialize configuration"));
 }
 
-void removeConfigFile() { LittleFS.remove(filename); }
+void removeConfigFile() {
+  LittleFS.remove(filename);
+}
 
 void printConfigFile() {
   File file = LittleFS.open(filename, "r");
@@ -46,12 +49,12 @@ void printConfigFile() {
   Serial.println();
 }
 
-void convertToJson(const Config &src, JsonVariant dst) {
+void convertToJson(const Config& src, JsonVariant dst) {
   dst["setpoint"] = src.setpoint;
   dst["hysteresis"] = src.hysteresis;
 }
 
-void convertFromJson(JsonVariantConst src, Config &dst) {
+void convertFromJson(JsonVariantConst src, Config& dst) {
   dst.setpoint = src["setpoint"];
   dst.hysteresis = src["hysteresis"];
 }

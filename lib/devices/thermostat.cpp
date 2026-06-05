@@ -4,12 +4,11 @@
 #define THERMOSTAT_DEBOUNCE_MS 60000UL
 
 Thermostat::Thermostat(Actuator* actuator, Clock* clock)
-    : actuator_(actuator),
-      clock_(clock),
-      currentState_(&idleStateSingleton) {}
+    : actuator_(actuator), clock_(clock), currentState_(&idleStateSingleton) {
+}
 
-void Thermostat::begin(const float setpoint, const float hysteresis,
-                       const float lowerLimit, const float upperLimit) {
+void Thermostat::begin(const float setpoint, const float hysteresis, const float lowerLimit,
+                       const float upperLimit) {
   setpoint_ = setpoint;
   hysteresis_ = hysteresis;
   lowerLimit_ = lowerLimit;
@@ -29,8 +28,10 @@ void Thermostat::update(float currentTemperatureC) {
 }
 
 void Thermostat::transitionTo(ThermostatState* nextState) {
-  if (nextState == currentState_) return;
-  if (clock_->millis() - lastTransitionMs_ < THERMOSTAT_DEBOUNCE_MS) return;
+  if (nextState == currentState_)
+    return;
+  if (clock_->millis() - lastTransitionMs_ < THERMOSTAT_DEBOUNCE_MS)
+    return;
   ThermostatState* prev = currentState_;
   currentState_ = nextState;
   lastTransitionMs_ = clock_->millis();
@@ -45,10 +46,18 @@ void Thermostat::forceTransitionToIdle() {
   currentState_->enter(*this);
 }
 
-Actuator* Thermostat::actuator() const { return actuator_; }
+Actuator* Thermostat::actuator() const {
+  return actuator_;
+}
 
-float Thermostat::setpoint() const { return setpoint_; }
+float Thermostat::setpoint() const {
+  return setpoint_;
+}
 
-float Thermostat::hysteresis() const { return hysteresis_; }
+float Thermostat::hysteresis() const {
+  return hysteresis_;
+}
 
-const char* Thermostat::stateName() const { return currentState_->name(); }
+const char* Thermostat::stateName() const {
+  return currentState_->name();
+}

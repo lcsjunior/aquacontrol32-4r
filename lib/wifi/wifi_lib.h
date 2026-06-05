@@ -9,15 +9,15 @@
 uint8_t dBmToQuality(const int16_t dBm);
 
 class WiFiLib {
-public:
-  void initAP(const char *apPass);
-  void initSTA(const char *ssid, const char *pass, const char *otaPass,
-               const char *tz, const char *hostname);
+ public:
+  void initAP(const char* apPass);
+  void initSTA(const char* ssid, const char* pass, const char* otaPass, const char* tz,
+               const char* hostname);
   void loop();
   uint32_t getChipId();
   void reboot();
 
-private:
+ private:
   char ssid_[32];
   char pass_[32];
   unsigned long lastReconnectAttemptMs_ = 0;
@@ -30,4 +30,4 @@ private:
 
 extern WiFiLib WIFI;
 
-#endif // WIFI_LIB_H
+#endif  // WIFI_LIB_H
