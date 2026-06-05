@@ -52,8 +52,8 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
     Serial.print(F("."));
     delay(300);
   }
-  staEnabled_ = true;
   Serial.println();
+  staEnabled_ = true;
 
   configTzTime(tz, NTP_SERVER);
   unsigned long ntpSyncStartMs = millis();
