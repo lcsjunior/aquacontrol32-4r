@@ -20,8 +20,6 @@ public:
   void loop();
 
 private:
-  bool reconnect();
-
   PubSubClient pubSubClient_;
   const char* server_   = nullptr;
   const char* clientId_ = nullptr;
@@ -29,6 +27,8 @@ private:
   const char* password_ = nullptr;
   const char* subscribedTopic_ = nullptr;
   unsigned long lastConnectAttempt_ = 0;
+
+  bool reconnect();
 };
 
 extern MQTTClient MQTT;

@@ -24,6 +24,15 @@ globais únicas usam **PascalCase** (não camelCase).
 
 Nos demais casos, seguir as convenções recomendadas nas skills.
 
+## Estrutura de classes
+
+Ordem das seções em toda declaração de classe:
+
+1. `public:` — construtor/destrutor, depois métodos públicos.
+2. `private:` — atributos, depois métodos privados.
+
+`protected:` segue a mesma lógica quando necessário (entre `public:` e `private:`).
+
 ## Dependências
 
 - Bibliotecas ficam fixadas por versão em `platformio.ini`.
