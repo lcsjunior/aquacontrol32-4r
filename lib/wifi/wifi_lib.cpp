@@ -24,7 +24,7 @@ void WiFiLib::initAP(const char *apPass) {
   if (!apConfigOk) log_w("[WiFiLib] softAPConfig failed");
 
   bool apStartOk = WiFi.softAP(apSsid, apPass);
-  if (!apStartOk) log_e("[WiFiLib] softAP start failed");
+  if (!apStartOk) log_w("[WiFiLib] softAP start failed");
 
   log_i("[WiFiLib] AP IP Address: %s", WiFi.softAPIP().toString().c_str());
   log_i("[WiFiLib] SSID: %s", WiFi.softAPSSID().c_str());
@@ -78,7 +78,7 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
 
 void WiFiLib::loop() {
   if (_shouldReboot) {
-    log_w("[WiFiLib] Rebooting...");
+    log_i("[WiFiLib] Rebooting...");
     delay(100);
     ESP.restart();
   }

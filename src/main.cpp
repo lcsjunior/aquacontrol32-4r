@@ -1,16 +1,18 @@
 #include <Arduino.h>
 #include <CronAlarms.h>
-#include <LittleFS.h>
 #include <NoDelay.h>
 #include <WebServer.h>
 #include <secrets.h>
 #include <config.h>
-#include <wifi_lib.h>
 #include <arduino_clock.h>
-#include <relay.h>
 #include <dallas_temperature_sensor.h>
-#include <thermostat.h>
+#include <fs_lib.h>
 #include <mqtt_client.h>
+#include <relay.h>
+#include <thermostat.h>
+#include <wifi_lib.h>
+
+#define SERIAL_BAUD_RATE 115200
 
 #define LED_PIN 25
 #define K1_PIN 21
@@ -20,7 +22,6 @@
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
 
-constexpr int SERIAL_BAUD_RATE = 115200;
 constexpr const char* TEXT_PLAIN = "text/plain";
 constexpr const char* APPLICATION_JSON = "application/json";
 
@@ -74,7 +75,7 @@ void setup() {
   lamp->begin(K2_PIN);
   co2->begin(K4_PIN);
 
-  if (!LittleFS.begin(true)) log_e("[main] Failed to mount LittleFS");
+  mountLittleFS();
   if (!loadConfigFile()) {
     log_i("[main] Using default config");
     config.setpoint = 24;
