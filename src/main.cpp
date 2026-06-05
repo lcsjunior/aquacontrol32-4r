@@ -30,7 +30,7 @@ constexpr const char* pass = WIFI_PASS;
 constexpr const char* otaPass = OTA_PASS;
 constexpr const char* apPass = AP_PASS;
 constexpr const char* tz = "<-03>3";
-constexpr const char* hostname = "smart-aquarium";
+constexpr const char* hostname = "aquacontrol32";
 
 constexpr const char* mqttServer = "mqtt3.thingspeak.com";
 constexpr int mqttPort = 1883;

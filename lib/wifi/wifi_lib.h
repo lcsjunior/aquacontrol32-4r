@@ -6,21 +6,16 @@
 #include <esp_wifi.h>
 #include <ArduinoOTA.h>
 
-#define WIFI_CONNECT_TIMEOUT_MS 60000UL
-#define CONFIG_TZ_DELAY_MS 3000UL
-
 uint8_t dBmToQuality(const int16_t dBm);
 
 class WiFiLib {
 private:
-  char _ssid[32];
-  char _pass[32];
-  unsigned long _lastWiFiRetryConnectTime = 0;
-  bool _shouldReboot = false;
-  bool _isSTAEnabled = false;
-  uint32_t _chipId = 0;
-  uint8_t _apChannel = 0;
-  uint8_t _channel = 0;
+  char ssid_[32];
+  char pass_[32];
+  unsigned long lastReconnectAttemptMs_ = 0;
+  bool rebootRequested_ = false;
+  bool staEnabled_ = false;
+  uint32_t chipId_ = 0;
 
 public:
   void initAP(const char *apPass);

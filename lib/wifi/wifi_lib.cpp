@@ -1,24 +1,26 @@
 #include "wifi_lib.h"
 
+#define WIFI_CONNECT_TIMEOUT_MS 60000UL
+#define WIFI_RECONNECT_INTERVAL_MS 60000UL
+#define NTP_SYNC_DELAY_MS 3000UL
+
 constexpr const char* NTP_SERVER = "pool.ntp.org";
 
 WiFiLib WIFI;
-IPAddress apIP(192, 168, 4, 1);
-IPAddress subnet(255, 255, 255, 0);
 
 uint8_t dBmToQuality(const int16_t dBm) {
-  if (dBm <= -100)
-    return 0;
-  else if (dBm >= -50)
-    return 100;
-  return 2 * (dBm + 100);
+  return (dBm <= -100) ? 0
+       : (dBm >= -50)  ? 100
+       : 2 * (dBm + 100);
 }
 
 void WiFiLib::initAP(const char *apPass) {
+  static const IPAddress apIP(192, 168, 4, 1);
+  static const IPAddress subnet(255, 255, 255, 0);
   delay(1000);
 
   char apSsid[32];
-  sprintf_P(apSsid, "ESPsoftAP-%06x", getChipId());
+  snprintf_P(apSsid, sizeof(apSsid), "ESPsoftAP-%06x", getChipId());
 
   bool apConfigOk = WiFi.softAPConfig(apIP, apIP, subnet);
   if (!apConfigOk) log_w("[WiFiLib] softAPConfig failed");
@@ -31,7 +33,6 @@ void WiFiLib::initAP(const char *apPass) {
   log_i("[WiFiLib] AP MAC Address: %s", WiFi.softAPmacAddress().c_str());
   log_i("[WiFiLib] Board MAC Address: %s", WiFi.macAddress().c_str());
   log_i("[WiFiLib] Channel: %d", (int)WiFi.channel());
-  _apChannel = WiFi.channel();
 
   delay(1000);
 }
@@ -40,25 +41,31 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
                         const char *tz, const char *hostname) {
   delay(1000);
 
-  strcpy_P(_ssid, ssid);
-  strcpy_P(_pass, pass);
+  strncpy(ssid_, ssid, sizeof(ssid_) - 1);
+  ssid_[sizeof(ssid_) - 1] = '\0';
+  strncpy(pass_, pass, sizeof(pass_) - 1);
+  pass_[sizeof(pass_) - 1] = '\0';
 
   WiFi.setHostname(hostname);
 
-  WiFi.begin(_ssid, _pass);
-  unsigned long currentMillis = millis();
+  WiFi.begin(ssid_, pass_);
+  Serial.print(F("Connecting"));
+  unsigned long wifiConnectStartMs = millis();
   while (!WiFi.isConnected() &&
-         (millis() - currentMillis) <= WIFI_CONNECT_TIMEOUT_MS) {
+         (millis() - wifiConnectStartMs) <= WIFI_CONNECT_TIMEOUT_MS) {
+    Serial.print(F("."));
     delay(300);
   }
-  _isSTAEnabled = true;
+  staEnabled_ = true;
+  Serial.println();
 
   configTzTime(tz, NTP_SERVER);
-  currentMillis = millis();
-  while ((millis() - currentMillis) <= CONFIG_TZ_DELAY_MS) {
+  unsigned long ntpSyncStartMs = millis();
+  while ((millis() - ntpSyncStartMs) <= NTP_SYNC_DELAY_MS) {
+    Serial.print(F("."));
     delay(300);
   }
-  delay(1000);
+  Serial.println();
 
   ArduinoOTA.setHostname((const char *)hostname);
   ArduinoOTA.setPassword((const char *)otaPass);
@@ -68,7 +75,6 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
   log_i("[WiFiLib] Hostname: %s", WiFi.getHostname());
   log_i("[WiFiLib] Board MAC Address: %s", WiFi.macAddress().c_str());
   log_i("[WiFiLib] Wi-Fi Channel: %d", (int)WiFi.channel());
-  _channel = WiFi.channel();
 
   int16_t rssi = WiFi.RSSI();
   log_i("[WiFiLib] Signal Strength: %d dBm / %u%%", (int)rssi, (unsigned)dBmToQuality(rssi));
@@ -77,29 +83,30 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
 }
 
 void WiFiLib::loop() {
-  if (_shouldReboot) {
+  if (rebootRequested_) {
     log_i("[WiFiLib] Rebooting...");
     delay(100);
     ESP.restart();
+    return;
   }
-  if (_isSTAEnabled) {
+  if (staEnabled_) {
     if (!WiFi.isConnected() &&
-        (millis() - _lastWiFiRetryConnectTime) >= WIFI_CONNECT_TIMEOUT_MS) {
-      _lastWiFiRetryConnectTime = millis();
+        (millis() - lastReconnectAttemptMs_) >= WIFI_RECONNECT_INTERVAL_MS) {
+      lastReconnectAttemptMs_ = millis();
       log_w("[WiFiLib] Reconnecting to WiFi...");
       WiFi.disconnect();
-      WiFi.begin(_ssid, _pass);
+      WiFi.begin(ssid_, pass_);
     }
     ArduinoOTA.handle();
   }
 }
 
 uint32_t WiFiLib::getChipId() {
-  if (_chipId > 0) return _chipId;
+  if (chipId_ > 0) return chipId_;
   for (int i = 0; i < 17; i = i + 8) {
-    _chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+    chipId_ |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
   }
-  return _chipId;
+  return chipId_;
 }
 
-void WiFiLib::reboot() { _shouldReboot = true; }
+void WiFiLib::reboot() { rebootRequested_ = true; }
