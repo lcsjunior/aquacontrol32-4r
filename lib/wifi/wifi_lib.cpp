@@ -84,21 +84,20 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
 
 void WiFiLib::loop() {
   if (rebootRequested_) {
-    log_i("[WiFiLib] Rebooting...");
+    log_w("[WiFiLib] Rebooting...");
     delay(100);
     ESP.restart();
     return;
   }
-  if (staEnabled_) {
-    if (!WiFi.isConnected() &&
-        (millis() - lastReconnectAttemptMs_) >= WIFI_RECONNECT_INTERVAL_MS) {
-      lastReconnectAttemptMs_ = millis();
-      log_w("[WiFiLib] Reconnecting to WiFi...");
-      WiFi.disconnect();
-      WiFi.begin(ssid_, pass_);
-    }
-    ArduinoOTA.handle();
+  if (!staEnabled_) return;
+  if (!WiFi.isConnected() &&
+      (millis() - lastReconnectAttemptMs_) >= WIFI_RECONNECT_INTERVAL_MS) {
+    lastReconnectAttemptMs_ = millis();
+    log_w("[WiFiLib] Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.begin(ssid_, pass_);
   }
+  ArduinoOTA.handle();
 }
 
 uint32_t WiFiLib::getChipId() {
