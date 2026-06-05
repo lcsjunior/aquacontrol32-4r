@@ -17,7 +17,6 @@ uint8_t dBmToQuality(const int16_t dBm) {
 void WiFiLib::initAP(const char *apPass) {
   static const IPAddress apIP(192, 168, 4, 1);
   static const IPAddress subnet(255, 255, 255, 0);
-  delay(1000);
 
   char apSsid[32];
   snprintf_P(apSsid, sizeof(apSsid), "ESPsoftAP-%06x", getChipId());
@@ -39,8 +38,6 @@ void WiFiLib::initAP(const char *apPass) {
 
 void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
                         const char *tz, const char *hostname) {
-  delay(1000);
-
   strncpy(ssid_, ssid, sizeof(ssid_) - 1);
   ssid_[sizeof(ssid_) - 1] = '\0';
   strncpy(pass_, pass, sizeof(pass_) - 1);
