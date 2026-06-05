@@ -12,13 +12,13 @@
 #include <thermostat.h>
 #include <wifi_lib.h>
 
-#define SERIAL_BAUD_RATE 115200
-
 #define LED_PIN 25
 #define K1_PIN 21
 #define K2_PIN 19
 #define K4_PIN 5
 #define DS18B20_PIN 22
+
+#define SERIAL_BAUD_RATE 115200
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
 

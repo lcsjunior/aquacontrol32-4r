@@ -1,6 +1,6 @@
 #include "heating_state.h"
-#include "thermostat.h"
 #include "idle_state.h"
+#include "thermostat.h"
 
 HeatingState heatingStateSingleton;
 

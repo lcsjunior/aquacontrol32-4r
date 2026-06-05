@@ -63,7 +63,7 @@ void WiFiLib::initSTA(const char *ssid, const char *pass, const char *otaPass,
   unsigned long ntpSyncStartMs = millis();
   while ((millis() - ntpSyncStartMs) <= NTP_SYNC_DELAY_MS) {
     Serial.print(F("."));
-    delay(300);
+    delay(200);
   }
   Serial.println();
 
@@ -90,6 +90,11 @@ void WiFiLib::loop() {
     return;
   }
   if (!staEnabled_) return;
+  reconnect();
+  ArduinoOTA.handle();
+}
+
+void WiFiLib::reconnect() {
   if (!WiFi.isConnected() &&
       (millis() - lastReconnectAttemptMs_) >= WIFI_RECONNECT_INTERVAL_MS) {
     lastReconnectAttemptMs_ = millis();
@@ -97,7 +102,6 @@ void WiFiLib::loop() {
     WiFi.disconnect();
     WiFi.begin(ssid_, pass_);
   }
-  ArduinoOTA.handle();
 }
 
 uint32_t WiFiLib::getChipId() {
