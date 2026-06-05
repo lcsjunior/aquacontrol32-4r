@@ -54,9 +54,7 @@ bool MQTTClient::reconnect() {
 }
 
 void MQTTClient::loop() {
-  if (!pubSubClient_.connected()) {
-    reconnect();
-  }
+  if (!pubSubClient_.connected()) reconnect();
   pubSubClient_.loop();
 }
 

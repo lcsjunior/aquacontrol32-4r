@@ -11,7 +11,7 @@ void DallasTemperatureSensor::begin(const byte pin) {
 }
 
 void DallasTemperatureSensor::requestTemperatures() {
-  if ((millis() - lastRequestMs_) < TEMPERATURE_POLL_INTERVAL_MS) return;
+  if (millis() - lastRequestMs_ < TEMPERATURE_POLL_INTERVAL_MS) return;
   sensors_.requestTemperatures();
   lastTemperatureC_ = sensors_.getTempCByIndex(0);
   if (lastTemperatureC_ == DEVICE_DISCONNECTED_C) log_e("[DallasTemperatureSensor] Could not read temperature");

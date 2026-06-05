@@ -30,7 +30,7 @@ void Thermostat::update(float currentTemperatureC) {
 
 void Thermostat::transitionTo(ThermostatState* nextState) {
   if (nextState == currentState_) return;
-  if ((clock_->millis() - lastTransitionMs_) < THERMOSTAT_DEBOUNCE_MS) return;
+  if (clock_->millis() - lastTransitionMs_ < THERMOSTAT_DEBOUNCE_MS) return;
   ThermostatState* prev = currentState_;
   currentState_ = nextState;
   lastTransitionMs_ = clock_->millis();
