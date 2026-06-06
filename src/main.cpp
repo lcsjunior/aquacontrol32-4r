@@ -21,11 +21,6 @@
 #define MQTT_PUB_INTERVAL_MS 60000UL
 #define WIFI_PORTAL_TIMEOUT_S 180
 
-constexpr const char* CRON_CO2_ON = "0 30 7 * * *";
-constexpr const char* CRON_LAMP_ON = "0 0 8 * * *";
-constexpr const char* CRON_CO2_OFF = "0 30 14 * * *";
-constexpr const char* CRON_LAMP_OFF = "0 0 15 * * *";
-
 constexpr const char* APPLICATION_JSON = "application/json";
 
 constexpr const char* TIMEZONE = "<-03>3";
@@ -34,6 +29,11 @@ constexpr const char* DEVICE_HOSTNAME = "aquacontrol32";
 
 constexpr const char* MQTT_PUB_TOPIC = "channels/2421172/publish";
 constexpr const char* MQTT_SUB_TOPIC = "channels/2421172/subscribe";
+
+constexpr const char* CRON_CO2_ON = "0 30 7 * * *";
+constexpr const char* CRON_LAMP_ON = "0 0 8 * * *";
+constexpr const char* CRON_CO2_OFF = "0 30 14 * * *";
+constexpr const char* CRON_LAMP_OFF = "0 0 15 * * *";
 
 WiFiClient espClient;
 WiFiManager wifiManager;
@@ -165,7 +165,6 @@ void initWifi() {
   wifiManager.addParameter(wmMqttClientId);
 
   wifiManager.autoConnect(getApName());
-  wifiManager.startWebPortal();
 
   configTzTime(TIMEZONE, NTP_SERVER);
 }
