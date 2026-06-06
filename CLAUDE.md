@@ -12,11 +12,12 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 
 ## Architecture (where things live)
 
-- `src/main.cpp` — general wiring: initializes sensors, relays, and thermostat; connects
-  WiFi+MQTT; registers crons and the HTTP server; runs the main loop.
+- `src/main.cpp` — general wiring: initializes sensors, relays, and thermostat; manages
+  WiFi via `WiFiManager` (captive portal, NTP) and OTA via `ArduinoOTA`; connects MQTT;
+  registers crons and the HTTP server; runs the main loop.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
-  `arduino_clock` (concrete impl).
-- `lib/wifi/` — `WiFiLib` (STA+AP, OTA, NTP); global singleton `WIFI`.
+  `arduino_clock` (concrete impl + `formatLocalDateTime`), `utilities`
+  (helpers: `dBmToQuality`, `getChipId`, `getApName`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
   `HeatingState`), interfaces `Actuator` and `TemperatureSensor`.
