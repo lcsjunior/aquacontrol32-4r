@@ -8,8 +8,21 @@
 			"Skill(platformio-build)",
 			"Bash(pio run *)",
 			"Bash(pio test *)",
-			"Bash(pio device monitor)",
 			"Bash(g++ *)"
+		]
+	},
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "f=$(jq -r '.tool_input.file_path // empty'); [[ \"$f\" =~ \\.(cpp|h|hpp)$ ]] && clang-format -i \"$f\" || true",
+						"statusMessage": "Formatting C++..."
+					}
+				]
+			}
 		]
 	}
 }

@@ -1,6 +1,6 @@
 #include "idle_state.h"
-#include "thermostat.h"
 #include "heating_state.h"
+#include "thermostat.h"
 
 IdleState idleStateSingleton;
 
@@ -14,4 +14,6 @@ void IdleState::update(Thermostat& context, float currentTemperatureC) {
   }
 }
 
-const char* IdleState::name() const { return "Idle"; }
+const char* IdleState::name() const {
+  return "Idle";
+}

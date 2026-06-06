@@ -18,4 +18,4 @@ void saveConfigFile();
 void removeConfigFile();
 void printConfigFile();
 
-#endif // CONFIG_H
+#endif  // CONFIG_H

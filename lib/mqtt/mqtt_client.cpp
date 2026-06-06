@@ -4,32 +4,29 @@
 
 MQTTClient MQTT;
 
-void MQTTClient::begin(Client& espClient,
-                       const char* server,
-                       int port,
-                       const char* clientId,
-                       const char* username,
-                       const char* password) {
+void MQTTClient::begin(Client& espClient, const char* server, int port, const char* clientId,
+                       const char* username, const char* password) {
   pubSubClient_.setClient(espClient);
   pubSubClient_.setServer(server, port);
-  server_   = server;
+  server_ = server;
   clientId_ = clientId;
   username_ = username;
   password_ = password;
   subscribedTopic_ = nullptr;
-  lastConnectAttempt_   = millis() - MQTT_CONN_TIMEOUT_MS;
+  lastConnectAttempt_ = millis() - MQTT_CONN_TIMEOUT_MS;
 }
 
 bool MQTTClient::connect() {
   log_i("[MQTTClient] Attempting connection to %s", server_);
   bool ok = pubSubClient_.connect(clientId_, username_, password_);
   if (!ok) {
-    log_w("[MQTTClient] connect failed, rc=%d, retry in %lu ms",
-          pubSubClient_.state(), MQTT_CONN_TIMEOUT_MS);
+    log_w("[MQTTClient] connect failed, rc=%d, retry in %lu ms", pubSubClient_.state(),
+          MQTT_CONN_TIMEOUT_MS);
     return false;
   }
   log_i("[MQTTClient] Connected to broker %s", server_);
-  if (subscribedTopic_ == nullptr) return true;
+  if (subscribedTopic_ == nullptr)
+    return true;
   pubSubClient_.subscribe(subscribedTopic_);
   log_i("[MQTTClient] Re-subscribed to %s", subscribedTopic_);
   return true;
@@ -48,15 +45,14 @@ void MQTTClient::publish(const char* topic, const char* payload) {
 }
 
 bool MQTTClient::reconnect() {
-  if (millis() - lastConnectAttempt_ < MQTT_CONN_TIMEOUT_MS) return false;
+  if (millis() - lastConnectAttempt_ < MQTT_CONN_TIMEOUT_MS)
+    return false;
   lastConnectAttempt_ = millis();
   return connect();
 }
 
 void MQTTClient::loop() {
-  if (!pubSubClient_.connected()) {
+  if (!pubSubClient_.connected())
     reconnect();
-  }
   pubSubClient_.loop();
 }
-
