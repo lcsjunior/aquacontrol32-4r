@@ -75,12 +75,12 @@ void setup() {
 }
 
 void loop() {
+  temperatureSensor->requestTemperatures();
+  thermostat.update(temperatureSensor->temperatureC());
+
   wifiManager.process();
   ArduinoOTA.handle();
   Cron.delay();
-
-  temperatureSensor->requestTemperatures();
-  thermostat.update(temperatureSensor->temperatureC());
 
   MQTT.loop();
   mqttPublish();
@@ -99,11 +99,8 @@ void buildPayload() {
 void mqttPublish() {
   if (!pubInterval.update())
     return;
-  const char* topic = AppConfig.mqttPubTopic();
-  if (topic[0] == '\0')
-    return;
   buildPayload();
-  MQTT.publish(topic, payload);
+  MQTT.publish(AppConfig.mqttPubTopic(), payload);
 }
 
 void onWifiManagerSaveParams() {
@@ -145,31 +142,20 @@ void initWifi() {
   char portBuf[7];
   snprintf(portBuf, sizeof(portBuf), "%u", AppConfig.mqttPort());
 
-  wmOtaPass = new WiFiManagerParameter(
-      "ota_pass", "OTA Password", AppConfig.otaPass(), 32, "type=\"password\"");
-  wmMqttHost = new WiFiManagerParameter("mqtt_host", "MQTT Broker Host",
-                                        AppConfig.mqttHost(), 64);
-  wmMqttPort = new WiFiManagerParameter("mqtt_port", "MQTT Broker Port",
-                                        portBuf, 6, "type=\"number\"");
-  wmMqttUser = new WiFiManagerParameter("mqtt_user", "MQTT Username",
-                                        AppConfig.mqttUser(), 48);
-  wmMqttPass =
-      new WiFiManagerParameter("mqtt_pass", "MQTT Password",
-                               AppConfig.mqttPass(), 48, "type=\"password\"");
-  wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",
-                                            AppConfig.mqttClientId(), 48);
-  wmMqttPubTopic = new WiFiManagerParameter(
-      "mqtt_pub_topic", "MQTT Publish Topic", AppConfig.mqttPubTopic(), 64);
-  wmMqttSubTopic = new WiFiManagerParameter(
-      "mqtt_sub_topic", "MQTT Subscribe Topic", AppConfig.mqttSubTopic(), 64);
-  wmCronLampOn = new WiFiManagerParameter("cron_lamp_on", "Lamp ON cron",
-                                          AppConfig.cron(0), 32);
-  wmCronLampOff = new WiFiManagerParameter("cron_lamp_off", "Lamp OFF cron",
-                                           AppConfig.cron(1), 32);
-  wmCronCo2On = new WiFiManagerParameter("cron_co2_on", "CO2 ON cron",
-                                         AppConfig.cron(2), 32);
-  wmCronCo2Off = new WiFiManagerParameter("cron_co2_off", "CO2 OFF cron",
-                                          AppConfig.cron(3), 32);
+  // clang-format off
+  wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),      32, "type=\"password\"");
+  wmMqttHost     = new WiFiManagerParameter("mqtt_host",      "MQTT Broker Host",    AppConfig.mqttHost(),     64);
+  wmMqttPort     = new WiFiManagerParameter("mqtt_port",      "MQTT Broker Port",    portBuf,                   6, "type=\"number\"");
+  wmMqttUser     = new WiFiManagerParameter("mqtt_user",      "MQTT Username",       AppConfig.mqttUser(),     48);
+  wmMqttPass     = new WiFiManagerParameter("mqtt_pass",      "MQTT Password",       AppConfig.mqttPass(),     48, "type=\"password\"");
+  wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",      AppConfig.mqttClientId(), 48);
+  wmMqttPubTopic = new WiFiManagerParameter("mqtt_pub_topic", "MQTT Publish Topic",  AppConfig.mqttPubTopic(), 64);
+  wmMqttSubTopic = new WiFiManagerParameter("mqtt_sub_topic", "MQTT Subscribe Topic",AppConfig.mqttSubTopic(), 64);
+  wmCronLampOn   = new WiFiManagerParameter("cron_lamp_on",   "Lamp ON cron",        AppConfig.cron(0),        32);
+  wmCronLampOff  = new WiFiManagerParameter("cron_lamp_off",  "Lamp OFF cron",       AppConfig.cron(1),        32);
+  wmCronCo2On    = new WiFiManagerParameter("cron_co2_on",    "CO2 ON cron",         AppConfig.cron(2),        32);
+  wmCronCo2Off   = new WiFiManagerParameter("cron_co2_off",   "CO2 OFF cron",        AppConfig.cron(3),        32);
+  // clang-format on
 
   wifiManager.setConfigPortalBlocking(false);
   wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
@@ -207,14 +193,9 @@ void initOta() {
 }
 
 void initMqtt() {
-  MQTT.begin(espClient, AppConfig.mqttHost(), (int)AppConfig.mqttPort(),
-             AppConfig.mqttClientId(), AppConfig.mqttUser(),
-             AppConfig.mqttPass());
+  MQTT.begin(espClient, AppConfig);
   MQTT.connect();
-  const char* subTopic = AppConfig.mqttSubTopic();
-  if (subTopic[0] != '\0') {
-    MQTT.subscribe(subTopic);
-  }
+  MQTT.subscribe(AppConfig.mqttSubTopic());
 }
 
 void initHttpServer() {
