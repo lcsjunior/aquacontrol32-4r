@@ -17,32 +17,16 @@ constexpr const char* DEFAULT_CRON_EXPR = "";
 Config AppConfig;
 
 void Config::applyDefaults() {
-  strncpy(otaPass_, DEFAULT_OTA_PASS, kOtaPassMaxLen);
-  otaPass_[kOtaPassMaxLen] = '\0';
-
-  strncpy(mqttHost_, DEFAULT_MQTT_HOST, kMqttHostMaxLen);
-  mqttHost_[kMqttHostMaxLen] = '\0';
-
-  mqttPort_ = DEFAULT_MQTT_PORT;
-
-  strncpy(mqttUser_, DEFAULT_MQTT_USER, kMqttUserMaxLen);
-  mqttUser_[kMqttUserMaxLen] = '\0';
-
-  strncpy(mqttPass_, DEFAULT_MQTT_PASS, kMqttPassMaxLen);
-  mqttPass_[kMqttPassMaxLen] = '\0';
-
-  strncpy(mqttClientId_, DEFAULT_MQTT_CLIENT_ID, kMqttClientIdMaxLen);
-  mqttClientId_[kMqttClientIdMaxLen] = '\0';
-
-  strncpy(mqttPubTopic_, DEFAULT_MQTT_PUB_TOPIC, kMqttTopicMaxLen);
-  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
-
-  strncpy(mqttSubTopic_, DEFAULT_MQTT_SUB_TOPIC, kMqttTopicMaxLen);
-  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
-
+  setOtaPass(DEFAULT_OTA_PASS);
+  setMqttHost(DEFAULT_MQTT_HOST);
+  setMqttPort(DEFAULT_MQTT_PORT);
+  setMqttUser(DEFAULT_MQTT_USER);
+  setMqttPass(DEFAULT_MQTT_PASS);
+  setMqttClientId(DEFAULT_MQTT_CLIENT_ID);
+  setMqttPubTopic(DEFAULT_MQTT_PUB_TOPIC);
+  setMqttSubTopic(DEFAULT_MQTT_SUB_TOPIC);
   for (int i = 0; i < kCronCount; ++i) {
-    strncpy(crons_[i], DEFAULT_CRON_EXPR, kCronExprMaxLen);
-    crons_[i][kCronExprMaxLen] = '\0';
+    setCron(i, DEFAULT_CRON_EXPR);
   }
 }
 
@@ -75,46 +59,26 @@ bool Config::load() {
 
   log_i("[Config] Loaded %u bytes from %s", bytesRead, CONFIG_PATH);
 
-  strncpy(otaPass_, doc["ota_pass"] | DEFAULT_OTA_PASS, kOtaPassMaxLen);
-  otaPass_[kOtaPassMaxLen] = '\0';
-
-  strncpy(mqttHost_, doc["mqtt_host"] | DEFAULT_MQTT_HOST, kMqttHostMaxLen);
-  mqttHost_[kMqttHostMaxLen] = '\0';
-
-  mqttPort_ = doc["mqtt_port"] | DEFAULT_MQTT_PORT;
-
-  strncpy(mqttUser_, doc["mqtt_user"] | DEFAULT_MQTT_USER, kMqttUserMaxLen);
-  mqttUser_[kMqttUserMaxLen] = '\0';
-
-  strncpy(mqttPass_, doc["mqtt_pass"] | DEFAULT_MQTT_PASS, kMqttPassMaxLen);
-  mqttPass_[kMqttPassMaxLen] = '\0';
-
-  strncpy(mqttClientId_, doc["mqtt_client_id"] | DEFAULT_MQTT_CLIENT_ID,
-          kMqttClientIdMaxLen);
-  mqttClientId_[kMqttClientIdMaxLen] = '\0';
-
-  strncpy(mqttPubTopic_, doc["mqtt_pub_topic"] | DEFAULT_MQTT_PUB_TOPIC,
-          kMqttTopicMaxLen);
-  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
-
-  strncpy(mqttSubTopic_, doc["mqtt_sub_topic"] | DEFAULT_MQTT_SUB_TOPIC,
-          kMqttTopicMaxLen);
-  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
-
-  JsonArrayConst cronsArray = doc["crons"].as<JsonArrayConst>();
-  for (size_t i = 0; i < kCronCount; ++i) {
-    const char* expr = i < cronsArray.size()
-                           ? (cronsArray[i] | DEFAULT_CRON_EXPR)
-                           : DEFAULT_CRON_EXPR;
-    strncpy(crons_[i], expr, kCronExprMaxLen);
-    crons_[i][kCronExprMaxLen] = '\0';
-  }
+  convertFromJson(doc);
 
   return true;
 }
 
-bool Config::save() {
-  JsonDocument doc;
+void Config::convertFromJson(const JsonDocument& doc) {
+  setOtaPass(doc["ota_pass"] | DEFAULT_OTA_PASS);
+  setMqttHost(doc["mqtt_host"] | DEFAULT_MQTT_HOST);
+  setMqttPort(doc["mqtt_port"] | DEFAULT_MQTT_PORT);
+  setMqttUser(doc["mqtt_user"] | DEFAULT_MQTT_USER);
+  setMqttPass(doc["mqtt_pass"] | DEFAULT_MQTT_PASS);
+  setMqttClientId(doc["mqtt_client_id"] | DEFAULT_MQTT_CLIENT_ID);
+  setMqttPubTopic(doc["mqtt_pub_topic"] | DEFAULT_MQTT_PUB_TOPIC);
+  setMqttSubTopic(doc["mqtt_sub_topic"] | DEFAULT_MQTT_SUB_TOPIC);
+  for (size_t i = 0; i < kCronCount; ++i) {
+    setCron(i, doc["crons"][i] | DEFAULT_CRON_EXPR);
+  }
+}
+
+void Config::convertToJson(JsonDocument& doc) const {
   doc["ota_pass"] = otaPass_;
   doc["mqtt_host"] = mqttHost_;
   doc["mqtt_port"] = mqttPort_;
@@ -123,10 +87,14 @@ bool Config::save() {
   doc["mqtt_client_id"] = mqttClientId_;
   doc["mqtt_pub_topic"] = mqttPubTopic_;
   doc["mqtt_sub_topic"] = mqttSubTopic_;
-  JsonArray cronsArray = doc["crons"].to<JsonArray>();
   for (int i = 0; i < kCronCount; ++i) {
-    cronsArray.add(crons_[i]);
+    doc["crons"].add(crons_[i]);
   }
+}
+
+bool Config::save() {
+  JsonDocument doc;
+  convertToJson(doc);
 
   File file = LittleFS.open(CONFIG_PATH, "w");
   if (!file) {

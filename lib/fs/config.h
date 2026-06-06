@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 class Config {
  public:
@@ -50,6 +51,8 @@ class Config {
   char crons_[kCronCount][kCronExprMaxLen + 1];
 
   void applyDefaults();
+  void convertFromJson(const JsonDocument& doc);
+  void convertToJson(JsonDocument& doc) const;
 };
 
 extern Config AppConfig;
