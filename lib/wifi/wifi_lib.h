@@ -5,8 +5,7 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <ArduinoOTA.h>
-
-uint8_t dBmToQuality(const int16_t dBm);
+#include "utilities.h"
 
 class WiFiLib {
  public:

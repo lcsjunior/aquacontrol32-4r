@@ -8,10 +8,6 @@ constexpr const char* NTP_SERVER = "pool.ntp.org";
 
 WiFiLib WIFI;
 
-uint8_t dBmToQuality(const int16_t dBm) {
-  return (dBm <= -100) ? 0 : (dBm >= -50) ? 100 : 2 * (dBm + 100);
-}
-
 void WiFiLib::initAP(const char* apPass) {
   static const IPAddress apIP(192, 168, 4, 1);
   static const IPAddress subnet(255, 255, 255, 0);
