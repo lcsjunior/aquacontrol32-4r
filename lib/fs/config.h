@@ -5,6 +5,7 @@
 
 class Config {
  public:
+  bool mount();
   bool load();
   bool save();
 

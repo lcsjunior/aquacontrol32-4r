@@ -13,6 +13,14 @@ constexpr const char* DEFAULT_MQTT_CLIENT_ID = "";
 
 Config AppConfig;
 
+bool Config::mount() {
+  if (!LittleFS.begin(true)) {
+    log_w("[Config] Failed to mount LittleFS");
+    return false;
+  }
+  return true;
+}
+
 void Config::applyDefaults() {
   strncpy(otaPass_, DEFAULT_OTA_PASS, kOtaPassMaxLen);
   otaPass_[kOtaPassMaxLen] = '\0';

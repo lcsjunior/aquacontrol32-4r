@@ -3,7 +3,8 @@
 
 #include <Arduino.h>
 
-uint32_t getChipId();
 uint8_t dBmToQuality(int16_t dBm);
+uint32_t getChipId();
+const char* getApName();
 
 #endif
