@@ -3,9 +3,8 @@
 #define TEMPERATURE_POLL_INTERVAL_MS 1000UL
 
 void DallasTemperatureSensor::begin(const byte pin) {
-  delete oneWire_;
-  oneWire_ = new OneWire(pin);
-  sensors_ = DallasTemperature(oneWire_);
+  oneWire_.begin(pin);
+  sensors_.setOneWire(&oneWire_);
   sensors_.begin();
   lastRequestMs_ = millis() - TEMPERATURE_POLL_INTERVAL_MS;
 }
