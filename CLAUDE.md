@@ -1,27 +1,27 @@
 # CLAUDE.md
 
-## Desenvolvimento Orientado a Especificação (SDD)
+## Spec-Driven Development (SDD)
 
-Este projeto segue **estritamente** um fluxo Spec-Driven Development conduzido pelos
-agentes. Os artefatos de cada feature vivem em `tasks/prd-<nome-da-feature>/`.
+This project **strictly** follows a Spec-Driven Development flow driven by agents.
+Artifacts for each feature live in `tasks/prd-<feature-name>/`.
 
-## Visão Geral
+## Overview
 
-Firmware ESP32 para um controlador de aquário plantado, em placa LILYGO T-Relay.
-Hardware (pinout) e mapeamento de fields do ThingSpeak: ver `README.md`.
+ESP32 firmware for a planted aquarium controller, on a LILYGO T-Relay board.
+Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 
-## Arquitetura (onde as coisas vivem)
+## Architecture (where things live)
 
-- `src/main.cpp` — wiring geral: inicializa sensores, relés e thermostat; conecta
-  WiFi+MQTT; registra crons e o servidor HTTP; roda o loop principal.
-- `lib/commons/` — utilitários de plataforma: `clock.h` (interface `Clock`),
-  `arduino_clock` (impl concreta).
-- `lib/wifi/` — `WiFiLib` (STA+AP, OTA, NTP); singleton global `WIFI`.
-- `lib/devices/` — abstrações de hardware: `Relay` (atuador GPIO), `DallasTemperatureSensor`
-  (DS18B20), `Thermostat` + `ThermostatState` (máquina de estados: `IdleState`,
-  `HeatingState`), interfaces `Actuator` e `TemperatureSensor`.
-- `lib/mqtt/` — `MQTTClient` (publicação de dados ao broker MQTT).
-- `lib/fs/` — `Config` (setpoint, hysteresis) persistido em LittleFS.
+- `src/main.cpp` — general wiring: initializes sensors, relays, and thermostat; connects
+  WiFi+MQTT; registers crons and the HTTP server; runs the main loop.
+- `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
+  `arduino_clock` (concrete impl).
+- `lib/wifi/` — `WiFiLib` (STA+AP, OTA, NTP); global singleton `WIFI`.
+- `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
+  (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
+  `HeatingState`), interfaces `Actuator` and `TemperatureSensor`.
+- `lib/mqtt/` — `MQTTClient` (data publishing to MQTT broker).
+- `lib/fs/` — `Config` (setpoint, hysteresis) persisted in LittleFS.
 
-Detalhes que mudam (horários dos crons, endpoints HTTP, fields MQTT, versões de libs)
-vivem no código (`src/main.cpp`) e no `platformio.ini` — não duplicar aqui.
+Details that change (cron schedules, HTTP endpoints, MQTT fields, lib versions)
+live in the code (`src/main.cpp`) and `platformio.ini` — do not duplicate here.
