@@ -1,66 +1,66 @@
-# Convenções do Projeto
+# Project Conventions
 
-## Idioma
+## Language
 
-- Código, identificadores, comentários e strings de log: **inglês**.
+- Code, identifiers, comments, and log strings: **English**.
 
-## Nomenclatura
+## Naming
 
-Segue a convenção Arduino, que sobrescreve a nomenclatura recomendada nas skills:
+Follows the Arduino convention, which overrides the naming recommended in skills:
 
-- `PascalCase` — classes/tipos (ex.: `Relay`, `Thermostat`, `DSTempSensor`).
-- `camelCase` — métodos, funções, variáveis e atributos (ex.: `turnOn`, `getCTemp`).
-- `UPPER_SNAKE_CASE` — macros e definições de pino (ex.: `K1_PIN`, `DS18B20_PIN_1`).
+- `PascalCase` — classes/types (e.g.: `Relay`, `Thermostat`, `DSTempSensor`).
+- `camelCase` — methods, functions, variables, and attributes (e.g.: `turnOn`, `getCTemp`).
+- `UPPER_SNAKE_CASE` — macros and pin definitions (e.g.: `K1_PIN`, `DS18B20_PIN_1`).
 
-### Interfaces (classes abstratas puras)
+### Interfaces (pure abstract classes)
 
-- Usar estilo C++ idiomático: nome direto **sem prefixo `I`** (ex.: `TemperatureSensor`, `ThermostatState`).
-- Quando o nome da interface colidir com uma classe concreta, a **concreta recebe sufixo `Impl`** (ex.: `ThermostatImpl`).
+- Use idiomatic C++ style: direct name **without `I` prefix** (e.g.: `TemperatureSensor`, `ThermostatState`).
+- When the interface name collides with a concrete class, the **concrete class receives the `Impl` suffix** (e.g.: `ThermostatImpl`).
 
-### Singletons globais
+### Global singletons
 
-Seguindo o estilo das libs do core Arduino (`Serial`, `Wire`, `SPI`, `EEPROM`), instâncias
-globais únicas usam **PascalCase** (não camelCase).
+Following the style of Arduino core libs (`Serial`, `Wire`, `SPI`, `EEPROM`), unique global
+instances use **PascalCase** (not camelCase).
 
-Nos demais casos, seguir as convenções recomendadas nas skills.
+In all other cases, follow the conventions recommended in the skills.
 
-## Estrutura de classes
+## Class structure
 
-Ordem das seções em toda declaração de classe:
+Section order in every class declaration:
 
-1. `public:` — construtor/destrutor, depois métodos públicos.
-2. `private:` — atributos, depois métodos privados.
+1. `public:` — constructor/destructor, then public methods.
+2. `private:` — attributes, then private methods.
 
-`protected:` segue a mesma lógica quando necessário (entre `public:` e `private:`).
+`protected:` follows the same logic when needed (between `public:` and `private:`).
 
-## Dependências
+## Dependencies
 
-- Bibliotecas ficam fixadas por versão em `platformio.ini`.
-- Não adicionar, remover ou atualizar dependências sem aprovação explícita.
+- Libraries are pinned by version in `platformio.ini`.
+- Do not add, remove, or update dependencies without explicit approval.
 
-## Comentários de código
+## Code comments
 
-- Não adicionar comentários ao código. Identificadores bem nomeados são suficientes.
-- Nomes de métodos, funções e variáveis devem ser **sugestivos**: revelar intenção e comportamento sem precisar de explicação adicional.
+- Do not add comments to code. Well-named identifiers are sufficient.
+- Method, function, and variable names must be **descriptive**: reveal intent and behavior without requiring additional explanation.
 
 ## Logging
 
-- Usar as macros do ESP-IDF (`log_i`, `log_w`, `log_e`, `log_d`) em vez de `Serial.print`/`Serial.println`.
-- Nunca usar `Serial` diretamente para log.
-- Prefixar mensagens com o nome da classe entre colchetes (ex.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
+- Use ESP-IDF macros (`log_i`, `log_w`, `log_e`, `log_d`) instead of `Serial.print`/`Serial.println`.
+- Never use `Serial` directly for logging.
+- Prefix messages with the class name in brackets (e.g.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
 
-## Constantes
+## Constants
 
-- Constantes em geral devem ser declaradas como `constexpr const char*` (ou tipo equivalente, ex.: `constexpr int`), para garantir avaliação em tempo de compilação e imutabilidade do ponteiro/valor.
-- Exceções permitidas como `#define` (`UPPER_SNAKE_CASE`):
-  - **Pinos** (ex.: `#define K1_PIN 21`).
-  - **Timeouts e intervalos de tempo**: sufixo `_MS` e literal `UL` (ex.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
+- Constants in general should be declared as `constexpr const char*` (or equivalent type, e.g.: `constexpr int`), to guarantee compile-time evaluation and pointer/value immutability.
+- Exceptions allowed as `#define` (`UPPER_SNAKE_CASE`):
+  - **Pins** (e.g.: `#define K1_PIN 21`).
+  - **Timeouts and time intervals**: `_MS` suffix and `UL` literal (e.g.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
 
-## Fluxo de controle
+## Control flow
 
-- Preferir early return e operador ternário a blocos `if/else` aninhados.
+- Prefer early return and the ternary operator over nested `if/else` blocks.
 
-## Hardware como fonte de verdade
+## Hardware as source of truth
 
-Quando um guideline de C++ conflitar com uma restrição de hardware (pinagem,
-timing, memória do ESP32), a restrição de hardware prevalece.
+When a C++ guideline conflicts with a hardware constraint (pinout,
+timing, ESP32 memory), the hardware constraint takes precedence.
