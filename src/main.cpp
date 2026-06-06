@@ -27,14 +27,6 @@ constexpr const char* TIMEZONE = "<-03>3";
 constexpr const char* NTP_SERVER = "pool.ntp.org";
 constexpr const char* DEVICE_HOSTNAME = "aquacontrol32";
 
-constexpr const char* MQTT_PUB_TOPIC = "channels/2421172/publish";
-constexpr const char* MQTT_SUB_TOPIC = "channels/2421172/subscribe";
-
-constexpr const char* CRON_CO2_ON = "0 30 7 * * *";
-constexpr const char* CRON_LAMP_ON = "0 0 8 * * *";
-constexpr const char* CRON_CO2_OFF = "0 30 14 * * *";
-constexpr const char* CRON_LAMP_OFF = "0 0 15 * * *";
-
 WiFiClient espClient;
 WiFiManager wifiManager;
 
@@ -44,6 +36,12 @@ WiFiManagerParameter* wmMqttPort;
 WiFiManagerParameter* wmMqttUser;
 WiFiManagerParameter* wmMqttPass;
 WiFiManagerParameter* wmMqttClientId;
+WiFiManagerParameter* wmMqttPubTopic;
+WiFiManagerParameter* wmMqttSubTopic;
+WiFiManagerParameter* wmCronLampOn;
+WiFiManagerParameter* wmCronLampOff;
+WiFiManagerParameter* wmCronCo2On;
+WiFiManagerParameter* wmCronCo2Off;
 
 TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
@@ -101,8 +99,11 @@ void buildPayload() {
 void mqttPublish() {
   if (!pubInterval.update())
     return;
+  const char* topic = AppConfig.mqttPubTopic();
+  if (topic[0] == '\0')
+    return;
   buildPayload();
-  MQTT.publish(MQTT_PUB_TOPIC, payload);
+  MQTT.publish(topic, payload);
 }
 
 void onWifiManagerSaveParams() {
@@ -112,6 +113,12 @@ void onWifiManagerSaveParams() {
   AppConfig.setMqttUser(wmMqttUser->getValue());
   AppConfig.setMqttPass(wmMqttPass->getValue());
   AppConfig.setMqttClientId(wmMqttClientId->getValue());
+  AppConfig.setMqttPubTopic(wmMqttPubTopic->getValue());
+  AppConfig.setMqttSubTopic(wmMqttSubTopic->getValue());
+  AppConfig.setCron(0, wmCronLampOn->getValue());
+  AppConfig.setCron(1, wmCronLampOff->getValue());
+  AppConfig.setCron(2, wmCronCo2On->getValue());
+  AppConfig.setCron(3, wmCronCo2Off->getValue());
   AppConfig.save();
 }
 
@@ -151,6 +158,18 @@ void initWifi() {
                                AppConfig.mqttPass(), 48, "type=\"password\"");
   wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",
                                             AppConfig.mqttClientId(), 48);
+  wmMqttPubTopic = new WiFiManagerParameter(
+      "mqtt_pub_topic", "MQTT Publish Topic", AppConfig.mqttPubTopic(), 64);
+  wmMqttSubTopic = new WiFiManagerParameter(
+      "mqtt_sub_topic", "MQTT Subscribe Topic", AppConfig.mqttSubTopic(), 64);
+  wmCronLampOn = new WiFiManagerParameter("cron_lamp_on", "Lamp ON cron",
+                                          AppConfig.cron(0), 32);
+  wmCronLampOff = new WiFiManagerParameter("cron_lamp_off", "Lamp OFF cron",
+                                           AppConfig.cron(1), 32);
+  wmCronCo2On = new WiFiManagerParameter("cron_co2_on", "CO2 ON cron",
+                                         AppConfig.cron(2), 32);
+  wmCronCo2Off = new WiFiManagerParameter("cron_co2_off", "CO2 OFF cron",
+                                          AppConfig.cron(3), 32);
 
   wifiManager.setConfigPortalBlocking(false);
   wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
@@ -163,6 +182,12 @@ void initWifi() {
   wifiManager.addParameter(wmMqttUser);
   wifiManager.addParameter(wmMqttPass);
   wifiManager.addParameter(wmMqttClientId);
+  wifiManager.addParameter(wmMqttPubTopic);
+  wifiManager.addParameter(wmMqttSubTopic);
+  wifiManager.addParameter(wmCronLampOn);
+  wifiManager.addParameter(wmCronLampOff);
+  wifiManager.addParameter(wmCronCo2On);
+  wifiManager.addParameter(wmCronCo2Off);
 
   wifiManager.autoConnect(getApName());
 
@@ -186,7 +211,10 @@ void initMqtt() {
              AppConfig.mqttClientId(), AppConfig.mqttUser(),
              AppConfig.mqttPass());
   MQTT.connect();
-  MQTT.subscribe(MQTT_SUB_TOPIC);
+  const char* subTopic = AppConfig.mqttSubTopic();
+  if (subTopic[0] != '\0') {
+    MQTT.subscribe(subTopic);
+  }
 }
 
 void initHttpServer() {
@@ -207,8 +235,17 @@ void initHttpServer() {
 }
 
 void initCrons() {
-  Cron.create((char*)CRON_CO2_ON, []() { co2->turnOn(); }, false);
-  Cron.create((char*)CRON_LAMP_ON, []() { lamp->turnOn(); }, false);
-  Cron.create((char*)CRON_CO2_OFF, []() { co2->turnOff(); }, false);
-  Cron.create((char*)CRON_LAMP_OFF, []() { lamp->turnOff(); }, false);
+  const char* lampOn = AppConfig.cron(0);
+  const char* lampOff = AppConfig.cron(1);
+  const char* co2On = AppConfig.cron(2);
+  const char* co2Off = AppConfig.cron(3);
+
+  if (lampOn[0] != '\0')
+    Cron.create((char*)lampOn, []() { lamp->turnOn(); }, false);
+  if (lampOff[0] != '\0')
+    Cron.create((char*)lampOff, []() { lamp->turnOff(); }, false);
+  if (co2On[0] != '\0')
+    Cron.create((char*)co2On, []() { co2->turnOn(); }, false);
+  if (co2Off[0] != '\0')
+    Cron.create((char*)co2Off, []() { co2->turnOff(); }, false);
 }

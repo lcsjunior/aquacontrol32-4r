@@ -10,6 +10,9 @@ constexpr uint16_t DEFAULT_MQTT_PORT = 1883;
 constexpr const char* DEFAULT_MQTT_USER = "";
 constexpr const char* DEFAULT_MQTT_PASS = "";
 constexpr const char* DEFAULT_MQTT_CLIENT_ID = "";
+constexpr const char* DEFAULT_MQTT_PUB_TOPIC = "";
+constexpr const char* DEFAULT_MQTT_SUB_TOPIC = "";
+constexpr const char* DEFAULT_CRON_EXPR = "";
 
 Config AppConfig;
 
@@ -30,6 +33,17 @@ void Config::applyDefaults() {
 
   strncpy(mqttClientId_, DEFAULT_MQTT_CLIENT_ID, kMqttClientIdMaxLen);
   mqttClientId_[kMqttClientIdMaxLen] = '\0';
+
+  strncpy(mqttPubTopic_, DEFAULT_MQTT_PUB_TOPIC, kMqttTopicMaxLen);
+  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
+
+  strncpy(mqttSubTopic_, DEFAULT_MQTT_SUB_TOPIC, kMqttTopicMaxLen);
+  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
+
+  for (int i = 0; i < kCronCount; ++i) {
+    strncpy(crons_[i], DEFAULT_CRON_EXPR, kCronExprMaxLen);
+    crons_[i][kCronExprMaxLen] = '\0';
+  }
 }
 
 bool Config::mount() {
@@ -79,6 +93,23 @@ bool Config::load() {
           kMqttClientIdMaxLen);
   mqttClientId_[kMqttClientIdMaxLen] = '\0';
 
+  strncpy(mqttPubTopic_, doc["mqtt_pub_topic"] | DEFAULT_MQTT_PUB_TOPIC,
+          kMqttTopicMaxLen);
+  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
+
+  strncpy(mqttSubTopic_, doc["mqtt_sub_topic"] | DEFAULT_MQTT_SUB_TOPIC,
+          kMqttTopicMaxLen);
+  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
+
+  JsonArrayConst cronsArray = doc["crons"].as<JsonArrayConst>();
+  for (size_t i = 0; i < kCronCount; ++i) {
+    const char* expr = i < cronsArray.size()
+                           ? (cronsArray[i] | DEFAULT_CRON_EXPR)
+                           : DEFAULT_CRON_EXPR;
+    strncpy(crons_[i], expr, kCronExprMaxLen);
+    crons_[i][kCronExprMaxLen] = '\0';
+  }
+
   return true;
 }
 
@@ -90,6 +121,12 @@ bool Config::save() {
   doc["mqtt_user"] = mqttUser_;
   doc["mqtt_pass"] = mqttPass_;
   doc["mqtt_client_id"] = mqttClientId_;
+  doc["mqtt_pub_topic"] = mqttPubTopic_;
+  doc["mqtt_sub_topic"] = mqttSubTopic_;
+  JsonArray cronsArray = doc["crons"].to<JsonArray>();
+  for (int i = 0; i < kCronCount; ++i) {
+    cronsArray.add(crons_[i]);
+  }
 
   File file = LittleFS.open(CONFIG_PATH, "w");
   if (!file) {
@@ -127,6 +164,18 @@ const char* Config::mqttPass() const {
 const char* Config::mqttClientId() const {
   return mqttClientId_;
 }
+const char* Config::mqttPubTopic() const {
+  return mqttPubTopic_;
+}
+const char* Config::mqttSubTopic() const {
+  return mqttSubTopic_;
+}
+const char* Config::cron(int index) const {
+  if (index < 0 || index >= kCronCount) {
+    return "";
+  }
+  return crons_[index];
+}
 
 void Config::setOtaPass(const char* value) {
   strncpy(otaPass_, value, kOtaPassMaxLen);
@@ -155,4 +204,22 @@ void Config::setMqttPass(const char* value) {
 void Config::setMqttClientId(const char* value) {
   strncpy(mqttClientId_, value, kMqttClientIdMaxLen);
   mqttClientId_[kMqttClientIdMaxLen] = '\0';
+}
+
+void Config::setMqttPubTopic(const char* value) {
+  strncpy(mqttPubTopic_, value, kMqttTopicMaxLen);
+  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
+}
+
+void Config::setMqttSubTopic(const char* value) {
+  strncpy(mqttSubTopic_, value, kMqttTopicMaxLen);
+  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
+}
+
+void Config::setCron(int index, const char* value) {
+  if (index < 0 || index >= kCronCount) {
+    return;
+  }
+  strncpy(crons_[index], value, kCronExprMaxLen);
+  crons_[index][kCronExprMaxLen] = '\0';
 }

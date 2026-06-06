@@ -15,6 +15,9 @@ class Config {
   const char* mqttUser() const;
   const char* mqttPass() const;
   const char* mqttClientId() const;
+  const char* mqttPubTopic() const;
+  const char* mqttSubTopic() const;
+  const char* cron(int index) const;
 
   void setOtaPass(const char* value);
   void setMqttHost(const char* value);
@@ -22,6 +25,9 @@ class Config {
   void setMqttUser(const char* value);
   void setMqttPass(const char* value);
   void setMqttClientId(const char* value);
+  void setMqttPubTopic(const char* value);
+  void setMqttSubTopic(const char* value);
+  void setCron(int index, const char* value);
 
  private:
   static constexpr int kOtaPassMaxLen = 32;
@@ -29,6 +35,9 @@ class Config {
   static constexpr int kMqttUserMaxLen = 48;
   static constexpr int kMqttPassMaxLen = 48;
   static constexpr int kMqttClientIdMaxLen = 48;
+  static constexpr int kMqttTopicMaxLen = 64;
+  static constexpr int kCronExprMaxLen = 32;
+  static constexpr int kCronCount = 4;
 
   char otaPass_[kOtaPassMaxLen + 1];
   char mqttHost_[kMqttHostMaxLen + 1];
@@ -36,6 +45,9 @@ class Config {
   char mqttUser_[kMqttUserMaxLen + 1];
   char mqttPass_[kMqttPassMaxLen + 1];
   char mqttClientId_[kMqttClientIdMaxLen + 1];
+  char mqttPubTopic_[kMqttTopicMaxLen + 1];
+  char mqttSubTopic_[kMqttTopicMaxLen + 1];
+  char crons_[kCronCount][kCronExprMaxLen + 1];
 
   void applyDefaults();
 };
