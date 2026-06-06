@@ -25,3 +25,7 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 
 Details that change (cron schedules, HTTP endpoints, MQTT fields, lib versions)
 live in the code (`src/main.cpp`) and `platformio.ini` — do not duplicate here.
+
+## Conventions
+
+Follow all rules defined in `.claude/rules/`.

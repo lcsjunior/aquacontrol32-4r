@@ -41,7 +41,8 @@ Section order in every class declaration:
 ## Code comments
 
 - Do not add comments to code. Well-named identifiers are sufficient.
-- Method, function, and variable names must be **descriptive**: reveal intent and behavior without requiring additional explanation.
+- Method, function, variable, and **object** names must be **descriptive**: reveal intent and behavior without requiring additional explanation.
+- Object names must be suggestive of their role — `temperatureSensor` or `heaterRelay` instead of generic `obj` or `v`.
 
 ## Logging
 
