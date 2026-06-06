@@ -49,7 +49,7 @@ bool Config::load() {
     return false;
   }
 
-  StaticJsonDocument<512> doc;
+  JsonDocument doc;
   DeserializationError err = deserializeJson(doc, file);
   size_t bytesRead = file.size();
   file.close();
@@ -83,7 +83,7 @@ bool Config::load() {
 }
 
 bool Config::save() {
-  StaticJsonDocument<512> doc;
+  JsonDocument doc;
   doc["ota_pass"] = otaPass_;
   doc["mqtt_host"] = mqttHost_;
   doc["mqtt_port"] = mqttPort_;
