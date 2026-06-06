@@ -7,8 +7,8 @@ Thermostat::Thermostat(Actuator* actuator, Clock* clock)
     : actuator_(actuator), clock_(clock), currentState_(&idleStateSingleton) {
 }
 
-void Thermostat::begin(const float setpoint, const float hysteresis, const float lowerLimit,
-                       const float upperLimit) {
+void Thermostat::begin(const float setpoint, const float hysteresis,
+                       const float lowerLimit, const float upperLimit) {
   setpoint_ = setpoint;
   hysteresis_ = hysteresis;
   lowerLimit_ = lowerLimit;

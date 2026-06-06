@@ -36,8 +36,8 @@ void WiFiLib::initAP(const char* apPass) {
   delay(1000);
 }
 
-void WiFiLib::initSTA(const char* ssid, const char* pass, const char* otaPass, const char* tz,
-                      const char* hostname) {
+void WiFiLib::initSTA(const char* ssid, const char* pass, const char* otaPass,
+                      const char* tz, const char* hostname) {
   strncpy(ssid_, ssid, sizeof(ssid_) - 1);
   ssid_[sizeof(ssid_) - 1] = '\0';
   strncpy(pass_, pass, sizeof(pass_) - 1);
@@ -48,7 +48,8 @@ void WiFiLib::initSTA(const char* ssid, const char* pass, const char* otaPass, c
   WiFi.begin(ssid_, pass_);
   Serial.print(F("Connecting"));
   unsigned long wifiConnectStartMs = millis();
-  while (!WiFi.isConnected() && millis() - wifiConnectStartMs <= WIFI_CONNECT_TIMEOUT_MS) {
+  while (!WiFi.isConnected() &&
+         millis() - wifiConnectStartMs <= WIFI_CONNECT_TIMEOUT_MS) {
     Serial.print(F("."));
     delay(300);
   }
@@ -73,7 +74,8 @@ void WiFiLib::initSTA(const char* ssid, const char* pass, const char* otaPass, c
   log_i("[WiFiLib] Wi-Fi Channel: %d", (int)WiFi.channel());
 
   int16_t rssi = WiFi.RSSI();
-  log_i("[WiFiLib] Signal Strength: %d dBm / %u%%", (int)rssi, (unsigned)dBmToQuality(rssi));
+  log_i("[WiFiLib] Signal Strength: %d dBm / %u%%", (int)rssi,
+        (unsigned)dBmToQuality(rssi));
 
   delay(1000);
 }

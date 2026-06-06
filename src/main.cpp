@@ -3,7 +3,6 @@
 #include <NoDelay.h>
 #include <WebServer.h>
 #include <secrets.h>
-#include <config.h>
 #include <arduino_clock.h>
 #include <dallas_temperature_sensor.h>
 #include <fs_lib.h>
@@ -22,34 +21,27 @@
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
 
+constexpr const char* CRON_CO2_ON = "0 30 7 * * *";
+constexpr const char* CRON_LAMP_ON = "0 0 8 * * *";
+constexpr const char* CRON_CO2_OFF = "0 30 14 * * *";
+constexpr const char* CRON_LAMP_OFF = "0 0 15 * * *";
+
 constexpr const char* TEXT_PLAIN = "text/plain";
 constexpr const char* APPLICATION_JSON = "application/json";
 
-constexpr const char* ssid = WIFI_SSID;
-constexpr const char* pass = WIFI_PASS;
-constexpr const char* otaPass = OTA_PASS;
-constexpr const char* apPass = AP_PASS;
-constexpr const char* tz = "<-03>3";
-constexpr const char* hostname = "aquacontrol32";
+constexpr const char* TIMEZONE = "<-03>3";
+constexpr const char* DEVICE_HOSTNAME = "aquacontrol32";
 
-constexpr const char* mqttServer = "mqtt3.thingspeak.com";
-constexpr int mqttPort = 1883;
-constexpr const char* mqttClientId = MQTT_CLIENT_ID;
-constexpr const char* mqttUsername = MQTT_USERNAME;
-constexpr const char* mqttPassword = MQTT_PASSWORD;
+constexpr const char* MQTT_SERVER = "mqtt3.thingspeak.com";
+constexpr int MQTT_PORT = 1883;
 
-constexpr const char* publishTopic = "channels/2421172/publish";
-constexpr const char* subscribeTopic = "channels/2421172/subscribe";
+constexpr const char* MQTT_PUB_TOPIC = "channels/2421172/publish";
+constexpr const char* MQTT_SUB_TOPIC = "channels/2421172/subscribe";
 
-noDelay publishInterval(MQTT_PUB_INTERVAL_MS);
+noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
 
-constexpr const char* cronstr_at_07_30 = "0 30 7 * * *";
-constexpr const char* cronstr_at_08_00 = "0 0 8 * * *";
-constexpr const char* cronstr_at_14_30 = "0 30 14 * * *";
-constexpr const char* cronstr_at_15_00 = "0 0 15 * * *";
-
-WebServer server(80);
+WebServer server(8080);
 WiFiClient espClient;
 
 TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
@@ -66,6 +58,7 @@ void initWS();
 
 void setup() {
   Serial.begin(SERIAL_BAUD_RATE);
+  mountLittleFS();
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
@@ -75,26 +68,19 @@ void setup() {
   lamp->begin(K2_PIN);
   co2->begin(K4_PIN);
 
-  mountLittleFS();
-  if (!loadConfigFile()) {
-    log_i("[main] Using default config");
-    config.setpoint = 24;
-    config.hysteresis = 0.5;
-    saveConfigFile();
-  }
-
-  thermostat.begin(config.setpoint, config.hysteresis, 0, 30);
+  thermostat.begin(24, 0.5, 0, 30);
 
   WiFi.mode(WIFI_AP_STA);
-  WIFI.initAP(apPass);
-  WIFI.initSTA(ssid, pass, otaPass, tz, hostname);
+  WIFI.initAP(AP_PASS);
+  WIFI.initSTA(WIFI_SSID, WIFI_PASS, OTA_PASS, TIMEZONE, DEVICE_HOSTNAME);
 
   initWS();
   initCrons();
 
-  MQTT.begin(espClient, mqttServer, mqttPort, mqttClientId, mqttUsername, mqttPassword);
+  MQTT.begin(espClient, MQTT_SERVER, MQTT_PORT, MQTT_CLIENT_ID, MQTT_USERNAME,
+             MQTT_PASSWORD);
   MQTT.connect();
-  MQTT.subscribe(subscribeTopic);
+  MQTT.subscribe(MQTT_SUB_TOPIC);
 }
 
 void loop() {
@@ -111,55 +97,51 @@ void loop() {
 }
 
 void buildPayload() {
-  char tbuf[64];
-  formatLocalDateTime(tbuf, sizeof(tbuf));
+  char dateTime[64];
+  formatLocalDateTime(dateTime, sizeof(dateTime));
   snprintf_P(payload, sizeof(payload),
              PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
                   "status=PUB %s RSSI %d dBm (%d pct)"),
-             temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(), co2->isOn(), tbuf,
-             WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
+             temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
+             co2->isOn(), dateTime, WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
 }
 
 void mqttPublish() {
-  if (publishInterval.update()) {
+  if (pubInterval.update()) {
     buildPayload();
-    MQTT.publish(publishTopic, payload);
+    MQTT.publish(MQTT_PUB_TOPIC, payload);
   }
 }
 
 void initCrons() {
-  Cron.create((char*)cronstr_at_07_30, []() { co2->turnOn(); }, false);
-  Cron.create((char*)cronstr_at_08_00, []() { lamp->turnOn(); }, false);
-  Cron.create((char*)cronstr_at_14_30, []() { co2->turnOff(); }, false);
-  Cron.create((char*)cronstr_at_15_00, []() { lamp->turnOff(); }, false);
+  Cron.create((char*)CRON_CO2_ON, []() { co2->turnOn(); }, false);
+  Cron.create((char*)CRON_LAMP_ON, []() { lamp->turnOn(); }, false);
+  Cron.create((char*)CRON_CO2_OFF, []() { co2->turnOff(); }, false);
+  Cron.create((char*)CRON_LAMP_OFF, []() { lamp->turnOff(); }, false);
 }
 
 void initWS() {
-  server.on(F("/"), []() { server.send(200, TEXT_PLAIN, "Hello from ESP!"); });
+  server.on(F("/"), []() {
+    server.send(200, FPSTR(TEXT_PLAIN), FPSTR("Hello from ESP32!"));
+  });
 
   server.on(F("/reboot"), HTTP_GET, []() {
     WIFI.reboot();
-    server.send(200);
-  });
-
-  server.on(F("/msg"), HTTP_GET, []() {
-    char buf[sizeof(payload) + 32];
-    size_t len = strnlen_P(payload, sizeof(payload));
-    snprintf_P(buf, sizeof(buf), PSTR("%s (%zd bytes)"), payload, len);
-    server.send(200, TEXT_PLAIN, buf);
+    server.send(204);
   });
 
   server.on(F("/lamp/toggle"), HTTP_GET, []() {
     lamp->toggle();
-    server.send(200);
+    server.send(204);
   });
 
   server.on(F("/co2/toggle"), HTTP_GET, []() {
     co2->toggle();
-    server.send(200);
+    server.send(204);
   });
 
-  server.onNotFound([]() { server.send(404, TEXT_PLAIN, "Not found"); });
+  server.onNotFound(
+      []() { server.send(404, FPSTR(TEXT_PLAIN), FPSTR("Not found")); });
 
   server.begin();
   log_i("[main] HTTP server started");

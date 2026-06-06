@@ -9,8 +9,8 @@ class Thermostat {
  public:
   explicit Thermostat(Actuator* actuator, Clock* clock);
 
-  void begin(const float setpoint, const float hysteresis, const float lowerLimit,
-             const float upperLimit);
+  void begin(const float setpoint, const float hysteresis,
+             const float lowerLimit, const float upperLimit);
   void update(float currentTemperatureC);
 
   void transitionTo(ThermostatState* nextState);
