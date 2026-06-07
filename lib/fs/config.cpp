@@ -11,7 +11,7 @@ Config AppConfig;
 
 bool Config::mount() {
   if (!LittleFS.begin(true)) {
-    log_w("Failed to mount LittleFS");
+    log_e("Failed to mount LittleFS");
     return false;
   }
   return true;
