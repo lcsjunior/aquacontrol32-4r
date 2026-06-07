@@ -89,11 +89,11 @@ void loop() {
 void buildPayload() {
   char dateTimeBuf[64];
   formatLocalDateTime(dateTimeBuf, sizeof(dateTimeBuf));
-  snprintf_P(payload, sizeof(payload),
-             PSTR("field1=%.1f&field3=%d&field5=%d&field6=%d&"
-                  "status=PUB %s RSSI %d dBm (%d pct)"),
-             temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
-             co2->isOn(), dateTimeBuf, WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
+  snprintf(payload, sizeof(payload),
+           "field1=%.1f&field3=%d&field5=%d&field6=%d&"
+           "status=PUB %s RSSI %d dBm (%d pct)",
+           temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
+           co2->isOn(), dateTimeBuf, WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
 }
 
 void mqttPublish() {
@@ -143,14 +143,14 @@ void initWifi() {
   snprintf(portBuf, sizeof(portBuf), "%u", AppConfig.mqttPort());
 
   // clang-format off
-  wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),      32, "type=\"password\"");
+  wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),      16, "type=\"password\"");
   wmMqttHost     = new WiFiManagerParameter("mqtt_host",      "MQTT Broker Host",    AppConfig.mqttHost(),     64);
   wmMqttPort     = new WiFiManagerParameter("mqtt_port",      "MQTT Broker Port",    portBuf,                   6, "type=\"number\"");
-  wmMqttUser     = new WiFiManagerParameter("mqtt_user",      "MQTT Username",       AppConfig.mqttUser(),     48);
-  wmMqttPass     = new WiFiManagerParameter("mqtt_pass",      "MQTT Password",       AppConfig.mqttPass(),     48, "type=\"password\"");
-  wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",      AppConfig.mqttClientId(), 48);
-  wmMqttPubTopic = new WiFiManagerParameter("mqtt_pub_topic", "MQTT Publish Topic",  AppConfig.mqttPubTopic(), 64);
-  wmMqttSubTopic = new WiFiManagerParameter("mqtt_sub_topic", "MQTT Subscribe Topic",AppConfig.mqttSubTopic(), 64);
+  wmMqttUser     = new WiFiManagerParameter("mqtt_user",      "MQTT Username",       AppConfig.mqttUser(),     32);
+  wmMqttPass     = new WiFiManagerParameter("mqtt_pass",      "MQTT Password",       AppConfig.mqttPass(),     32, "type=\"password\"");
+  wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",      AppConfig.mqttClientId(), 32);
+  wmMqttPubTopic = new WiFiManagerParameter("mqtt_pub_topic", "MQTT Publish Topic",  AppConfig.mqttPubTopic(), 32);
+  wmMqttSubTopic = new WiFiManagerParameter("mqtt_sub_topic", "MQTT Subscribe Topic",AppConfig.mqttSubTopic(), 32);
   wmCronLampOn   = new WiFiManagerParameter("cron_lamp_on",   "Lamp ON cron",        AppConfig.cron(0),        32);
   wmCronLampOff  = new WiFiManagerParameter("cron_lamp_off",  "Lamp OFF cron",       AppConfig.cron(1),        32);
   wmCronCo2On    = new WiFiManagerParameter("cron_co2_on",    "CO2 ON cron",         AppConfig.cron(2),        32);
@@ -199,17 +199,16 @@ void initMqtt() {
 }
 
 void initHttpServer() {
-  wifiManager.server->on(F("/health"), HTTP_GET, []() {
-    wifiManager.server->send(200, FPSTR(APPLICATION_JSON),
-                             F("{\"status\":\"UP\"}"));
+  wifiManager.server->on("/health", HTTP_GET, []() {
+    wifiManager.server->send(200, APPLICATION_JSON, "{\"status\":\"UP\"}");
   });
 
-  wifiManager.server->on(F("/lamp/toggle"), HTTP_GET, []() {
+  wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
     lamp->toggle();
     wifiManager.server->send(204);
   });
 
-  wifiManager.server->on(F("/co2/toggle"), HTTP_GET, []() {
+  wifiManager.server->on("/co2/toggle", HTTP_GET, []() {
     co2->toggle();
     wifiManager.server->send(204);
   });

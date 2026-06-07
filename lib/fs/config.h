@@ -31,24 +31,17 @@ class Config {
   void setCron(int index, const char* value);
 
  private:
-  static constexpr int kOtaPassMaxLen = 32;
-  static constexpr int kMqttHostMaxLen = 64;
-  static constexpr int kMqttUserMaxLen = 48;
-  static constexpr int kMqttPassMaxLen = 48;
-  static constexpr int kMqttClientIdMaxLen = 48;
-  static constexpr int kMqttTopicMaxLen = 64;
-  static constexpr int kCronExprMaxLen = 32;
-  static constexpr int kCronCount = 4;
+  static constexpr int cronLength = 4;
 
-  char otaPass_[kOtaPassMaxLen + 1];
-  char mqttHost_[kMqttHostMaxLen + 1];
+  char otaPass_[16];
+  char mqttHost_[64];
   uint16_t mqttPort_;
-  char mqttUser_[kMqttUserMaxLen + 1];
-  char mqttPass_[kMqttPassMaxLen + 1];
-  char mqttClientId_[kMqttClientIdMaxLen + 1];
-  char mqttPubTopic_[kMqttTopicMaxLen + 1];
-  char mqttSubTopic_[kMqttTopicMaxLen + 1];
-  char crons_[kCronCount][kCronExprMaxLen + 1];
+  char mqttUser_[32];
+  char mqttPass_[32];
+  char mqttClientId_[32];
+  char mqttPubTopic_[32];
+  char mqttSubTopic_[32];
+  char crons_[cronLength][32];
 
   void applyDefaults();
   void convertFromJson(const JsonDocument& doc);

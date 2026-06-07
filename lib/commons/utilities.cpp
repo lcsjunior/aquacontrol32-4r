@@ -14,7 +14,6 @@ uint32_t getChipId() {
 
 const char* getApName() {
   static char name[32];
-  snprintf_P(name, sizeof(name), PSTR("ESPsoftAP-%lu"),
-             (unsigned long)getChipId());
+  snprintf(name, sizeof(name), "ESPsoftAP-%lu", (unsigned long)getChipId());
   return name;
 }

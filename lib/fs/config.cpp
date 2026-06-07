@@ -7,28 +7,8 @@ constexpr const char* CONFIG_PATH = "/config.json";
 constexpr const char* DEFAULT_OTA_PASS = "admin";
 constexpr const char* DEFAULT_MQTT_HOST = "mqtt3.thingspeak.com";
 constexpr uint16_t DEFAULT_MQTT_PORT = 1883;
-constexpr const char* DEFAULT_MQTT_USER = "";
-constexpr const char* DEFAULT_MQTT_PASS = "";
-constexpr const char* DEFAULT_MQTT_CLIENT_ID = "";
-constexpr const char* DEFAULT_MQTT_PUB_TOPIC = "";
-constexpr const char* DEFAULT_MQTT_SUB_TOPIC = "";
-constexpr const char* DEFAULT_CRON_EXPR = "";
 
 Config AppConfig;
-
-void Config::applyDefaults() {
-  setOtaPass(DEFAULT_OTA_PASS);
-  setMqttHost(DEFAULT_MQTT_HOST);
-  setMqttPort(DEFAULT_MQTT_PORT);
-  setMqttUser(DEFAULT_MQTT_USER);
-  setMqttPass(DEFAULT_MQTT_PASS);
-  setMqttClientId(DEFAULT_MQTT_CLIENT_ID);
-  setMqttPubTopic(DEFAULT_MQTT_PUB_TOPIC);
-  setMqttSubTopic(DEFAULT_MQTT_SUB_TOPIC);
-  for (int i = 0; i < kCronCount; ++i) {
-    setCron(i, DEFAULT_CRON_EXPR);
-  }
-}
 
 bool Config::mount() {
   if (!LittleFS.begin(true)) {
@@ -62,34 +42,6 @@ bool Config::load() {
   convertFromJson(doc);
 
   return true;
-}
-
-void Config::convertFromJson(const JsonDocument& doc) {
-  setOtaPass(doc["ota_pass"] | DEFAULT_OTA_PASS);
-  setMqttHost(doc["mqtt_host"] | DEFAULT_MQTT_HOST);
-  setMqttPort(doc["mqtt_port"] | DEFAULT_MQTT_PORT);
-  setMqttUser(doc["mqtt_user"] | DEFAULT_MQTT_USER);
-  setMqttPass(doc["mqtt_pass"] | DEFAULT_MQTT_PASS);
-  setMqttClientId(doc["mqtt_client_id"] | DEFAULT_MQTT_CLIENT_ID);
-  setMqttPubTopic(doc["mqtt_pub_topic"] | DEFAULT_MQTT_PUB_TOPIC);
-  setMqttSubTopic(doc["mqtt_sub_topic"] | DEFAULT_MQTT_SUB_TOPIC);
-  for (size_t i = 0; i < kCronCount; ++i) {
-    setCron(i, doc["crons"][i] | DEFAULT_CRON_EXPR);
-  }
-}
-
-void Config::convertToJson(JsonDocument& doc) const {
-  doc["ota_pass"] = otaPass_;
-  doc["mqtt_host"] = mqttHost_;
-  doc["mqtt_port"] = mqttPort_;
-  doc["mqtt_user"] = mqttUser_;
-  doc["mqtt_pass"] = mqttPass_;
-  doc["mqtt_client_id"] = mqttClientId_;
-  doc["mqtt_pub_topic"] = mqttPubTopic_;
-  doc["mqtt_sub_topic"] = mqttSubTopic_;
-  for (int i = 0; i < kCronCount; ++i) {
-    doc["crons"].add(crons_[i]);
-  }
 }
 
 bool Config::save() {
@@ -139,20 +91,18 @@ const char* Config::mqttSubTopic() const {
   return mqttSubTopic_;
 }
 const char* Config::cron(int index) const {
-  if (index < 0 || index >= kCronCount) {
+  if (index < 0 || index >= cronLength) {
     return "";
   }
   return crons_[index];
 }
 
 void Config::setOtaPass(const char* value) {
-  strncpy(otaPass_, value, kOtaPassMaxLen);
-  otaPass_[kOtaPassMaxLen] = '\0';
+  strlcpy(otaPass_, value, sizeof(otaPass_));
 }
 
 void Config::setMqttHost(const char* value) {
-  strncpy(mqttHost_, value, kMqttHostMaxLen);
-  mqttHost_[kMqttHostMaxLen] = '\0';
+  strlcpy(mqttHost_, value, sizeof(mqttHost_));
 }
 
 void Config::setMqttPort(uint16_t value) {
@@ -160,34 +110,70 @@ void Config::setMqttPort(uint16_t value) {
 }
 
 void Config::setMqttUser(const char* value) {
-  strncpy(mqttUser_, value, kMqttUserMaxLen);
-  mqttUser_[kMqttUserMaxLen] = '\0';
+  strlcpy(mqttUser_, value, sizeof(mqttUser_));
 }
 
 void Config::setMqttPass(const char* value) {
-  strncpy(mqttPass_, value, kMqttPassMaxLen);
-  mqttPass_[kMqttPassMaxLen] = '\0';
+  strlcpy(mqttPass_, value, sizeof(mqttPass_));
 }
 
 void Config::setMqttClientId(const char* value) {
-  strncpy(mqttClientId_, value, kMqttClientIdMaxLen);
-  mqttClientId_[kMqttClientIdMaxLen] = '\0';
+  strlcpy(mqttClientId_, value, sizeof(mqttClientId_));
 }
 
 void Config::setMqttPubTopic(const char* value) {
-  strncpy(mqttPubTopic_, value, kMqttTopicMaxLen);
-  mqttPubTopic_[kMqttTopicMaxLen] = '\0';
+  strlcpy(mqttPubTopic_, value, sizeof(mqttPubTopic_));
 }
 
 void Config::setMqttSubTopic(const char* value) {
-  strncpy(mqttSubTopic_, value, kMqttTopicMaxLen);
-  mqttSubTopic_[kMqttTopicMaxLen] = '\0';
+  strlcpy(mqttSubTopic_, value, sizeof(mqttSubTopic_));
 }
 
 void Config::setCron(int index, const char* value) {
-  if (index < 0 || index >= kCronCount) {
+  if (index < 0 || index >= cronLength) {
     return;
   }
-  strncpy(crons_[index], value, kCronExprMaxLen);
-  crons_[index][kCronExprMaxLen] = '\0';
+  strlcpy(crons_[index], value, sizeof(crons_[index]));
+}
+
+void Config::applyDefaults() {
+  setOtaPass(DEFAULT_OTA_PASS);
+  setMqttHost(DEFAULT_MQTT_HOST);
+  setMqttPort(DEFAULT_MQTT_PORT);
+  setMqttUser("");
+  setMqttPass("");
+  setMqttClientId("");
+  setMqttPubTopic("");
+  setMqttSubTopic("");
+  for (int i = 0; i < cronLength; ++i) {
+    setCron(i, "");
+  }
+}
+
+void Config::convertFromJson(const JsonDocument& doc) {
+  setOtaPass(doc["ota_pass"] | DEFAULT_OTA_PASS);
+  setMqttHost(doc["mqtt_host"] | DEFAULT_MQTT_HOST);
+  setMqttPort(doc["mqtt_port"] | DEFAULT_MQTT_PORT);
+  setMqttUser(doc["mqtt_user"] | "");
+  setMqttPass(doc["mqtt_pass"] | "");
+  setMqttClientId(doc["mqtt_client_id"] | "");
+  setMqttPubTopic(doc["mqtt_pub_topic"] | "");
+  setMqttSubTopic(doc["mqtt_sub_topic"] | "");
+  for (size_t i = 0; i < cronLength; ++i) {
+    setCron(i, doc["crons"][i] | "");
+  }
+}
+
+void Config::convertToJson(JsonDocument& doc) const {
+  doc["ota_pass"] = otaPass_;
+  doc["mqtt_host"] = mqttHost_;
+  doc["mqtt_port"] = mqttPort_;
+  doc["mqtt_user"] = mqttUser_;
+  doc["mqtt_pass"] = mqttPass_;
+  doc["mqtt_client_id"] = mqttClientId_;
+  doc["mqtt_pub_topic"] = mqttPubTopic_;
+  doc["mqtt_sub_topic"] = mqttSubTopic_;
+  for (int i = 0; i < cronLength; ++i) {
+    doc["crons"].add(crons_[i]);
+  }
 }
