@@ -2,9 +2,13 @@
 
 AquaControl32-4R is an intelligent [ESP32 T-Relay](https://lilygo.cc/en-us/products/t-relay) controller for my 80 L tetra aquarium. It is implemented in Arduino and PlatformIO. It monitors water temperature with a DS18B20 sensor, runs a thermostat, and schedules lights and CO2 on/off events.
 
-The system sends data to ThingSpeak. View the dashboard here:
+The system sends data to ThingSpeak. **View here**: [ThingSpeak dashboard for channel 2421172](https://thingspeak.mathworks.com/channels/2421172)
 
-[ThingSpeak dashboard for channel 2421172](https://thingspeak.mathworks.com/channels/2421172)
+The goal is to preserve the health of the aquarium and its fish — black tetras, which thrive in tropical temperatures.
+
+The thermostat keeps water above the ambient temperature, targeting 24 °C.
+
+<img src="assets/images/thingspeak-aquacontrol32.png" align="right" width="340"/>
 
 ### Pinout & ThingSpeak field mapping
 
