@@ -8,8 +8,6 @@
 
 class MQTTClient {
  public:
-  void begin(Client& espClient, const char* server, uint16_t port,
-             const char* clientId, const char* username, const char* password);
   void begin(Client& espClient, const Config& config);
 
   bool connect();

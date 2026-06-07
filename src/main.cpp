@@ -21,6 +21,11 @@
 #define MQTT_PUB_INTERVAL_MS 60000UL
 #define WIFI_PORTAL_TIMEOUT_S 180
 
+constexpr int LAMP_ON_CRON_IDX = 0;
+constexpr int LAMP_OFF_CRON_IDX = 1;
+constexpr int CO2_ON_CRON_IDX = 2;
+constexpr int CO2_OFF_CRON_IDX = 3;
+
 constexpr const char* APPLICATION_JSON = "application/json";
 
 constexpr const char* TIMEZONE = "<-03>3";
@@ -53,9 +58,6 @@ Thermostat thermostat(heater, &arduinoClock);
 noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
 
-void buildPayload();
-void mqttPublish();
-void onWifiManagerSaveParams();
 void initIO();
 void initFs();
 void initWifi();
@@ -63,6 +65,9 @@ void initOta();
 void initMqtt();
 void initHttpServer();
 void initCrons();
+void buildPayload();
+void mqttPublish();
+void onWifiManagerSaveParams();
 
 void setup() {
   initIO();
@@ -86,39 +91,6 @@ void loop() {
   mqttPublish();
 }
 
-void buildPayload() {
-  char dateTimeBuf[64];
-  formatLocalDateTime(dateTimeBuf, sizeof(dateTimeBuf));
-  snprintf(payload, sizeof(payload),
-           "field1=%.1f&field3=%d&field5=%d&field6=%d&"
-           "status=PUB %s RSSI %d dBm (%d pct)",
-           temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
-           co2->isOn(), dateTimeBuf, WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
-}
-
-void mqttPublish() {
-  if (!pubInterval.update())
-    return;
-  buildPayload();
-  MQTT.publish(AppConfig.mqttPubTopic(), payload);
-}
-
-void onWifiManagerSaveParams() {
-  AppConfig.setOtaPass(wmOtaPass->getValue());
-  AppConfig.setMqttHost(wmMqttHost->getValue());
-  AppConfig.setMqttPort((uint16_t)atoi(wmMqttPort->getValue()));
-  AppConfig.setMqttUser(wmMqttUser->getValue());
-  AppConfig.setMqttPass(wmMqttPass->getValue());
-  AppConfig.setMqttClientId(wmMqttClientId->getValue());
-  AppConfig.setMqttPubTopic(wmMqttPubTopic->getValue());
-  AppConfig.setMqttSubTopic(wmMqttSubTopic->getValue());
-  AppConfig.setCron(0, wmCronLampOn->getValue());
-  AppConfig.setCron(1, wmCronLampOff->getValue());
-  AppConfig.setCron(2, wmCronCo2On->getValue());
-  AppConfig.setCron(3, wmCronCo2Off->getValue());
-  AppConfig.save();
-}
-
 void initIO() {
   Serial.begin(SERIAL_BAUD_RATE);
 
@@ -139,22 +111,19 @@ void initFs() {
 }
 
 void initWifi() {
-  char portBuf[7];
-  snprintf(portBuf, sizeof(portBuf), "%u", AppConfig.mqttPort());
-
   // clang-format off
-  wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),      16, "type=\"password\"");
-  wmMqttHost     = new WiFiManagerParameter("mqtt_host",      "MQTT Broker Host",    AppConfig.mqttHost(),     64);
-  wmMqttPort     = new WiFiManagerParameter("mqtt_port",      "MQTT Broker Port",    portBuf,                   6, "type=\"number\"");
+  wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),               16, "type=\"password\"");
+  wmMqttHost     = new WiFiManagerParameter("mqtt_host",      "MQTT Broker Host",    AppConfig.mqttHost(),              64);
+  wmMqttPort     = new WiFiManagerParameter("mqtt_port",      "MQTT Broker Port",    intToStr(AppConfig.mqttPort()),     6, "type=\"number\"");
   wmMqttUser     = new WiFiManagerParameter("mqtt_user",      "MQTT Username",       AppConfig.mqttUser(),     32);
   wmMqttPass     = new WiFiManagerParameter("mqtt_pass",      "MQTT Password",       AppConfig.mqttPass(),     32, "type=\"password\"");
   wmMqttClientId = new WiFiManagerParameter("mqtt_client_id", "MQTT Client ID",      AppConfig.mqttClientId(), 32);
   wmMqttPubTopic = new WiFiManagerParameter("mqtt_pub_topic", "MQTT Publish Topic",  AppConfig.mqttPubTopic(), 32);
   wmMqttSubTopic = new WiFiManagerParameter("mqtt_sub_topic", "MQTT Subscribe Topic",AppConfig.mqttSubTopic(), 32);
-  wmCronLampOn   = new WiFiManagerParameter("cron_lamp_on",   "Lamp ON cron",        AppConfig.cron(0),        32);
-  wmCronLampOff  = new WiFiManagerParameter("cron_lamp_off",  "Lamp OFF cron",       AppConfig.cron(1),        32);
-  wmCronCo2On    = new WiFiManagerParameter("cron_co2_on",    "CO2 ON cron",         AppConfig.cron(2),        32);
-  wmCronCo2Off   = new WiFiManagerParameter("cron_co2_off",   "CO2 OFF cron",        AppConfig.cron(3),        32);
+  wmCronLampOn   = new WiFiManagerParameter("cron_lamp_on",   "Lamp ON cron",        AppConfig.cron(LAMP_ON_CRON_IDX),  32);
+  wmCronLampOff  = new WiFiManagerParameter("cron_lamp_off",  "Lamp OFF cron",       AppConfig.cron(LAMP_OFF_CRON_IDX), 32);
+  wmCronCo2On    = new WiFiManagerParameter("cron_co2_on",    "CO2 ON cron",         AppConfig.cron(CO2_ON_CRON_IDX),   32);
+  wmCronCo2Off   = new WiFiManagerParameter("cron_co2_off",   "CO2 OFF cron",        AppConfig.cron(CO2_OFF_CRON_IDX),  32);
   // clang-format on
 
   wifiManager.setConfigPortalBlocking(false);
@@ -205,27 +174,61 @@ void initHttpServer() {
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
     lamp->toggle();
-    wifiManager.server->send(204);
+    wifiManager.server->send(
+        200, APPLICATION_JSON,
+        lamp->isOn() ? "{\"active\":true}" : "{\"active\":false}");
   });
 
   wifiManager.server->on("/co2/toggle", HTTP_GET, []() {
     co2->toggle();
-    wifiManager.server->send(204);
+    wifiManager.server->send(
+        200, APPLICATION_JSON,
+        co2->isOn() ? "{\"active\":true}" : "{\"active\":false}");
   });
 }
 
 void initCrons() {
-  const char* lampOn = AppConfig.cron(0);
-  const char* lampOff = AppConfig.cron(1);
-  const char* co2On = AppConfig.cron(2);
-  const char* co2Off = AppConfig.cron(3);
+  if (WiFi.status() != WL_CONNECTED)
+    return;
+  Cron.create((char*)AppConfig.cron(LAMP_ON_CRON_IDX), []() { lamp->turnOn(); },
+              false);
+  Cron.create((char*)AppConfig.cron(LAMP_OFF_CRON_IDX),
+              []() { lamp->turnOff(); }, false);
+  Cron.create((char*)AppConfig.cron(CO2_ON_CRON_IDX), []() { co2->turnOn(); },
+              false);
+  Cron.create((char*)AppConfig.cron(CO2_OFF_CRON_IDX), []() { co2->turnOff(); },
+              false);
+}
 
-  if (lampOn[0] != '\0')
-    Cron.create((char*)lampOn, []() { lamp->turnOn(); }, false);
-  if (lampOff[0] != '\0')
-    Cron.create((char*)lampOff, []() { lamp->turnOff(); }, false);
-  if (co2On[0] != '\0')
-    Cron.create((char*)co2On, []() { co2->turnOn(); }, false);
-  if (co2Off[0] != '\0')
-    Cron.create((char*)co2Off, []() { co2->turnOff(); }, false);
+void buildPayload() {
+  char dateTimeBuf[64];
+  formatLocalDateTime(dateTimeBuf, sizeof(dateTimeBuf));
+  snprintf(payload, sizeof(payload),
+           "field1=%.1f&field3=%d&field5=%d&field6=%d&"
+           "status=PUB %s RSSI %d dBm (%d pct)",
+           temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
+           co2->isOn(), dateTimeBuf, WiFi.RSSI(), dBmToQuality(WiFi.RSSI()));
+}
+
+void mqttPublish() {
+  if (!pubInterval.update())
+    return;
+  buildPayload();
+  MQTT.publish(AppConfig.mqttPubTopic(), payload);
+}
+
+void onWifiManagerSaveParams() {
+  AppConfig.setOtaPass(wmOtaPass->getValue());
+  AppConfig.setMqttHost(wmMqttHost->getValue());
+  AppConfig.setMqttPort((uint16_t)atoi(wmMqttPort->getValue()));
+  AppConfig.setMqttUser(wmMqttUser->getValue());
+  AppConfig.setMqttPass(wmMqttPass->getValue());
+  AppConfig.setMqttClientId(wmMqttClientId->getValue());
+  AppConfig.setMqttPubTopic(wmMqttPubTopic->getValue());
+  AppConfig.setMqttSubTopic(wmMqttSubTopic->getValue());
+  AppConfig.setCron(LAMP_ON_CRON_IDX, wmCronLampOn->getValue());
+  AppConfig.setCron(LAMP_OFF_CRON_IDX, wmCronLampOff->getValue());
+  AppConfig.setCron(CO2_ON_CRON_IDX, wmCronCo2On->getValue());
+  AppConfig.setCron(CO2_OFF_CRON_IDX, wmCronCo2Off->getValue());
+  AppConfig.save();
 }

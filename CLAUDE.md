@@ -13,16 +13,19 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 ## Architecture (where things live)
 
 - `src/main.cpp` — general wiring: initializes sensors, relays, and thermostat; manages
-  WiFi via `WiFiManager` (captive portal, NTP) and OTA via `ArduinoOTA`; connects MQTT;
-  registers crons and the HTTP server; runs the main loop.
+  WiFi via `WiFiManager` (captive portal with custom parameters for MQTT and cron config,
+  NTP) and OTA via `ArduinoOTA`; connects MQTT; registers crons and the HTTP server;
+  runs the main loop.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
   `arduino_clock` (concrete impl + `formatLocalDateTime`), `utilities`
-  (helpers: `dBmToQuality`, `getChipId`, `getApName`).
+  (helpers: `dBmToQuality`, `getChipId`, `getApName`, `intToStr`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
   `HeatingState`), interfaces `Actuator` and `TemperatureSensor`.
-- `lib/mqtt/` — `MQTTClient` (data publishing to MQTT broker).
-- `lib/fs/` — `Config` (setpoint, hysteresis) persisted in LittleFS.
+- `lib/mqtt/` — `MQTTClient` (publishes/subscribes to MQTT broker; configurable via
+  `Config` or explicit parameters; auto-reconnect).
+- `lib/fs/` — `Config` (OTA password, MQTT connection settings, 4 cron schedules)
+  persisted in LittleFS.
 
 Details that change (cron schedules, HTTP endpoints, MQTT fields, lib versions)
 live in the code (`src/main.cpp`) and `platformio.ini` — do not duplicate here.

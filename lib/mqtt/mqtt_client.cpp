@@ -4,22 +4,15 @@
 
 MQTTClient MQTT;
 
-void MQTTClient::begin(Client& espClient, const char* server, uint16_t port,
-                       const char* clientId, const char* username,
-                       const char* password) {
-  pubSubClient_.setClient(espClient);
-  pubSubClient_.setServer(server, port);
-  server_ = server;
-  clientId_ = clientId;
-  username_ = username;
-  password_ = password;
-  subscribedTopic_ = nullptr;
-  lastConnectAttempt_ = millis() - MQTT_CONN_TIMEOUT_MS;
-}
-
 void MQTTClient::begin(Client& espClient, const Config& config) {
-  begin(espClient, config.mqttHost(), config.mqttPort(), config.mqttClientId(),
-        config.mqttUser(), config.mqttPass());
+  pubSubClient_.setClient(espClient);
+  pubSubClient_.setServer(config.mqttHost(), config.mqttPort());
+  server_ = config.mqttHost();
+  clientId_ = config.mqttClientId();
+  username_ = config.mqttUser();
+  password_ = config.mqttPass();
+  subscribedTopic_ = config.mqttPubTopic();
+  lastConnectAttempt_ = millis() - MQTT_CONN_TIMEOUT_MS;
 }
 
 bool MQTTClient::connect() {
@@ -39,7 +32,7 @@ bool MQTTClient::connect() {
 }
 
 void MQTTClient::subscribe(const char* topic) {
-  if (!topic || topic[0] == '\0') {
+  if (topic[0] == '\0') {
     log_w("[MQTTClient] subscribe called with empty topic, skipping");
     return;
   }
@@ -49,7 +42,7 @@ void MQTTClient::subscribe(const char* topic) {
 }
 
 void MQTTClient::publish(const char* topic, const char* payload) {
-  if (!topic || topic[0] == '\0') {
+  if (topic[0] == '\0') {
     log_w("[MQTTClient] publish called with empty topic, skipping");
     return;
   }

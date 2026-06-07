@@ -38,9 +38,7 @@ bool Config::load() {
   }
 
   log_i("[Config] Loaded %u bytes from %s", bytesRead, CONFIG_PATH);
-
   convertFromJson(doc);
-
   return true;
 }
 
@@ -56,7 +54,6 @@ bool Config::save() {
 
   size_t bytesWritten = serializeJson(doc, file);
   file.close();
-
   if (bytesWritten == 0) {
     log_e("[Config] Failed to write to %s", CONFIG_PATH);
     return false;
