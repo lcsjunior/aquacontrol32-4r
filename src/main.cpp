@@ -157,7 +157,7 @@ void initWifi() {
   wifiManager.addParameter(wmCronCo2Off);
 
   wifiManager.setConfigPortalBlocking(false);
-  // wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
+  wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
   wifiManager.setHostname(DEVICE_HOSTNAME);
   wifiManager.setSaveParamsCallback(onWifiManagerSaveParams);
   wifiManager.autoConnect(getApName(), AP_PASSWORD);
