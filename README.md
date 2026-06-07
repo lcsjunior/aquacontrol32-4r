@@ -6,31 +6,27 @@ The system sends data to ThingSpeak. View the dashboard here:
 
 [ThingSpeak dashboard for channel 2421172](https://thingspeak.mathworks.com/channels/2421172)
 
-### Pinout
+### Pinout & ThingSpeak field mapping
 
-| Signal                          | GPIO     |
-|---------------------------------|----------|
-| Heater relay (K1)               | 21       |
-| LED bar relay (K2)              | 19       |
-| CO2 solenoid relay (K4)         | 5        |
-| DS18B20 sensor                  | 22       |
-| On-board status LED             | 25       |
-
-### ThingSpeak field mapping
-
-| Field | Data                            |
-|-------|---------------------------------|
-| 1     | DS18B20 sensor                  |
-| 3     | Heater relay state              |
-| 5     | LED bar relay state             |
-| 6     | CO2 solenoid relay state        |
+| Signal                  | GPIO | ThingSpeak Field |
+|-------------------------|------|-----------------|
+| DS18B20 sensor          | 22   | 1               |
+| Heater relay (K1)       | 21   | 3               |
+| LED bar relay (K2)      | 19   | 5               |
+| CO2 solenoid relay (K4) | 5    | 6               |
+| On-board status LED     | 25   | —               |
 
 ## Screenshots
 
 This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 4x4 socket panel, [ESP32 T-Relay](https://lilygo.cc/en-us/products/t-relay), waterproof DS18B20 sensors, a 12V supply, wires and wago connectors.
 
-![IMG_20240205_144102019_HDR.jpg](assets/images/IMG_20240205_144102019_HDR.jpg)
-![IMG_20240205_154955856.jpg](assets/images/IMG_20240205_154955856.jpg)
+<table>
+  <tr>
+    <td><img src="assets/images/aquacontrol32-3.jpg" width="260"/></td>
+    <td><img src="assets/images/aquacontrol32-1.jpg" width="260"/></td>
+    <td><img src="assets/images/aquacontrol32-2.jpg" width="260"/></td>
+  </tr>
+</table>
 
 ## TODO
 
