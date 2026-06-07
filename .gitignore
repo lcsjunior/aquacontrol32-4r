@@ -1,5 +1,4 @@
 tasks/*
-local_settings.ini
 src/secrets.h
 
 compile_commands.json
