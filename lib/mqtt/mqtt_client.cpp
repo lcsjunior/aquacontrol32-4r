@@ -1,6 +1,6 @@
 #include <mqtt_client.h>
 
-#define MQTT_CONN_TIMEOUT_MS 5000UL
+#define MQTT_CONN_TIMEOUT_MS 10000UL
 
 MQTTClient MQTT;
 

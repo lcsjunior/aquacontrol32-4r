@@ -97,6 +97,13 @@ void test_force_transition_ignores_debounce() {
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
+void test_force_transition_to_idle_is_noop_when_already_idle() {
+  int turnOffCountBefore = actuator.turnOffCount_;
+  thermostat->update(NAN);
+  TEST_ASSERT_EQUAL(turnOffCountBefore, actuator.turnOffCount_);
+  TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
+}
+
 void test_transition_to_same_state_is_noop() {
   int turnOffCountBefore = actuator.turnOffCount_;
   thermostat->update(25.0f);
@@ -152,6 +159,7 @@ int main() {
   RUN_TEST(test_invalid_temperature_below_lower_limit_forces_idle);
   RUN_TEST(test_invalid_temperature_above_upper_limit_forces_idle);
   RUN_TEST(test_force_transition_ignores_debounce);
+  RUN_TEST(test_force_transition_to_idle_is_noop_when_already_idle);
   RUN_TEST(test_transition_to_same_state_is_noop);
   RUN_TEST(test_heating_turns_on_actuator);
   RUN_TEST(test_idle_turns_off_actuator);

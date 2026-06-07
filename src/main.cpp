@@ -193,14 +193,22 @@ void initCrons() {
   const char* lampOffCron = AppConfig.cron(LAMP_OFF_CRON_IDX);
   const char* co2OnCron = AppConfig.cron(CO2_ON_CRON_IDX);
   const char* co2OffCron = AppConfig.cron(CO2_OFF_CRON_IDX);
-  log_i("Lamp ON cron:  %s", lampOnCron);
-  log_i("Lamp OFF cron: %s", lampOffCron);
-  log_i("CO2 ON cron:   %s", co2OnCron);
-  log_i("CO2 OFF cron:  %s", co2OffCron);
-  Cron.create((char*)lampOnCron, []() { lamp->turnOn(); }, false);
-  Cron.create((char*)lampOffCron, []() { lamp->turnOff(); }, false);
-  Cron.create((char*)co2OnCron, []() { co2->turnOn(); }, false);
-  Cron.create((char*)co2OffCron, []() { co2->turnOff(); }, false);
+  if (*lampOnCron != '\0') {
+    log_i("Lamp ON cron:  %s", lampOnCron);
+    Cron.create((char*)lampOnCron, []() { lamp->turnOn(); }, false);
+  }
+  if (*lampOffCron != '\0') {
+    log_i("Lamp OFF cron: %s", lampOffCron);
+    Cron.create((char*)lampOffCron, []() { lamp->turnOff(); }, false);
+  }
+  if (*co2OnCron != '\0') {
+    log_i("CO2 ON cron:   %s", co2OnCron);
+    Cron.create((char*)co2OnCron, []() { co2->turnOn(); }, false);
+  }
+  if (*co2OffCron != '\0') {
+    log_i("CO2 OFF cron:  %s", co2OffCron);
+    Cron.create((char*)co2OffCron, []() { co2->turnOff(); }, false);
+  }
 }
 
 void buildPayload() {
