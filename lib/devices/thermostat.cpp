@@ -40,6 +40,8 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
 }
 
 void Thermostat::forceTransitionToIdle() {
+  if (currentState_ == &idleStateSingleton)
+    return;
   log_w("Forcing transition to idle");
   currentState_ = &idleStateSingleton;
   lastTransitionMs_ = clock_->millis();

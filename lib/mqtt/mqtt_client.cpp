@@ -1,6 +1,6 @@
 #include <mqtt_client.h>
 
-#define MQTT_CONN_TIMEOUT_MS 5000UL
+#define MQTT_CONN_TIMEOUT_MS 10000UL
 
 MQTTClient MQTT;
 
@@ -19,7 +19,7 @@ bool MQTTClient::connect() {
   log_i("Attempting connection to %s", server_);
   bool ok = pubSubClient_.connect(clientId_, username_, password_);
   if (!ok) {
-    log_w("Connect failed, rc=%d, retry in %lu ms", pubSubClient_.state(),
+    log_e("Connect failed, rc=%d, retry in %lu ms", pubSubClient_.state(),
           MQTT_CONN_TIMEOUT_MS);
     return false;
   }
