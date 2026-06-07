@@ -29,7 +29,7 @@ class Thermostat {
   float hysteresis_;
   float lowerLimit_;
   float upperLimit_;
-  unsigned long lastTransitionMs_ = 0;
+  unsigned long lastUpdateMs_ = 0;
 };
 
 #endif  // THERMOSTAT_H

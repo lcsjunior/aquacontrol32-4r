@@ -87,7 +87,7 @@ void test_invalid_temperature_above_upper_limit_forces_idle() {
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
-void test_force_transition_ignores_debounce() {
+void test_safety_force_bypasses_update_interval() {
   thermostat->update(23.0f);
   TEST_ASSERT_TRUE(actuator.isOn());
 
@@ -158,7 +158,7 @@ int main() {
   RUN_TEST(test_invalid_temperature_nan_forces_idle);
   RUN_TEST(test_invalid_temperature_below_lower_limit_forces_idle);
   RUN_TEST(test_invalid_temperature_above_upper_limit_forces_idle);
-  RUN_TEST(test_force_transition_ignores_debounce);
+  RUN_TEST(test_safety_force_bypasses_update_interval);
   RUN_TEST(test_force_transition_to_idle_is_noop_when_already_idle);
   RUN_TEST(test_transition_to_same_state_is_noop);
   RUN_TEST(test_heating_turns_on_actuator);
