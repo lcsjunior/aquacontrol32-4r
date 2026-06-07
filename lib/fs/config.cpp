@@ -12,7 +12,7 @@ Config AppConfig;
 
 bool Config::mount() {
   if (!LittleFS.begin(true)) {
-    log_w("[Config] Failed to mount LittleFS");
+    log_w("Failed to mount LittleFS");
     return false;
   }
   return true;
@@ -23,7 +23,7 @@ bool Config::load() {
 
   File file = LittleFS.open(CONFIG_PATH, "r");
   if (!file) {
-    log_e("[Config] Failed to open %s", CONFIG_PATH);
+    log_e("Failed to open %s", CONFIG_PATH);
     return false;
   }
 
@@ -33,11 +33,11 @@ bool Config::load() {
   file.close();
 
   if (err) {
-    log_e("[Config] Parse error: %s", err.c_str());
+    log_e("Parse error: %s", err.c_str());
     return false;
   }
 
-  log_i("[Config] Loaded %u bytes from %s", bytesRead, CONFIG_PATH);
+  log_i("Loaded %u bytes from %s", bytesRead, CONFIG_PATH);
   convertFromJson(doc);
   return true;
 }
@@ -48,18 +48,18 @@ bool Config::save() {
 
   File file = LittleFS.open(CONFIG_PATH, "w");
   if (!file) {
-    log_e("[Config] Failed to open %s for writing", CONFIG_PATH);
+    log_e("Failed to open %s for writing", CONFIG_PATH);
     return false;
   }
 
   size_t bytesWritten = serializeJson(doc, file);
   file.close();
   if (bytesWritten == 0) {
-    log_e("[Config] Failed to write to %s", CONFIG_PATH);
+    log_e("Failed to write to %s", CONFIG_PATH);
     return false;
   }
 
-  log_i("[Config] Saved %u bytes to %s", bytesWritten, CONFIG_PATH);
+  log_i("Saved %u bytes to %s", bytesWritten, CONFIG_PATH);
   return true;
 }
 

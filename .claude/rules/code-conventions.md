@@ -48,7 +48,6 @@ Section order in every class declaration:
 
 - Use ESP-IDF macros (`log_i`, `log_w`, `log_e`, `log_d`) instead of `Serial.print`/`Serial.println`.
 - Never use `Serial` directly for logging.
-- Prefix messages with the class name in brackets (e.g.: `log_e("[DallasTemperatureSensor] Could not read temperature")`).
 
 ## Constants
 

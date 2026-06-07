@@ -36,11 +36,11 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
   currentState_ = nextState;
   lastTransitionMs_ = clock_->millis();
   currentState_->enter(*this);
-  log_i("[Thermostat] %s -> %s", prev->name(), currentState_->name());
+  log_i("%s -> %s", prev->name(), currentState_->name());
 }
 
 void Thermostat::forceTransitionToIdle() {
-  log_w("[Thermostat] Forcing transition to idle");
+  log_w("Forcing transition to idle");
   currentState_ = &idleStateSingleton;
   lastTransitionMs_ = clock_->millis();
   currentState_->enter(*this);

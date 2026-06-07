@@ -18,7 +18,7 @@ void Relay::turnOn() {
   if (!isOn_) {
     isOn_ = true;
     write();
-    log_i("[Relay] Pin %d on", pin_);
+    log_i("Pin %d on", pin_);
   }
 }
 
@@ -26,7 +26,7 @@ void Relay::turnOff() {
   if (isOn_) {
     isOn_ = false;
     write();
-    log_i("[Relay] Pin %d off", pin_);
+    log_i("Pin %d off", pin_);
   }
 }
 

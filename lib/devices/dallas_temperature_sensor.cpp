@@ -15,7 +15,7 @@ void DallasTemperatureSensor::requestTemperatures() {
   sensors_.requestTemperatures();
   lastTemperatureC_ = sensors_.getTempCByIndex(0);
   if (lastTemperatureC_ == DEVICE_DISCONNECTED_C)
-    log_e("[DallasTemperatureSensor] Could not read temperature");
+    log_e("Could not read temperature");
   lastRequestMs_ = millis();
 }
 
