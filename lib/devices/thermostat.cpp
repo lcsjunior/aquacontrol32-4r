@@ -7,8 +7,8 @@ Thermostat::Thermostat(Actuator* actuator, Clock* clock)
     : actuator_(actuator), clock_(clock), currentState_(&idleStateSingleton) {
 }
 
-void Thermostat::begin(const float setpoint, const float hysteresis, const float lowerLimit,
-                       const float upperLimit) {
+void Thermostat::begin(const float setpoint, const float hysteresis,
+                       const float lowerLimit, const float upperLimit) {
   setpoint_ = setpoint;
   hysteresis_ = hysteresis;
   lowerLimit_ = lowerLimit;
@@ -36,11 +36,11 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
   currentState_ = nextState;
   lastTransitionMs_ = clock_->millis();
   currentState_->enter(*this);
-  log_i("[Thermostat] %s -> %s", prev->name(), currentState_->name());
+  log_i("%s -> %s", prev->name(), currentState_->name());
 }
 
 void Thermostat::forceTransitionToIdle() {
-  log_w("[Thermostat] Forcing transition to idle");
+  log_w("Forcing transition to idle");
   currentState_ = &idleStateSingleton;
   lastTransitionMs_ = clock_->millis();
   currentState_->enter(*this);

@@ -11,13 +11,12 @@ C++ rules for embedded firmware development (ESP32/Arduino ecosystem). Consult b
 
 - No `malloc()` or `new` at runtime — heap fragmentation is fatal in embedded; allocate only in global constructors
 - Use fixed-size buffers: `char buf[32]`, `char msg[255]` — size according to protocol/payload constraints
-- Never use the Arduino `String` class — use `char[]` + `snprintf` / `snprintf_P`
+- Never use the Arduino `String` class — use `char[]` + `snprintf`
 
-## Flash Strings
+## Flash Strings (AVR only — do NOT use on ESP32)
 
-- `F()` in `Serial.print()` — keeps string literals in flash, not RAM
-- `PSTR()` + `snprintf_P` for format strings with runtime arguments
-- `FPSTR()` when passing PROGMEM strings to functions that accept `const __FlashStringHelper*`
+- `F()`, `FPSTR()`, `PSTR()`, `snprintf_P`, and `_P`-suffix functions are AVR/PROGMEM artifacts
+- On ESP32 they are no-ops or aliases — remove them and use plain string literals and `snprintf` directly
 
 ## ISR / Callbacks
 

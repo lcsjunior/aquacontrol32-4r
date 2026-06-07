@@ -2,20 +2,52 @@
 #define CONFIG_H
 
 #include <Arduino.h>
-#include <LittleFS.h>
 #include <ArduinoJson.h>
 
-#define JSON_DOC_SIZE 1024
+class Config {
+ public:
+  bool mount();
+  bool load();
+  bool save();
 
-struct Config {
-  float setpoint;
-  float hysteresis;
+  const char* otaPass() const;
+  const char* mqttHost() const;
+  uint16_t mqttPort() const;
+  const char* mqttUser() const;
+  const char* mqttPass() const;
+  const char* mqttClientId() const;
+  const char* mqttPubTopic() const;
+  const char* mqttSubTopic() const;
+  const char* cron(int index) const;
+
+  void setOtaPass(const char* value);
+  void setMqttHost(const char* value);
+  void setMqttPort(uint16_t value);
+  void setMqttUser(const char* value);
+  void setMqttPass(const char* value);
+  void setMqttClientId(const char* value);
+  void setMqttPubTopic(const char* value);
+  void setMqttSubTopic(const char* value);
+  void setCron(int index, const char* value);
+
+ private:
+  static constexpr int cronLength = 4;
+
+  char otaPass_[16];
+  char mqttHost_[64];
+  uint16_t mqttPort_;
+  char mqttUser_[32];
+  char mqttPass_[32];
+  char mqttClientId_[32];
+  char mqttPubTopic_[32];
+  char mqttSubTopic_[32];
+  char crons_[cronLength][32];
+
+  void applyDefaults();
+  void convertFromJson(const JsonDocument& doc);
+  void convertToJson(JsonDocument& doc) const;
 };
-extern Config config;
 
-bool loadConfigFile();
-void saveConfigFile();
-void removeConfigFile();
-void printConfigFile();
+extern Config AppConfig;
 
 #endif  // CONFIG_H

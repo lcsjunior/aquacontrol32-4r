@@ -12,7 +12,7 @@ class DallasTemperatureSensor : public TemperatureSensor {
   float temperatureC() override;
 
  private:
-  OneWire* oneWire_ = nullptr;
+  OneWire oneWire_;
   DallasTemperature sensors_;
   unsigned long lastRequestMs_ = 0;
   float lastTemperatureC_ = DEVICE_DISCONNECTED_C;

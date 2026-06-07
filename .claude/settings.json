@@ -8,7 +8,8 @@
 			"Skill(platformio-build)",
 			"Bash(pio run *)",
 			"Bash(pio test *)",
-			"Bash(g++ *)"
+			"Bash(g++ *)",
+			"Bash(clang-format *)"
 		]
 	},
 	"hooks": {

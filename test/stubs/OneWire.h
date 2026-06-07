@@ -3,6 +3,8 @@
 #include <cstdint>
 
 class OneWire {
-public:
-    explicit OneWire(uint8_t) {}
+ public:
+  OneWire() = default;
+  void begin(uint8_t) {
+  }
 };
