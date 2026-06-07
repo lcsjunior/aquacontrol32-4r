@@ -145,6 +145,7 @@ void initWifi() {
   wifiManager.addParameter(wmCronCo2Off);
 
   wifiManager.autoConnect(getApName(), AP_PASSWORD);
+  wifiManager.startWebPortal();
 
   configTzTime(TIMEZONE, NTP_SERVER);
 }

@@ -4,7 +4,6 @@
 #include <config.h>
 
 constexpr const char* CONFIG_PATH = "/config.json";
-constexpr const char* DEFAULT_OTA_PASS = "admin";
 constexpr const char* DEFAULT_MQTT_HOST = "mqtt3.thingspeak.com";
 constexpr uint16_t DEFAULT_MQTT_PORT = 1883;
 
@@ -134,7 +133,7 @@ void Config::setCron(int index, const char* value) {
 }
 
 void Config::applyDefaults() {
-  setOtaPass(DEFAULT_OTA_PASS);
+  setOtaPass(OTA_PASSWORD);
   setMqttHost(DEFAULT_MQTT_HOST);
   setMqttPort(DEFAULT_MQTT_PORT);
   setMqttUser("");
@@ -148,7 +147,7 @@ void Config::applyDefaults() {
 }
 
 void Config::convertFromJson(const JsonDocument& doc) {
-  setOtaPass(doc["ota_pass"] | DEFAULT_OTA_PASS);
+  setOtaPass(doc["ota_pass"] | OTA_PASSWORD);
   setMqttHost(doc["mqtt_host"] | DEFAULT_MQTT_HOST);
   setMqttPort(doc["mqtt_port"] | DEFAULT_MQTT_PORT);
   setMqttUser(doc["mqtt_user"] | "");
