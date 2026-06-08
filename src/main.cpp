@@ -48,11 +48,11 @@ WiFiManagerParameter* wmCronLampOff;
 WiFiManagerParameter* wmCronCo2On;
 WiFiManagerParameter* wmCronCo2Off;
 
-TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
-Actuator* heater = new Relay();
-Actuator* lamp = new Relay();
-Actuator* co2 = new Relay();
-Thermostat thermostat(heater, &ArduinoClock);
+DallasTemperatureSensor temperatureSensor;
+Relay heater;
+Relay lamp;
+Relay co2;
+Thermostat thermostat(&heater, &ArduinoClock);
 
 noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
@@ -72,7 +72,6 @@ void setup() {
   initIO();
   initFs();
   initWifi();
-  TelnetLog.begin();
   initOta();
   initMqtt();
   initHttpServer();
@@ -80,8 +79,8 @@ void setup() {
 }
 
 void loop() {
-  temperatureSensor->requestTemperatures();
-  thermostat.update(temperatureSensor->temperatureC());
+  temperatureSensor.requestTemperatures();
+  thermostat.update(temperatureSensor.temperatureC());
 
   wifiManager.process();
   ArduinoOTA.handle();
@@ -95,8 +94,8 @@ void loop() {
 void buildPayload() {
   snprintf(payload, sizeof(payload),
            "field1=%.1f&field3=%d&field5=%d&field6=%d&status=PUB %s",
-           temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
-           co2->isOn(), ArduinoClock.formatLocalDateTime());
+           temperatureSensor.temperatureC(), heater.isOn(), lamp.isOn(),
+           co2.isOn(), ArduinoClock.formatLocalDateTime());
   log_d("%s", payload);
 }
 
@@ -113,10 +112,10 @@ void initIO() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  temperatureSensor->begin(DS18B20_PIN);
-  heater->begin(K1_PIN);
-  lamp->begin(K2_PIN);
-  co2->begin(K4_PIN);
+  temperatureSensor.begin(DS18B20_PIN);
+  heater.begin(K1_PIN, "heater");
+  lamp.begin(K2_PIN, "lamp");
+  co2.begin(K4_PIN, "co2");
 
   thermostat.begin(24, 0.5, 0, 30);
 }
@@ -163,6 +162,8 @@ void initWifi() {
   wifiManager.startWebPortal();
 
   configTzTime(TIMEZONE, NTP_SERVER);
+
+  TelnetLog.begin();
 }
 
 void onWifiManagerSaveParams() {
@@ -203,17 +204,17 @@ void initHttpServer() {
   });
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
-    lamp->toggle();
+    lamp.toggle();
     wifiManager.server->send(
         200, APPLICATION_JSON,
-        lamp->isOn() ? "{\"active\":true}" : "{\"active\":false}");
+        lamp.isOn() ? "{\"active\":true}" : "{\"active\":false}");
   });
 
   wifiManager.server->on("/co2/toggle", HTTP_GET, []() {
-    co2->toggle();
+    co2.toggle();
     wifiManager.server->send(
         200, APPLICATION_JSON,
-        co2->isOn() ? "{\"active\":true}" : "{\"active\":false}");
+        co2.isOn() ? "{\"active\":true}" : "{\"active\":false}");
   });
 }
 
@@ -224,18 +225,18 @@ void initCrons() {
   const char* co2OffCron = AppConfig.cron(CO2_OFF_CRON_IDX);
   if (*lampOnCron != '\0') {
     log_i("Lamp ON cron:  %s", lampOnCron);
-    Cron.create((char*)lampOnCron, []() { lamp->turnOn(); }, false);
+    Cron.create((char*)lampOnCron, []() { lamp.turnOn(); }, false);
   }
   if (*lampOffCron != '\0') {
     log_i("Lamp OFF cron: %s", lampOffCron);
-    Cron.create((char*)lampOffCron, []() { lamp->turnOff(); }, false);
+    Cron.create((char*)lampOffCron, []() { lamp.turnOff(); }, false);
   }
   if (*co2OnCron != '\0') {
     log_i("CO2 ON cron:   %s", co2OnCron);
-    Cron.create((char*)co2OnCron, []() { co2->turnOn(); }, false);
+    Cron.create((char*)co2OnCron, []() { co2.turnOn(); }, false);
   }
   if (*co2OffCron != '\0') {
     log_i("CO2 OFF cron:  %s", co2OffCron);
-    Cron.create((char*)co2OffCron, []() { co2->turnOff(); }, false);
+    Cron.create((char*)co2OffCron, []() { co2.turnOff(); }, false);
   }
 }

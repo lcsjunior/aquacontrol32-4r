@@ -22,6 +22,14 @@ Follows the Arduino convention, which overrides the naming recommended in skills
 Following the style of Arduino core libs (`Serial`, `Wire`, `SPI`, `EEPROM`), unique global
 instances use **PascalCase** (not camelCase).
 
+Declaration/definition pattern:
+
+- In the **header** (`.h`): declare with `extern` after the class declaration
+  (e.g.: `extern TelnetLogger TelnetLog;`).
+- In the **source** (`.cpp`): define the instance at the **top of the file**,
+  right after the `#include`s and any file-level macros, before method
+  implementations (e.g.: `TelnetLogger TelnetLog;`).
+
 In all other cases, follow the conventions recommended in the skills.
 
 ## Class structure
@@ -67,3 +75,10 @@ Section order in every class declaration:
 
 When a C++ guideline conflicts with a hardware constraint (pinout,
 timing, ESP32 memory), the hardware constraint takes precedence.
+
+## Project documentation
+
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` must always be kept up to date.
+- Whenever a change affects architecture, conventions, hardware wiring, dependencies,
+  or any information already documented in these files, update them in the same
+  change set.

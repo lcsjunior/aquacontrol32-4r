@@ -29,7 +29,7 @@ bool MQTTClient::connect() {
 }
 
 void MQTTClient::subscribe(const char* topic) {
-  if (topic[0] == '\0') {
+  if (!topic || topic[0] == '\0') {
     log_w("Subscribe called with empty topic, skipping");
     return;
   }
@@ -39,7 +39,7 @@ void MQTTClient::subscribe(const char* topic) {
 }
 
 void MQTTClient::publish(const char* topic, const char* payload) {
-  if (topic[0] == '\0') {
+  if (!topic || topic[0] == '\0') {
     log_w("Publish called with empty topic, skipping");
     return;
   }

@@ -5,7 +5,12 @@ void Relay::write() {
 }
 
 void Relay::begin(const byte pin) {
+  begin(pin, nullptr);
+}
+
+void Relay::begin(const byte pin, const char* label) {
   pin_ = pin;
+  label_ = label;
   pinMode(pin_, OUTPUT);
   write();
 }
@@ -18,7 +23,7 @@ void Relay::turnOn() {
   if (!isOn_) {
     isOn_ = true;
     write();
-    log_i("Pin %d on", pin_);
+    label_ ? log_i("%s on", label_) : log_i("Pin %d on", pin_);
   }
 }
 
@@ -26,7 +31,7 @@ void Relay::turnOff() {
   if (isOn_) {
     isOn_ = false;
     write();
-    log_i("Pin %d off", pin_);
+    label_ ? log_i("%s off", label_) : log_i("Pin %d off", pin_);
   }
 }
 
