@@ -48,6 +48,9 @@ Section order in every class declaration:
 
 - Use ESP-IDF macros (`log_i`, `log_w`, `log_e`, `log_d`) instead of `Serial.print`/`Serial.println`.
 - Never use `Serial` directly for logging.
+- Never call `log_*` macros from inside `TelnetLogger` (`lib/logger/`). Telnet
+  streaming captures all `log_*` output via linker wrap of `log_printfv`, so
+  logging from within the logger itself would cause infinite recursion.
 
 ## Constants
 
