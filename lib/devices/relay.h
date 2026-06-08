@@ -6,6 +6,7 @@
 class Relay : public Actuator {
  public:
   void begin(const byte pin) override;
+  void begin(const byte pin, const char* label);
   bool isOn() const override;
   void turnOn() override;
   void turnOff() override;
@@ -14,6 +15,7 @@ class Relay : public Actuator {
  private:
   byte pin_;
   bool isOn_ = false;
+  const char* label_ = nullptr;
   void write();
 };
 

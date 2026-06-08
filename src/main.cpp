@@ -113,9 +113,9 @@ void initIO() {
   digitalWrite(LED_PIN, LOW);
 
   temperatureSensor.begin(DS18B20_PIN);
-  heater.begin(K1_PIN);
-  lamp.begin(K2_PIN);
-  co2.begin(K4_PIN);
+  heater.begin(K1_PIN, "heater");
+  lamp.begin(K2_PIN, "lamp");
+  co2.begin(K4_PIN, "co2");
 
   thermostat.begin(24, 0.5, 0, 30);
 }
