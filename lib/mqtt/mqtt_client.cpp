@@ -4,8 +4,8 @@
 
 MQTTClient MQTT;
 
-void MQTTClient::begin(Client& espClient, const Config& config) {
-  pubSubClient_.setClient(espClient);
+void MQTTClient::begin(const Config& config) {
+  pubSubClient_.setClient(wifiClient_);
   pubSubClient_.setServer(config.mqttHost(), config.mqttPort());
   server_ = config.mqttHost();
   clientId_ = config.mqttClientId();

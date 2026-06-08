@@ -2,13 +2,13 @@
 #define MQTT_CLIENT_H
 
 #include <Arduino.h>
-#include <Client.h>
 #include <PubSubClient.h>
+#include <WiFi.h>
 #include <config.h>
 
 class MQTTClient {
  public:
-  void begin(Client& espClient, const Config& config);
+  void begin(const Config& config);
 
   bool connect();
   void publish(const char* topic, const char* payload);
@@ -16,6 +16,7 @@ class MQTTClient {
   void loop();
 
  private:
+  WiFiClient wifiClient_;
   PubSubClient pubSubClient_;
   const char* server_ = nullptr;
   const char* clientId_ = nullptr;
