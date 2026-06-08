@@ -8,6 +8,7 @@
 #include <dallas_temperature_sensor.h>
 #include <mqtt_client.h>
 #include <relay.h>
+#include <telnet_logger.h>
 #include <thermostat.h>
 #include <utilities.h>
 
@@ -32,7 +33,6 @@ constexpr const char* TIMEZONE = "<-03>3";
 constexpr const char* NTP_SERVER = "pool.ntp.org";
 constexpr const char* DEVICE_HOSTNAME = "aquacontrol32";
 
-WiFiClient espClient;
 WiFiManager wifiManager;
 
 WiFiManagerParameter* wmOtaPass;
@@ -52,8 +52,7 @@ TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
 Actuator* lamp = new Relay();
 Actuator* co2 = new Relay();
-ArduinoClock arduinoClock;
-Thermostat thermostat(heater, &arduinoClock);
+Thermostat thermostat(heater, &ArduinoClock);
 
 noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
@@ -73,6 +72,7 @@ void setup() {
   initIO();
   initFs();
   initWifi();
+  TelnetLog.begin();
   initOta();
   initMqtt();
   initHttpServer();
@@ -87,17 +87,16 @@ void loop() {
   ArduinoOTA.handle();
   Cron.delay();
 
+  TelnetLog.loop();
   MQTT.loop();
   mqttPublish();
 }
 
 void buildPayload() {
-  char dateTimeBuf[64];
-  formatLocalDateTime(dateTimeBuf, sizeof(dateTimeBuf));
   snprintf(payload, sizeof(payload),
            "field1=%.1f&field3=%d&field5=%d&field6=%d&status=PUB %s",
            temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
-           co2->isOn(), dateTimeBuf);
+           co2->isOn(), ArduinoClock.formatLocalDateTime());
   log_d("%s", payload);
 }
 
@@ -194,7 +193,7 @@ void initOta() {
 }
 
 void initMqtt() {
-  MQTT.begin(espClient, AppConfig);
+  MQTT.begin(AppConfig);
   MQTT.connect();
 }
 
@@ -219,8 +218,6 @@ void initHttpServer() {
 }
 
 void initCrons() {
-  if (WiFi.status() != WL_CONNECTED)
-    return;
   const char* lampOnCron = AppConfig.cron(LAMP_ON_CRON_IDX);
   const char* lampOffCron = AppConfig.cron(LAMP_OFF_CRON_IDX);
   const char* co2OnCron = AppConfig.cron(CO2_ON_CRON_IDX);
