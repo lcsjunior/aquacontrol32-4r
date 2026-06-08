@@ -3,13 +3,13 @@
 
 #include "thermostat_state.h"
 
-class HeatingState : public ThermostatState {
+class HeatingStateImpl : public ThermostatState {
  public:
   void enter(Thermostat& context) override;
   void update(Thermostat& context, float currentTemperatureC) override;
   const char* name() const override;
 };
 
-extern HeatingState heatingStateSingleton;
+extern HeatingStateImpl HeatingState;
 
 #endif  // HEATING_STATE_H
