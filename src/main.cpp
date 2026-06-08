@@ -72,7 +72,6 @@ void setup() {
   initIO();
   initFs();
   initWifi();
-  TelnetLog.begin();
   initOta();
   initMqtt();
   initHttpServer();
@@ -163,6 +162,8 @@ void initWifi() {
   wifiManager.startWebPortal();
 
   configTzTime(TIMEZONE, NTP_SERVER);
+
+  TelnetLog.begin();
 }
 
 void onWifiManagerSaveParams() {

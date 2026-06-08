@@ -27,7 +27,7 @@ void Thermostat::update(float currentTemperatureC) {
   if (clock_->millis() - lastUpdateMs_ < THERMOSTAT_UPDATE_INTERVAL_MS)
     return;
   lastUpdateMs_ = clock_->millis();
-  log_d("temp=%.2f state=%s", currentTemperatureC, currentState_->name());
+  log_i("temp=%.2f state=%s", currentTemperatureC, currentState_->name());
   currentState_->update(*this, currentTemperatureC);
 }
 
