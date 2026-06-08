@@ -6,10 +6,6 @@ The system sends data to ThingSpeak. **View here**: [ThingSpeak dashboard for ch
 
 The goal is to preserve the health of the aquarium and its fish — black tetras, which thrive in tropical temperatures.
 
-The thermostat keeps water above the ambient temperature, targeting 24 °C.
-
-<img src="assets/images/thingspeak-aquacontrol32.png" align="right" width="340"/>
-
 ### Pinout & ThingSpeak field mapping
 
 | Signal                  | GPIO | ThingSpeak Field |
