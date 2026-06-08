@@ -17,13 +17,18 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
   NTP) and OTA via `ArduinoOTA`; connects MQTT; registers crons and the HTTP server;
   runs the main loop.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
-  `arduino_clock` (concrete impl + `formatLocalDateTime`), `utilities`
+  `arduino_clock` (`ArduinoClockImpl` + extern `ArduinoClock` singleton;
+  exposes `formatLocalDateTime()` backed by an internal buffer), `utilities`
   (helpers: `dBmToQuality`, `getChipId`, `getApName`, `intToStr`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
   `HeatingState`), interfaces `Actuator` and `TemperatureSensor`.
 - `lib/mqtt/` — `MQTTClient` (publishes/subscribes to MQTT broker; configurable via
   `Config` or explicit parameters; auto-reconnect).
+- `lib/logger/` — `TelnetLogger` + extern `TelnetLog` singleton: streams ESP-IDF
+  `log_*` output over TCP (port 23). Captured via linker wrap of `log_printfv`
+  (see `platformio.ini`), so all `log_*` calls in the codebase reach Telnet
+  clients transparently.
 - `lib/fs/` — `Config` (OTA password, MQTT connection settings, 4 cron schedules)
   persisted in LittleFS.
 
@@ -32,4 +37,8 @@ live in the code (`src/main.cpp`) and `platformio.ini` — do not duplicate here
 
 ## Conventions
 
-Follow all rules defined in `.claude/rules/`.
+**All code in this repository must follow `.claude/rules/code-conventions.md`.**
+This file is the single source of truth for naming, class structure, logging,
+constants, control flow, and the hardware-first tie-breaker rule. Read it
+before writing or reviewing code — deviations break the consistency that
+makes the codebase predictable across libs and reviewable in small diffs.
