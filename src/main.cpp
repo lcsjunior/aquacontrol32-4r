@@ -52,8 +52,7 @@ TemperatureSensor* temperatureSensor = new DallasTemperatureSensor();
 Actuator* heater = new Relay();
 Actuator* lamp = new Relay();
 Actuator* co2 = new Relay();
-ArduinoClock arduinoClock;
-Thermostat thermostat(heater, &arduinoClock);
+Thermostat thermostat(heater, &ArduinoClock);
 
 noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
@@ -94,12 +93,10 @@ void loop() {
 }
 
 void buildPayload() {
-  char dateTimeBuf[64];
-  formatLocalDateTime(dateTimeBuf, sizeof(dateTimeBuf));
   snprintf(payload, sizeof(payload),
            "field1=%.1f&field3=%d&field5=%d&field6=%d&status=PUB %s",
            temperatureSensor->temperatureC(), heater->isOn(), lamp->isOn(),
-           co2->isOn(), dateTimeBuf);
+           co2->isOn(), ArduinoClock.formatLocalDateTime());
   log_d("%s", payload);
 }
 
