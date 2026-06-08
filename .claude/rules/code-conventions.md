@@ -75,3 +75,10 @@ Section order in every class declaration:
 
 When a C++ guideline conflicts with a hardware constraint (pinout,
 timing, ESP32 memory), the hardware constraint takes precedence.
+
+## Project documentation
+
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` must always be kept up to date.
+- Whenever a change affects architecture, conventions, hardware wiring, dependencies,
+  or any information already documented in these files, update them in the same
+  change set.
