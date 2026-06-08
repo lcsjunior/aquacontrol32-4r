@@ -23,14 +23,14 @@ void tearDown() {
 
 void test_idle_enter_turns_off_actuator() {
   actuator.turnOn();
-  IdleState idle;
+  IdleStateImpl idle;
   idle.enter(*thermostat);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 void test_idle_name_returns_idle() {
-  IdleState idle;
+  IdleStateImpl idle;
   TEST_ASSERT_EQUAL_STRING("Idle", idle.name());
 }
 

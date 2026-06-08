@@ -2,18 +2,18 @@
 #include "heating_state.h"
 #include "thermostat.h"
 
-IdleState idleStateSingleton;
+IdleStateImpl IdleState;
 
-void IdleState::enter(Thermostat& context) {
+void IdleStateImpl::enter(Thermostat& context) {
   context.actuator()->turnOff();
 }
 
-void IdleState::update(Thermostat& context, float currentTemperatureC) {
+void IdleStateImpl::update(Thermostat& context, float currentTemperatureC) {
   if (currentTemperatureC < context.setpoint()) {
-    context.transitionTo(&heatingStateSingleton);
+    context.transitionTo(&HeatingState);
   }
 }
 
-const char* IdleState::name() const {
+const char* IdleStateImpl::name() const {
   return "Idle";
 }

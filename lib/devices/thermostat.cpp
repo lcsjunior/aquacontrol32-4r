@@ -4,7 +4,7 @@
 #define THERMOSTAT_UPDATE_INTERVAL_MS 60000UL
 
 Thermostat::Thermostat(Actuator* actuator, Clock* clock)
-    : actuator_(actuator), clock_(clock), currentState_(&idleStateSingleton) {
+    : actuator_(actuator), clock_(clock), currentState_(&IdleState) {
 }
 
 void Thermostat::begin(const float setpoint, const float hysteresis,
@@ -14,7 +14,7 @@ void Thermostat::begin(const float setpoint, const float hysteresis,
   lowerLimit_ = lowerLimit;
   upperLimit_ = upperLimit;
   lastUpdateMs_ = clock_->millis() - THERMOSTAT_UPDATE_INTERVAL_MS;
-  currentState_ = &idleStateSingleton;
+  currentState_ = &IdleState;
   currentState_->enter(*this);
 }
 
@@ -41,10 +41,10 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
 }
 
 void Thermostat::forceTransitionToIdle() {
-  if (currentState_ == &idleStateSingleton)
+  if (currentState_ == &IdleState)
     return;
   log_w("Forcing transition to idle");
-  currentState_ = &idleStateSingleton;
+  currentState_ = &IdleState;
   currentState_->enter(*this);
 }
 

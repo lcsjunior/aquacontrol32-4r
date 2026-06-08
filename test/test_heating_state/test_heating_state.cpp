@@ -28,7 +28,7 @@ void test_heating_enter_turns_on_actuator() {
 }
 
 void test_heating_name_returns_heating() {
-  HeatingState heating;
+  HeatingStateImpl heating;
   TEST_ASSERT_EQUAL_STRING("Heating", heating.name());
 }
 
