@@ -19,6 +19,10 @@ class Config {
   const char* mqttPubTopic() const;
   const char* mqttSubTopic() const;
   const char* cron(int index) const;
+  float thermostatSetpoint() const;
+  float thermostatHysteresis() const;
+  float thermostatLowerLimit() const;
+  float thermostatUpperLimit() const;
 
   void setOtaPass(const char* value);
   void setMqttHost(const char* value);
@@ -29,6 +33,10 @@ class Config {
   void setMqttPubTopic(const char* value);
   void setMqttSubTopic(const char* value);
   void setCron(int index, const char* value);
+  void setThermostatSetpoint(float value);
+  void setThermostatHysteresis(float value);
+  void setThermostatLowerLimit(float value);
+  void setThermostatUpperLimit(float value);
 
  private:
   static constexpr int cronLength = 4;
@@ -42,6 +50,10 @@ class Config {
   char mqttPubTopic_[32];
   char mqttSubTopic_[32];
   char crons_[cronLength][32];
+  float thermostatSetpoint_;
+  float thermostatHysteresis_;
+  float thermostatLowerLimit_;
+  float thermostatUpperLimit_;
 
   void applyDefaults();
   void convertFromJson(const JsonDocument& doc);

@@ -148,6 +148,36 @@ void test_full_cycle_idle_heating_idle() {
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
+void test_validate_defaults_are_valid() {
+  TEST_ASSERT_TRUE(validateThermostatConfig(23.5f, 0.5f, 0.0f, 28.0f));
+}
+
+void test_validate_rejects_lower_limit_not_below_upper() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(23.5f, 0.5f, 30.0f, 30.0f));
+  TEST_ASSERT_FALSE(validateThermostatConfig(23.5f, 0.5f, 31.0f, 30.0f));
+}
+
+void test_validate_rejects_setpoint_above_upper_limit() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(31.0f, 0.5f, 0.0f, 30.0f));
+}
+
+void test_validate_rejects_setpoint_below_lower_limit() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(-1.0f, 0.5f, 0.0f, 30.0f));
+}
+
+void test_validate_rejects_non_positive_hysteresis() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(23.5f, 0.0f, 0.0f, 30.0f));
+  TEST_ASSERT_FALSE(validateThermostatConfig(23.5f, -0.5f, 0.0f, 30.0f));
+}
+
+void test_validate_rejects_actuation_band_below_lower_limit() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(0.2f, 0.5f, 0.0f, 30.0f));
+}
+
+void test_validate_rejects_actuation_band_above_upper_limit() {
+  TEST_ASSERT_FALSE(validateThermostatConfig(29.8f, 0.5f, 0.0f, 30.0f));
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_begin_leaves_in_idle_actuator_off);
@@ -164,5 +194,12 @@ int main() {
   RUN_TEST(test_heating_turns_on_actuator);
   RUN_TEST(test_idle_turns_off_actuator);
   RUN_TEST(test_full_cycle_idle_heating_idle);
+  RUN_TEST(test_validate_defaults_are_valid);
+  RUN_TEST(test_validate_rejects_lower_limit_not_below_upper);
+  RUN_TEST(test_validate_rejects_setpoint_above_upper_limit);
+  RUN_TEST(test_validate_rejects_setpoint_below_lower_limit);
+  RUN_TEST(test_validate_rejects_non_positive_hysteresis);
+  RUN_TEST(test_validate_rejects_actuation_band_below_lower_limit);
+  RUN_TEST(test_validate_rejects_actuation_band_above_upper_limit);
   return UNITY_END();
 }

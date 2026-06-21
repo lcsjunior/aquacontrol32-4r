@@ -63,3 +63,11 @@ float Thermostat::hysteresis() const {
 const char* Thermostat::stateName() const {
   return currentState_->name();
 }
+
+bool validateThermostatConfig(const float setpoint, const float hysteresis,
+                              const float lowerLimit, const float upperLimit) {
+  return lowerLimit < upperLimit && setpoint > lowerLimit &&
+         setpoint < upperLimit && hysteresis > 0 &&
+         setpoint - hysteresis >= lowerLimit &&
+         setpoint + hysteresis <= upperLimit;
+}
