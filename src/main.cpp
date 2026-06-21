@@ -31,8 +31,6 @@ constexpr const char* APPLICATION_JSON = "application/json";
 
 constexpr const char* TIMEZONE = "<-03>3";
 constexpr const char* NTP_SERVER = "pool.ntp.org";
-constexpr const char* DEVICE_HOSTNAME = "aquacontrol32";
-
 WiFiManager wifiManager;
 
 WiFiManagerParameter* wmOtaPass;
@@ -64,7 +62,6 @@ char payload[255];
 void buildPayload();
 void mqttPublish();
 void initIO();
-void initFs();
 void initWifi();
 void onWifiManagerSaveParams();
 void initOta();
@@ -74,9 +71,16 @@ void initCrons();
 
 void setup() {
   Serial.begin(SERIAL_BAUD_RATE);
-  initFs();
+
+  AppConfig.mount();
+  AppConfig.load();
+
   initIO();
+
   initWifi();
+  configTzTime(TIMEZONE, NTP_SERVER);
+  TelnetLog.begin();
+
   initOta();
   initMqtt();
   initHttpServer();
@@ -125,11 +129,6 @@ void initIO() {
       AppConfig.thermostatLowerLimit(), AppConfig.thermostatUpperLimit());
 }
 
-void initFs() {
-  AppConfig.mount();
-  AppConfig.load();
-}
-
 void initWifi() {
   // clang-format off
   wmOtaPass      = new WiFiManagerParameter("ota_pass",       "OTA Password",        AppConfig.otaPass(),               16, "type=\"password\"");
@@ -173,10 +172,6 @@ void initWifi() {
   wifiManager.setSaveParamsCallback(onWifiManagerSaveParams);
   wifiManager.autoConnect(getApName(), AP_PASSWORD);
   wifiManager.startWebPortal();
-
-  configTzTime(TIMEZONE, NTP_SERVER);
-
-  TelnetLog.begin();
 }
 
 void onWifiManagerSaveParams() {
@@ -203,8 +198,6 @@ void onWifiManagerSaveParams() {
     AppConfig.setThermostatHysteresis(thermostatHysteresis);
     AppConfig.setThermostatLowerLimit(thermostatLowerLimit);
     AppConfig.setThermostatUpperLimit(thermostatUpperLimit);
-    thermostat.begin(thermostatSetpoint, thermostatHysteresis,
-                     thermostatLowerLimit, thermostatUpperLimit);
   } else {
     log_w(
         "Invalid thermostat config rejected: setpoint=%.1f hysteresis=%.1f "
