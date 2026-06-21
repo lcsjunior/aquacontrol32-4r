@@ -96,7 +96,7 @@ void buildPayload() {
            "field1=%.1f&field3=%d&field5=%d&field6=%d&status=PUB %s",
            temperatureSensor.temperatureC(), heater.isOn(), lamp.isOn(),
            co2.isOn(), ArduinoClock.formatLocalDateTime());
-  log_d("%s", payload);
+  log_i("%s", payload);
 }
 
 void mqttPublish() {
