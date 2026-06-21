@@ -61,11 +61,9 @@ char payload[255];
 
 void buildPayload();
 void mqttPublish();
-void initIO();
 void initWifi();
 void onWifiManagerSaveParams();
 void initOta();
-void initMqtt();
 void initHttpServer();
 void initCrons();
 
@@ -75,16 +73,27 @@ void setup() {
   AppConfig.mount();
   AppConfig.load();
 
-  initIO();
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
+  temperatureSensor.begin(DS18B20_PIN);
+  heater.begin(K1_PIN, "heater");
+  lamp.begin(K2_PIN, "lamp");
+  co2.begin(K4_PIN, "co2");
+
+  thermostat.begin(
+      AppConfig.thermostatSetpoint(), AppConfig.thermostatHysteresis(),
+      AppConfig.thermostatLowerLimit(), AppConfig.thermostatUpperLimit());
 
   initWifi();
   configTzTime(TIMEZONE, NTP_SERVER);
   TelnetLog.begin();
-
   initOta();
-  initMqtt();
   initHttpServer();
   initCrons();
+
+  MQTT.begin(AppConfig);
+  MQTT.connect();
 }
 
 void loop() {
@@ -92,10 +101,10 @@ void loop() {
   thermostat.update(temperatureSensor.temperatureC());
 
   wifiManager.process();
-  ArduinoOTA.handle();
   Cron.delay();
-
   TelnetLog.loop();
+  ArduinoOTA.handle();
+
   MQTT.loop();
   mqttPublish();
 }
@@ -113,20 +122,6 @@ void mqttPublish() {
     return;
   buildPayload();
   MQTT.publish(AppConfig.mqttPubTopic(), payload);
-}
-
-void initIO() {
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-
-  temperatureSensor.begin(DS18B20_PIN);
-  heater.begin(K1_PIN, "heater");
-  lamp.begin(K2_PIN, "lamp");
-  co2.begin(K4_PIN, "co2");
-
-  thermostat.begin(
-      AppConfig.thermostatSetpoint(), AppConfig.thermostatHysteresis(),
-      AppConfig.thermostatLowerLimit(), AppConfig.thermostatUpperLimit());
 }
 
 void initWifi() {
@@ -218,11 +213,6 @@ void initOta() {
   ArduinoOTA.onError([](ota_error_t error) { log_e("OTA error %u", error); });
 
   ArduinoOTA.begin();
-}
-
-void initMqtt() {
-  MQTT.begin(AppConfig);
-  MQTT.connect();
 }
 
 void initHttpServer() {
