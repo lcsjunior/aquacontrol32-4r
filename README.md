@@ -33,6 +33,6 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [x] Remote log via telnet
 - [x] Persist thermostat parameters in config
 - [ ] Generate OpenAPI spec for the REST API
-- ~~[ ] Add more metrics to the health check endpoint~~
+- [ ] Add more metrics to the health check endpoint
 - [ ] Bug: lamp turned on after cron
 - [ ] Refactor `main.cpp`: extract `init*()` functions into a separate module
