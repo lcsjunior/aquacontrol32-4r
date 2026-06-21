@@ -27,3 +27,9 @@ const char* intToStr(int value) {
   snprintf(buf, sizeof(buf), "%d", value);
   return buf;
 }
+
+const char* floatToStr(float value) {
+  static char buf[12];
+  snprintf(buf, sizeof(buf), "%.1f", value);
+  return buf;
+}

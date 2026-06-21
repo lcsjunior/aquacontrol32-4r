@@ -47,6 +47,10 @@ WiFiManagerParameter* wmCronLampOn;
 WiFiManagerParameter* wmCronLampOff;
 WiFiManagerParameter* wmCronCo2On;
 WiFiManagerParameter* wmCronCo2Off;
+WiFiManagerParameter* wmThermostatSetpoint;
+WiFiManagerParameter* wmThermostatHysteresis;
+WiFiManagerParameter* wmThermostatLowerLimit;
+WiFiManagerParameter* wmThermostatUpperLimit;
 
 DallasTemperatureSensor temperatureSensor;
 Relay heater;
@@ -69,8 +73,9 @@ void initHttpServer();
 void initCrons();
 
 void setup() {
-  initIO();
+  Serial.begin(SERIAL_BAUD_RATE);
   initFs();
+  initIO();
   initWifi();
   initOta();
   initMqtt();
@@ -107,8 +112,6 @@ void mqttPublish() {
 }
 
 void initIO() {
-  Serial.begin(SERIAL_BAUD_RATE);
-
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
@@ -117,7 +120,9 @@ void initIO() {
   lamp.begin(K2_PIN, "lamp");
   co2.begin(K4_PIN, "co2");
 
-  thermostat.begin(24, 0.5, 0, 30);
+  thermostat.begin(
+      AppConfig.thermostatSetpoint(), AppConfig.thermostatHysteresis(),
+      AppConfig.thermostatLowerLimit(), AppConfig.thermostatUpperLimit());
 }
 
 void initFs() {
@@ -139,6 +144,10 @@ void initWifi() {
   wmCronLampOff  = new WiFiManagerParameter("cron_lamp_off",  "Lamp OFF cron",       AppConfig.cron(LAMP_OFF_CRON_IDX), 32);
   wmCronCo2On    = new WiFiManagerParameter("cron_co2_on",    "CO2 ON cron",         AppConfig.cron(CO2_ON_CRON_IDX),   32);
   wmCronCo2Off   = new WiFiManagerParameter("cron_co2_off",   "CO2 OFF cron",        AppConfig.cron(CO2_OFF_CRON_IDX),  32);
+  wmThermostatSetpoint   = new WiFiManagerParameter("thermostat_setpoint",    "Thermostat Setpoint (C)",     floatToStr(AppConfig.thermostatSetpoint()),   8, "type=\"number\" step=\"0.5\"");
+  wmThermostatHysteresis = new WiFiManagerParameter("thermostat_hysteresis",  "Thermostat Hysteresis (C)",   floatToStr(AppConfig.thermostatHysteresis()), 8, "type=\"number\" step=\"0.5\"");
+  wmThermostatLowerLimit = new WiFiManagerParameter("thermostat_lower_limit", "Thermostat Lower Limit (C)",  floatToStr(AppConfig.thermostatLowerLimit()), 8, "type=\"number\" step=\"0.5\"");
+  wmThermostatUpperLimit = new WiFiManagerParameter("thermostat_upper_limit", "Thermostat Upper Limit (C)",  floatToStr(AppConfig.thermostatUpperLimit()), 8, "type=\"number\" step=\"0.5\"");
   // clang-format on
 
   wifiManager.addParameter(wmOtaPass);
@@ -153,6 +162,10 @@ void initWifi() {
   wifiManager.addParameter(wmCronLampOff);
   wifiManager.addParameter(wmCronCo2On);
   wifiManager.addParameter(wmCronCo2Off);
+  wifiManager.addParameter(wmThermostatSetpoint);
+  wifiManager.addParameter(wmThermostatHysteresis);
+  wifiManager.addParameter(wmThermostatLowerLimit);
+  wifiManager.addParameter(wmThermostatUpperLimit);
 
   wifiManager.setConfigPortalBlocking(false);
   wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
@@ -179,6 +192,27 @@ void onWifiManagerSaveParams() {
   AppConfig.setCron(LAMP_OFF_CRON_IDX, wmCronLampOff->getValue());
   AppConfig.setCron(CO2_ON_CRON_IDX, wmCronCo2On->getValue());
   AppConfig.setCron(CO2_OFF_CRON_IDX, wmCronCo2Off->getValue());
+
+  float thermostatSetpoint = atof(wmThermostatSetpoint->getValue());
+  float thermostatHysteresis = atof(wmThermostatHysteresis->getValue());
+  float thermostatLowerLimit = atof(wmThermostatLowerLimit->getValue());
+  float thermostatUpperLimit = atof(wmThermostatUpperLimit->getValue());
+  if (validateThermostatConfig(thermostatSetpoint, thermostatHysteresis,
+                               thermostatLowerLimit, thermostatUpperLimit)) {
+    AppConfig.setThermostatSetpoint(thermostatSetpoint);
+    AppConfig.setThermostatHysteresis(thermostatHysteresis);
+    AppConfig.setThermostatLowerLimit(thermostatLowerLimit);
+    AppConfig.setThermostatUpperLimit(thermostatUpperLimit);
+    thermostat.begin(thermostatSetpoint, thermostatHysteresis,
+                     thermostatLowerLimit, thermostatUpperLimit);
+  } else {
+    log_w(
+        "Invalid thermostat config rejected: setpoint=%.1f hysteresis=%.1f "
+        "lower=%.1f upper=%.1f",
+        thermostatSetpoint, thermostatHysteresis, thermostatLowerLimit,
+        thermostatUpperLimit);
+  }
+
   AppConfig.save();
 }
 

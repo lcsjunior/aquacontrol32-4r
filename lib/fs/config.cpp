@@ -6,6 +6,10 @@
 constexpr const char* CONFIG_PATH = "/config.json";
 constexpr const char* DEFAULT_MQTT_HOST = "mqtt3.thingspeak.com";
 constexpr uint16_t DEFAULT_MQTT_PORT = 1883;
+constexpr float DEFAULT_THERMOSTAT_SETPOINT = 23.5f;
+constexpr float DEFAULT_THERMOSTAT_HYSTERESIS = 0.5f;
+constexpr float DEFAULT_THERMOSTAT_LOWER_LIMIT = 0.0f;
+constexpr float DEFAULT_THERMOSTAT_UPPER_LIMIT = 28.0f;
 
 Config AppConfig;
 
@@ -65,32 +69,56 @@ bool Config::save() {
 const char* Config::otaPass() const {
   return otaPass_;
 }
+
 const char* Config::mqttHost() const {
   return mqttHost_;
 }
+
 uint16_t Config::mqttPort() const {
   return mqttPort_;
 }
+
 const char* Config::mqttUser() const {
   return mqttUser_;
 }
+
 const char* Config::mqttPass() const {
   return mqttPass_;
 }
+
 const char* Config::mqttClientId() const {
   return mqttClientId_;
 }
+
 const char* Config::mqttPubTopic() const {
   return mqttPubTopic_;
 }
+
 const char* Config::mqttSubTopic() const {
   return mqttSubTopic_;
 }
+
 const char* Config::cron(int index) const {
   if (index < 0 || index >= cronLength) {
     return "";
   }
   return crons_[index];
+}
+
+float Config::thermostatSetpoint() const {
+  return thermostatSetpoint_;
+}
+
+float Config::thermostatHysteresis() const {
+  return thermostatHysteresis_;
+}
+
+float Config::thermostatLowerLimit() const {
+  return thermostatLowerLimit_;
+}
+
+float Config::thermostatUpperLimit() const {
+  return thermostatUpperLimit_;
 }
 
 void Config::setOtaPass(const char* value) {
@@ -132,6 +160,22 @@ void Config::setCron(int index, const char* value) {
   strlcpy(crons_[index], value, sizeof(crons_[index]));
 }
 
+void Config::setThermostatSetpoint(float value) {
+  thermostatSetpoint_ = value;
+}
+
+void Config::setThermostatHysteresis(float value) {
+  thermostatHysteresis_ = value;
+}
+
+void Config::setThermostatLowerLimit(float value) {
+  thermostatLowerLimit_ = value;
+}
+
+void Config::setThermostatUpperLimit(float value) {
+  thermostatUpperLimit_ = value;
+}
+
 void Config::applyDefaults() {
   setOtaPass(OTA_PASSWORD);
   setMqttHost(DEFAULT_MQTT_HOST);
@@ -144,6 +188,10 @@ void Config::applyDefaults() {
   for (int i = 0; i < cronLength; ++i) {
     setCron(i, "");
   }
+  setThermostatSetpoint(DEFAULT_THERMOSTAT_SETPOINT);
+  setThermostatHysteresis(DEFAULT_THERMOSTAT_HYSTERESIS);
+  setThermostatLowerLimit(DEFAULT_THERMOSTAT_LOWER_LIMIT);
+  setThermostatUpperLimit(DEFAULT_THERMOSTAT_UPPER_LIMIT);
 }
 
 void Config::convertFromJson(const JsonDocument& doc) {
@@ -158,6 +206,14 @@ void Config::convertFromJson(const JsonDocument& doc) {
   for (size_t i = 0; i < cronLength; ++i) {
     setCron(i, doc["crons"][i] | "");
   }
+  setThermostatSetpoint(doc["thermostat_setpoint"] |
+                        DEFAULT_THERMOSTAT_SETPOINT);
+  setThermostatHysteresis(doc["thermostat_hysteresis"] |
+                          DEFAULT_THERMOSTAT_HYSTERESIS);
+  setThermostatLowerLimit(doc["thermostat_lower_limit"] |
+                          DEFAULT_THERMOSTAT_LOWER_LIMIT);
+  setThermostatUpperLimit(doc["thermostat_upper_limit"] |
+                          DEFAULT_THERMOSTAT_UPPER_LIMIT);
 }
 
 void Config::convertToJson(JsonDocument& doc) const {
@@ -172,4 +228,8 @@ void Config::convertToJson(JsonDocument& doc) const {
   for (int i = 0; i < cronLength; ++i) {
     doc["crons"].add(crons_[i]);
   }
+  doc["thermostat_setpoint"] = thermostatSetpoint_;
+  doc["thermostat_hysteresis"] = thermostatHysteresis_;
+  doc["thermostat_lower_limit"] = thermostatLowerLimit_;
+  doc["thermostat_upper_limit"] = thermostatUpperLimit_;
 }

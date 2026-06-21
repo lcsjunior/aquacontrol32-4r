@@ -32,4 +32,7 @@ class Thermostat {
   unsigned long lastUpdateMs_ = 0;
 };
 
+bool validateThermostatConfig(const float setpoint, const float hysteresis,
+                              const float lowerLimit, const float upperLimit);
+
 #endif  // THERMOSTAT_H
