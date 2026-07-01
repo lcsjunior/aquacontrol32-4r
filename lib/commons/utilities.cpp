@@ -38,12 +38,13 @@ void loadingDelay(uint32_t durationMs) {
 }
 
 bool waitWifi(uint32_t timeoutMs) {
-  log_i("Waiting for WiFi connection...");
+  Serial.println(F("Waiting for WiFi connection..."));
   const uint32_t startMs = millis();
   while (!WiFi.isConnected() && (millis() - startMs) <= timeoutMs) {
     Serial.print(F("."));
     delay(LOADING_DOT_INTERVAL_MS);
   }
-  Serial.println();
-  return WiFi.isConnected();
+  const bool connected = WiFi.isConnected();
+  Serial.println(connected ? F("connected") : F("disconnected"));
+  return connected;
 }
