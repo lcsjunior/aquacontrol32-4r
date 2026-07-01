@@ -19,7 +19,7 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
   `arduino_clock` (`ArduinoClockImpl` + extern `ArduinoClock` singleton;
   exposes `formatLocalDateTime()` backed by an internal buffer), `utilities`
-  (helpers: `dBmToQuality`, `getChipId`, `getApName`, `intToStr`, `floatToStr`,
+  (helpers: `getChipId`, `getApName`, `intToStr`, `floatToStr`,
   `loadingDelay`, `waitWifi`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,

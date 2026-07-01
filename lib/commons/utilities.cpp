@@ -2,14 +2,6 @@
 
 #define LOADING_DOT_INTERVAL_MS 250UL
 
-// clang-format off
-uint8_t dBmToQuality(const int16_t dBm) {
-  return (dBm <= -100) ? 0
-       : (dBm >= -50)  ? 100
-                       : 2 * (dBm + 100);
-}
-// clang-format on
-
 uint32_t getChipId() {
   uint32_t chipId = 0;
   for (int i = 0; i < 17; i = i + 8) {
@@ -46,12 +38,13 @@ void loadingDelay(uint32_t durationMs) {
 }
 
 bool waitWifi(uint32_t timeoutMs) {
-  log_i("Waiting for WiFi connection...");
+  Serial.println(F("Waiting for WiFi connection..."));
   const uint32_t startMs = millis();
   while (!WiFi.isConnected() && (millis() - startMs) <= timeoutMs) {
     Serial.print(F("."));
     delay(LOADING_DOT_INTERVAL_MS);
   }
-  Serial.println();
-  return WiFi.isConnected();
+  const bool connected = WiFi.isConnected();
+  Serial.println(connected ? F("connected") : F("disconnected"));
+  return connected;
 }
