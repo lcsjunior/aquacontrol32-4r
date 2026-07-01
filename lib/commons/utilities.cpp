@@ -1,5 +1,7 @@
 #include "utilities.h"
 
+#define LOADING_DOT_INTERVAL_MS 250UL
+
 // clang-format off
 uint8_t dBmToQuality(const int16_t dBm) {
   return (dBm <= -100) ? 0
@@ -32,4 +34,24 @@ const char* floatToStr(float value) {
   static char buf[12];
   snprintf(buf, sizeof(buf), "%.1f", value);
   return buf;
+}
+
+void loadingDelay(uint32_t durationMs) {
+  const uint32_t startMs = millis();
+  while (millis() - startMs < durationMs) {
+    Serial.print(F("."));
+    delay(LOADING_DOT_INTERVAL_MS);
+  }
+  Serial.println();
+}
+
+bool waitWifi(uint32_t timeoutMs) {
+  log_i("Waiting for WiFi connection...");
+  const uint32_t startMs = millis();
+  while (!WiFi.isConnected() && (millis() - startMs) <= timeoutMs) {
+    Serial.print(F("."));
+    delay(LOADING_DOT_INTERVAL_MS);
+  }
+  Serial.println();
+  return WiFi.isConnected();
 }

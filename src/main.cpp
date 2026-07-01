@@ -19,8 +19,11 @@
 #define DS18B20_PIN 22
 
 #define SERIAL_BAUD_RATE 115200
+
 #define MQTT_PUB_INTERVAL_MS 60000UL
 #define WIFI_PORTAL_TIMEOUT_S 300
+#define WIFI_CONNECT_TIMEOUT_MS 30000UL
+#define POST_NTP_LOADING_DELAY_MS 2000UL
 
 constexpr int LAMP_ON_CRON_IDX = 0;
 constexpr int LAMP_OFF_CRON_IDX = 1;
@@ -86,8 +89,6 @@ void setup() {
       AppConfig.thermostatLowerLimit(), AppConfig.thermostatUpperLimit());
 
   initWifi();
-  configTzTime(TIMEZONE, NTP_SERVER);
-  TelnetLog.begin();
   initOta();
   initHttpServer();
   initCrons();
@@ -167,6 +168,12 @@ void initWifi() {
   wifiManager.setSaveParamsCallback(onWifiManagerSaveParams);
   wifiManager.autoConnect(getApName(), AP_PASSWORD);
   wifiManager.startWebPortal();
+
+  waitWifi(WIFI_CONNECT_TIMEOUT_MS);
+  configTzTime(TIMEZONE, NTP_SERVER);
+  loadingDelay(POST_NTP_LOADING_DELAY_MS);
+
+  TelnetLog.begin();
 }
 
 void onWifiManagerSaveParams() {
@@ -236,6 +243,9 @@ void initHttpServer() {
 }
 
 void initCrons() {
+  if (!waitWifi(WIFI_CONNECT_TIMEOUT_MS)) {
+    return;
+  }
   const char* lampOnCron = AppConfig.cron(LAMP_ON_CRON_IDX);
   const char* lampOffCron = AppConfig.cron(LAMP_OFF_CRON_IDX);
   const char* co2OnCron = AppConfig.cron(CO2_ON_CRON_IDX);
