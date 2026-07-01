@@ -17,10 +17,11 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
   thermostat config, NTP) and OTA via `ArduinoOTA`; connects MQTT; registers crons
   and the HTTP server; runs the main loop.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
-  `arduino_clock` (`ArduinoClockImpl` + extern `ArduinoClock` singleton;
-  exposes `formatLocalDateTime()` backed by an internal buffer), `utilities`
-  (helpers: `getChipId`, `getApName`, `intToStr`, `floatToStr`,
-  `loadingDelay`, `waitWifi`).
+  `arduino_clock` (`ArduinoClockImpl` + extern `ArduinoClock` singleton; free
+  functions `formatLocalDateTime()`, `isClockSynced()` / `isClockSynced(time_t)`,
+  and the template `safeCron(obj, action)` that only invokes `action` on `obj`
+  if the clock is synced), `utilities` (helpers: `getChipId`, `getApName`,
+  `intToStr`, `floatToStr`, `loadingDelay`, `waitWifi`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
   `HeatingState`), interfaces `Actuator` and `TemperatureSensor`. Also the pure free
