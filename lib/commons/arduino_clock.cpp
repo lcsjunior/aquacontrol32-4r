@@ -14,8 +14,16 @@ const char* formatLocalDateTime() {
   return dateTimeBuf;
 }
 
+bool isClockSynced() {
+  return isClockSynced(time(nullptr));
+}
+
 bool isClockSynced(time_t now) {
   struct tm timeInfo;
   gmtime_r(&now, &timeInfo);
-  return (timeInfo.tm_year + 1900) >= NTP_SYNC_MIN_YEAR;
+  if ((timeInfo.tm_year + 1900) < NTP_SYNC_MIN_YEAR) {
+    log_w("Clock not synced");
+    return false;
+  }
+  return true;
 }

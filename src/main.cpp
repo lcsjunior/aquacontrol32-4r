@@ -249,7 +249,8 @@ void initCrons() {
   const char* co2OffCron = AppConfig.cron(CO2_OFF_CRON_IDX);
   if (*lampOnCron != '\0') {
     log_i("Lamp ON cron:  %s", lampOnCron);
-    Cron.create((char*)lampOnCron, []() { lamp.turnOn(); }, false);
+    Cron.create((char*)lampOnCron, []() { safeCron(lamp, &Relay::turnOn); },
+                false);
   }
   if (*lampOffCron != '\0') {
     log_i("Lamp OFF cron: %s", lampOffCron);
@@ -257,7 +258,8 @@ void initCrons() {
   }
   if (*co2OnCron != '\0') {
     log_i("CO2 ON cron:   %s", co2OnCron);
-    Cron.create((char*)co2OnCron, []() { co2.turnOn(); }, false);
+    Cron.create((char*)co2OnCron, []() { safeCron(co2, &Relay::turnOn); },
+                false);
   }
   if (*co2OffCron != '\0') {
     log_i("CO2 OFF cron:  %s", co2OffCron);

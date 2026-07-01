@@ -15,6 +15,13 @@ class ArduinoClockImpl : public Clock {
 extern ArduinoClockImpl ArduinoClock;
 
 const char* formatLocalDateTime();
+bool isClockSynced();
 bool isClockSynced(time_t now);
+
+template <typename T>
+void safeCron(T& obj, void (T::*action)()) {
+  if (isClockSynced())
+    (obj.*action)();
+}
 
 #endif  // ARDUINO_CLOCK_H
