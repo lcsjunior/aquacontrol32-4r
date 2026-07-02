@@ -224,7 +224,10 @@ void initOta() {
 
 void initHttpServer() {
   wifiManager.server->on("/health", HTTP_GET, []() {
-    wifiManager.server->send(200, APPLICATION_JSON, "{\"status\":\"UP\"}");
+    char healthBuf[64];
+    snprintf(healthBuf, sizeof(healthBuf),
+             "{\"status\":\"UP\",\"datetime\":\"%s\"}", formatLocalDateTime());
+    wifiManager.server->send(200, APPLICATION_JSON, healthBuf);
   });
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
@@ -249,20 +252,38 @@ void initCrons() {
   const char* co2OffCron = AppConfig.cron(CO2_OFF_CRON_IDX);
   if (*lampOnCron != '\0') {
     log_i("Lamp ON cron:  %s", lampOnCron);
-    Cron.create((char*)lampOnCron, []() { safeCron(lamp, &Relay::turnOn); },
+    Cron.create((char*)lampOnCron,
+                []() {
+                  log_i("Lamp ON cron triggered");
+                  safeCron(lamp, &Relay::turnOn);
+                },
                 false);
   }
   if (*lampOffCron != '\0') {
     log_i("Lamp OFF cron: %s", lampOffCron);
-    Cron.create((char*)lampOffCron, []() { lamp.turnOff(); }, false);
+    Cron.create((char*)lampOffCron,
+                []() {
+                  log_i("Lamp OFF cron triggered");
+                  lamp.turnOff();
+                },
+                false);
   }
   if (*co2OnCron != '\0') {
     log_i("CO2 ON cron:   %s", co2OnCron);
-    Cron.create((char*)co2OnCron, []() { safeCron(co2, &Relay::turnOn); },
+    Cron.create((char*)co2OnCron,
+                []() {
+                  log_i("CO2 ON cron triggered");
+                  safeCron(co2, &Relay::turnOn);
+                },
                 false);
   }
   if (*co2OffCron != '\0') {
     log_i("CO2 OFF cron:  %s", co2OffCron);
-    Cron.create((char*)co2OffCron, []() { co2.turnOff(); }, false);
+    Cron.create((char*)co2OffCron,
+                []() {
+                  log_i("CO2 OFF cron triggered");
+                  co2.turnOff();
+                },
+                false);
   }
 }
