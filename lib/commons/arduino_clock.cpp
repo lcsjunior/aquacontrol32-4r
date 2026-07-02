@@ -22,7 +22,7 @@ bool isClockSynced(time_t now) {
   struct tm timeInfo;
   gmtime_r(&now, &timeInfo);
   if ((timeInfo.tm_year + 1900) < NTP_SYNC_MIN_YEAR) {
-    log_w("Clock not synced");
+    log_w("Clock not synced (year=%d)", timeInfo.tm_year + 1900);
     return false;
   }
   return true;
