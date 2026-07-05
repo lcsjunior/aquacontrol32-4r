@@ -4,55 +4,56 @@
 
 MQTTClient MQTT;
 
-void MQTTClient::begin(const Config& config) {
+void MQTTClient::begin(const char* host, uint16_t port, const char* clientId,
+                       const char* username, const char* password,
+                       const char* subTopic, const char* pubTopic) {
   pubSubClient_.setClient(wifiClient_);
-  pubSubClient_.setServer(config.mqttHost(), config.mqttPort());
-  server_ = config.mqttHost();
-  clientId_ = config.mqttClientId();
-  username_ = config.mqttUser();
-  password_ = config.mqttPass();
-  subscribedTopic_ = config.mqttPubTopic();
+  pubSubClient_.setServer(host, port);
+  server_ = host;
+  clientId_ = clientId;
+  username_ = username;
+  password_ = password;
+  subscribedTopic_ = subTopic;
+  publishTopic_ = pubTopic;
   lastConnectAttempt_ = millis() - MQTT_CONN_TIMEOUT_MS;
 }
 
-bool MQTTClient::connect() {
+void MQTTClient::connect() {
   log_i("Attempting connection to %s", server_);
   bool ok = pubSubClient_.connect(clientId_, username_, password_);
   if (!ok) {
     log_e("Connect failed, rc=%d, retry in %lu ms", pubSubClient_.state(),
           MQTT_CONN_TIMEOUT_MS);
-    return false;
+    return;
   }
   log_i("Connected to broker %s", server_);
-  subscribe(subscribedTopic_);
-  return true;
+  subscribe();
 }
 
-void MQTTClient::subscribe(const char* topic) {
-  if (!topic || topic[0] == '\0') {
+void MQTTClient::subscribe() {
+  if (!subscribedTopic_ || subscribedTopic_[0] == '\0') {
     log_w("Subscribe called with empty topic, skipping");
     return;
   }
-  subscribedTopic_ = topic;
-  pubSubClient_.subscribe(topic);
-  log_i("Subscribed to %s", topic);
+  pubSubClient_.subscribe(subscribedTopic_);
+  log_i("Subscribed to %s", subscribedTopic_);
 }
 
-void MQTTClient::publish(const char* topic, const char* payload) {
-  if (!topic || topic[0] == '\0') {
+void MQTTClient::publish(const char* payload) {
+  if (!publishTopic_ || publishTopic_[0] == '\0') {
     log_w("Publish called with empty topic, skipping");
     return;
   }
   const size_t len = strlen(payload);
-  log_i("Publishing to %s (%u bytes)", topic, (unsigned)len);
-  pubSubClient_.publish(topic, payload);
+  log_i("Publishing to %s (%u bytes)", publishTopic_, (unsigned)len);
+  pubSubClient_.publish(publishTopic_, payload);
 }
 
-bool MQTTClient::reconnect() {
+void MQTTClient::reconnect() {
   if (millis() - lastConnectAttempt_ < MQTT_CONN_TIMEOUT_MS)
-    return false;
+    return;
   lastConnectAttempt_ = millis();
-  return connect();
+  connect();
 }
 
 void MQTTClient::loop() {

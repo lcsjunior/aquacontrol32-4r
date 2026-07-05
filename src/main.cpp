@@ -93,7 +93,10 @@ void setup() {
   initHttpServer();
   initCrons();
 
-  MQTT.begin(AppConfig);
+  MQTT.begin(AppConfig.mqttHost(), AppConfig.mqttPort(),
+             AppConfig.mqttClientId(), AppConfig.mqttUser(),
+             AppConfig.mqttPass(), AppConfig.mqttSubTopic(),
+             AppConfig.mqttPubTopic());
   MQTT.connect();
 }
 
@@ -122,7 +125,7 @@ void mqttPublish() {
   if (!pubInterval.update())
     return;
   buildPayload();
-  MQTT.publish(AppConfig.mqttPubTopic(), payload);
+  MQTT.publish(payload);
 }
 
 void initWifi() {
