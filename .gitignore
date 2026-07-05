@@ -1,6 +1,6 @@
 tasks/*
 specs/*
-.specify/**
+.specify/*
 *skills/speckit*
 
 src/secrets.h
