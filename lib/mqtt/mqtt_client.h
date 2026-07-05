@@ -4,15 +4,16 @@
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <WiFi.h>
-#include <config.h>
 
 class MQTTClient {
  public:
-  void begin(const Config& config);
+  void begin(const char* host, uint16_t port, const char* clientId,
+             const char* username, const char* password, const char* subTopic,
+             const char* pubTopic);
 
-  bool connect();
-  void publish(const char* topic, const char* payload);
-  void subscribe(const char* topic);
+  void connect();
+  void publish(const char* payload);
+  void subscribe();
   void loop();
 
  private:
@@ -23,9 +24,10 @@ class MQTTClient {
   const char* username_ = nullptr;
   const char* password_ = nullptr;
   const char* subscribedTopic_ = nullptr;
+  const char* publishTopic_ = nullptr;
   unsigned long lastConnectAttempt_ = 0;
 
-  bool reconnect();
+  void reconnect();
 };
 
 extern MQTTClient MQTT;
