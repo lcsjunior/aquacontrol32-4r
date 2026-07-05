@@ -181,3 +181,7 @@ alternative explicitly rejected. Complexity or a new dependency without such
 justification MUST be rejected in review.
 
 **Version**: 1.0.0 | **Ratified**: 2026-07-05 | **Last Amended**: 2026-07-05
+
+## Language and Localization
+* All generated specification documents (`spec.md`, `plan.md`, `tasks.md`) MUST be written in Portuguese (pt-BR).
+* Code comments and documentation within the source files must follow the project's existing pattern.

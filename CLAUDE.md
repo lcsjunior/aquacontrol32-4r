@@ -50,6 +50,7 @@ before writing or reviewing code — deviations break the consistency that
 makes the codebase predictable across libs and reviewable in small diffs.
 
 <!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
+Active plan: `specs/001-extract-main-modules/plan.md`. For additional
+context about technologies to be used, project structure, shell commands,
+and other important information for the feature in progress, read that plan.
 <!-- SPECKIT END -->
