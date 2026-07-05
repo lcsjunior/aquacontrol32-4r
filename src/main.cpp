@@ -23,7 +23,6 @@
 #define MQTT_PUB_INTERVAL_MS 60000UL
 #define WIFI_PORTAL_TIMEOUT_S 300
 #define WIFI_CONNECT_TIMEOUT_MS 30000UL
-#define POST_NTP_LOADING_DELAY_MS 2000UL
 
 constexpr int LAMP_ON_CRON_IDX = 0;
 constexpr int LAMP_OFF_CRON_IDX = 1;
@@ -174,7 +173,6 @@ void initWifi() {
   waitWifi(WIFI_CONNECT_TIMEOUT_MS);
 
   configTzTime(TIMEZONE, NTP_SERVER);
-  loadingDelay(POST_NTP_LOADING_DELAY_MS);
 
   TelnetLog.begin();
 }
