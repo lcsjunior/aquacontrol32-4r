@@ -8,7 +8,6 @@ uint32_t getChipId();
 const char* getApName();
 const char* intToStr(int value);
 const char* floatToStr(float value);
-void loadingDelay(uint32_t durationMs);
 bool waitWifi(uint32_t timeoutMs);
 
 #endif

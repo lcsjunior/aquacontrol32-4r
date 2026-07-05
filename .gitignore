@@ -1,6 +1,9 @@
 tasks/*
-src/secrets.h
+specs/*
+.specify/*
+*/skills/speckit*
 
+src/secrets.h
 compile_commands.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,platformio
