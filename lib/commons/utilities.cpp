@@ -28,15 +28,6 @@ const char* floatToStr(float value) {
   return buf;
 }
 
-void loadingDelay(uint32_t durationMs) {
-  const uint32_t startMs = millis();
-  while (millis() - startMs < durationMs) {
-    Serial.print(F("."));
-    delay(LOADING_DOT_INTERVAL_MS);
-  }
-  Serial.println();
-}
-
 bool waitWifi(uint32_t timeoutMs) {
   Serial.println(F("Waiting for WiFi connection..."));
   const uint32_t startMs = millis();
