@@ -1,7 +1,7 @@
 tasks/*
 specs/*
 .specify/*
-*skills/speckit*
+*/skills/speckit*
 
 src/secrets.h
 compile_commands.json
