@@ -71,12 +71,13 @@ void loop() {
   thermostat.update(temperatureSensor.temperatureC());
 
   wifiManager.process();
-  Cron.delay();
-  TelnetLog.loop();
   OTA.handle();
+  Cron.delay();
 
   MQTT.loop();
   mqttPublish();
+
+  TelnetLog.loop();
 }
 
 void mqttPublish() {
