@@ -9,9 +9,8 @@ void HeatingStateImpl::enter(Thermostat& context) {
 }
 
 void HeatingStateImpl::update(Thermostat& context, float currentTemperatureC) {
-  if (currentTemperatureC > context.setpoint() + context.hysteresis()) {
+  if (currentTemperatureC > context.setpoint() + context.hysteresis())
     context.transitionTo(&IdleState);
-  }
 }
 
 const char* HeatingStateImpl::name() const {

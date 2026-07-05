@@ -99,9 +99,8 @@ const char* Config::mqttSubTopic() const {
 }
 
 const char* Config::cron(int index) const {
-  if (index < 0 || index >= cronLength) {
+  if (index < 0 || index >= cronLength)
     return "";
-  }
   return crons_[index];
 }
 

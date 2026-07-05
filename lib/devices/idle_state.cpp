@@ -9,9 +9,8 @@ void IdleStateImpl::enter(Thermostat& context) {
 }
 
 void IdleStateImpl::update(Thermostat& context, float currentTemperatureC) {
-  if (currentTemperatureC < context.setpoint()) {
+  if (currentTemperatureC < context.setpoint())
     context.transitionTo(&HeatingState);
-  }
 }
 
 const char* IdleStateImpl::name() const {
