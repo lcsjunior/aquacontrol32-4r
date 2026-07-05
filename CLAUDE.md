@@ -48,3 +48,8 @@ This file is the single source of truth for naming, class structure, logging,
 constants, control flow, and the hardware-first tie-breaker rule. Read it
 before writing or reviewing code — deviations break the consistency that
 makes the codebase predictable across libs and reviewable in small diffs.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

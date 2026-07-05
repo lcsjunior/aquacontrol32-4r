@@ -37,4 +37,4 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [x] Bug: lamp turned on after cron
 - [ ] Log file
 - [x] Save mqttPubTopic
-- [ ] Refactor `main.cpp`: extract `init*()` functions into a separate module
+- [ ] Refactor `main.cpp`: extract `init*()` functions into a separate module (initWifi, initOta, initHttpServer, initCrons)
