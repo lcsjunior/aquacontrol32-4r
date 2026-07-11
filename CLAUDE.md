@@ -19,8 +19,13 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
 - `src/wifi_setup` — `initWifi()`: brings up the `WiFiManager` captive portal
   (owns the `wifiManager` instance and its custom parameters for MQTT, cron,
   and thermostat config) and its save-parameters callback; configures NTP.
-- `src/http_server` — `initHttpServer()`: registers the `/health`,
-  `/lamp/toggle`, `/co2/toggle` HTTP routes on `wifiManager.server`.
+- `src/modules/http_server` — `initHttpServer()`: registers the `/health`,
+  `/lamp/toggle`, `/co2/toggle`, `/heater/on` HTTP routes on
+  `wifiManager.server`. `/lamp/toggle`, `/co2/toggle`, and `/heater/on`
+  require HTTP Basic Auth (`requireAuth()`, credentials from the
+  `WWW_USERNAME`/`WWW_PASSWORD` build-time macros); `/health` stays open.
+  `/heater/on` calls `thermostat.forceTransition(&HeatingState)` and always
+  replies `204 No Content`.
 - `src/cron_setup` — `initCron()`: registers the four lamp/CO2 ON/OFF cron
   schedules, gating the ON crons on `safeCron`/`isClockSynced()`.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
@@ -31,9 +36,10 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
   `intToStr`, `floatToStr`, `loadingDelay`, `waitWifi`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
-  `HeatingState`), interfaces `Actuator` and `TemperatureSensor`. Also the pure free
-  function `validateThermostatConfig` (safety rules for the persisted thermostat
-  parameters; testable in `native`).
+  `HeatingState`; `forceTransition(ThermostatState*)` forces any target state,
+  idempotent when already there), interfaces `Actuator` and `TemperatureSensor`.
+  Also the pure free function `validateThermostatConfig` (safety rules for the
+  persisted thermostat parameters; testable in `native`).
 - `lib/mqtt/` — `MQTTClient` (publishes/subscribes to MQTT broker; configurable via
   `Config` or explicit parameters; auto-reconnect).
 - `lib/ota/` — `OTAClient` + extern `OTA` singleton: wraps `ArduinoOTA`

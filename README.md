@@ -16,6 +16,21 @@ The goal is to preserve the health of the aquarium and its fish — black tetras
 | CO2 solenoid relay (K4) | 5    | 6               |
 | On-board status LED     | 25   | —               |
 
+### HTTP endpoints
+
+| Endpoint         | Method | Auth              | Description                                                |
+|-------------------|--------|--------------------|--------------------------------------------------------------|
+| `/health`         | GET    | none               | Liveness check; returns status and current datetime.          |
+| `/lamp/toggle`    | GET    | HTTP Basic         | Toggles the LED bar relay.                                    |
+| `/co2/toggle`     | GET    | HTTP Basic         | Toggles the CO2 solenoid relay.                                |
+| `/heater/on`      | GET    | HTTP Basic         | Forces the thermostat into the Heating state (idempotent); always replies `204 No Content`. |
+
+`/lamp/toggle`, `/co2/toggle`, and `/heater/on` require HTTP Basic Auth
+credentials, provided at build time via the `ESP_WWW_USERNAME`/
+`ESP_WWW_PASSWORD` environment variables (see `platformio.ini`, same pattern
+as `ESP_AP_PASSWORD`/`ESP_OTA_PASSWORD`). A request without valid credentials
+gets `401 Unauthorized` with a `WWW-Authenticate` header.
+
 ## Screenshots
 
 This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 4x4 socket panel, [ESP32 T-Relay](https://lilygo.cc/en-us/products/t-relay), waterproof DS18B20 sensors, a 12V supply, wires and wago connectors.
@@ -38,4 +53,5 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [ ] Log file
 - [x] Save mqttPubTopic
 - [x] Refactor `main.cpp`: extract `init*()` functions into a separate module (initWifi, initOta, initHttpServer, initCron)
+- [x] Endpoint: force heater on manually (`/heater/on`)
 - [ ] Wifi reconnecting

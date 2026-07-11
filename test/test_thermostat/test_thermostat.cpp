@@ -1,5 +1,6 @@
 #include <unity.h>
 #include "thermostat.h"
+#include "heating_state.h"
 #include "fake_actuator.h"
 #include "fake_clock.h"
 
@@ -104,6 +105,20 @@ void test_force_transition_to_idle_is_noop_when_already_idle() {
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
+void test_force_transition_to_heating_transitions_from_idle() {
+  thermostat->forceTransition(&HeatingState);
+  TEST_ASSERT_TRUE(actuator.isOn());
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
+}
+
+void test_force_transition_to_heating_is_noop_when_already_heating() {
+  thermostat->forceTransition(&HeatingState);
+  int turnOnCountBefore = actuator.turnOnCount_;
+  thermostat->forceTransition(&HeatingState);
+  TEST_ASSERT_EQUAL(turnOnCountBefore, actuator.turnOnCount_);
+  TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
+}
+
 void test_transition_to_same_state_is_noop() {
   int turnOffCountBefore = actuator.turnOffCount_;
   thermostat->update(25.0f);
@@ -190,6 +205,8 @@ int main() {
   RUN_TEST(test_invalid_temperature_above_upper_limit_forces_idle);
   RUN_TEST(test_safety_force_bypasses_update_interval);
   RUN_TEST(test_force_transition_to_idle_is_noop_when_already_idle);
+  RUN_TEST(test_force_transition_to_heating_transitions_from_idle);
+  RUN_TEST(test_force_transition_to_heating_is_noop_when_already_heating);
   RUN_TEST(test_transition_to_same_state_is_noop);
   RUN_TEST(test_heating_turns_on_actuator);
   RUN_TEST(test_idle_turns_off_actuator);

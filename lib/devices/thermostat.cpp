@@ -21,7 +21,7 @@ void Thermostat::begin(const float setpoint, const float hysteresis,
 void Thermostat::update(float currentTemperatureC) {
   if (isnan(currentTemperatureC) || currentTemperatureC < lowerLimit_ ||
       currentTemperatureC > upperLimit_) {
-    forceTransitionToIdle();
+    forceTransition(&IdleState);
     return;
   }
   if (clock_->millis() - lastUpdateMs_ < THERMOSTAT_UPDATE_INTERVAL_MS)
@@ -40,11 +40,11 @@ void Thermostat::transitionTo(ThermostatState* nextState) {
   log_i("%s -> %s", prev->name(), currentState_->name());
 }
 
-void Thermostat::forceTransitionToIdle() {
-  if (currentState_ == &IdleState)
+void Thermostat::forceTransition(ThermostatState* targetState) {
+  if (currentState_ == targetState)
     return;
-  log_w("Forcing transition to idle");
-  currentState_ = &IdleState;
+  log_w("Forcing transition to %s", targetState->name());
+  currentState_ = targetState;
   currentState_->enter(*this);
 }
 
