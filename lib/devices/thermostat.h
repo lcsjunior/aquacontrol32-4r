@@ -14,7 +14,6 @@ class Thermostat {
   void update(float currentTemperatureC);
 
   void transitionTo(ThermostatState* nextState);
-  void forceTransitionToIdle();
 
   Actuator* actuator() const;
   float setpoint() const;

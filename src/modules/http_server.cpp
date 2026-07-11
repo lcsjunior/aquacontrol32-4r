@@ -9,6 +9,13 @@ constexpr const char* APPLICATION_JSON = "application/json";
 extern Relay lamp;
 extern Relay co2;
 
+static bool requireAuth() {
+  if (wifiManager.server->authenticate(WWW_USERNAME, WWW_PASSWORD))
+    return true;
+  wifiManager.server->requestAuthentication();
+  return false;
+}
+
 void initHttpServer() {
   wifiManager.server->on("/health", HTTP_GET, []() {
     char healthBuf[64];
@@ -18,6 +25,8 @@ void initHttpServer() {
   });
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
+    if (!requireAuth())
+      return;
     lamp.toggle();
     wifiManager.server->send(
         200, APPLICATION_JSON,
@@ -25,6 +34,8 @@ void initHttpServer() {
   });
 
   wifiManager.server->on("/co2/toggle", HTTP_GET, []() {
+    if (!requireAuth())
+      return;
     co2.toggle();
     wifiManager.server->send(
         200, APPLICATION_JSON,
