@@ -106,15 +106,15 @@ void test_force_transition_to_idle_is_noop_when_already_idle() {
 }
 
 void test_force_transition_to_heating_transitions_from_idle() {
-  thermostat->forceTransition(&HeatingState);
+  thermostat->transitionTo(&HeatingState);
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }
 
 void test_force_transition_to_heating_is_noop_when_already_heating() {
-  thermostat->forceTransition(&HeatingState);
+  thermostat->transitionTo(&HeatingState);
   int turnOnCountBefore = actuator.turnOnCount_;
-  thermostat->forceTransition(&HeatingState);
+  thermostat->transitionTo(&HeatingState);
   TEST_ASSERT_EQUAL(turnOnCountBefore, actuator.turnOnCount_);
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 }

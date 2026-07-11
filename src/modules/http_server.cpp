@@ -48,7 +48,7 @@ void initHttpServer() {
   wifiManager.server->on("/heater/on", HTTP_GET, []() {
     if (!requireAuth())
       return;
-    thermostat.forceTransition(&HeatingState);
+    thermostat.transitionTo(&HeatingState);
     wifiManager.server->send(204);
   });
 }
