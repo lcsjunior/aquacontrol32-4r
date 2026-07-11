@@ -23,9 +23,8 @@ The goal is to preserve the health of the aquarium and its fish — black tetras
 | `/health`         | GET    | none               | Liveness check; returns status and current datetime.          |
 | `/lamp/toggle`    | GET    | HTTP Basic         | Toggles the LED bar relay.                                    |
 | `/co2/toggle`     | GET    | HTTP Basic         | Toggles the CO2 solenoid relay.                                |
-| `/heater/on`      | GET    | HTTP Basic         | Forces the thermostat into the Heating state (idempotent); always replies `204 No Content`. |
 
-`/lamp/toggle`, `/co2/toggle`, and `/heater/on` require HTTP Basic Auth
+`/lamp/toggle` and `/co2/toggle` require HTTP Basic Auth
 credentials, provided at build time via the `ESP_WWW_USERNAME`/
 `ESP_WWW_PASSWORD` environment variables (see `platformio.ini`, same pattern
 as `ESP_AP_PASSWORD`/`ESP_OTA_PASSWORD`). A request without valid credentials
@@ -53,5 +52,4 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [ ] Log file
 - [x] Save mqttPubTopic
 - [x] Refactor `main.cpp`: extract `init*()` functions into a separate module (initWifi, initOta, initHttpServer, initCron)
-- [x] Endpoint: force heater on manually (`/heater/on`)
 - [ ] Wifi reconnecting

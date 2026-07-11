@@ -20,12 +20,10 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
   (owns the `wifiManager` instance and its custom parameters for MQTT, cron,
   and thermostat config) and its save-parameters callback; configures NTP.
 - `src/modules/http_server` — `initHttpServer()`: registers the `/health`,
-  `/lamp/toggle`, `/co2/toggle`, `/heater/on` HTTP routes on
-  `wifiManager.server`. `/lamp/toggle`, `/co2/toggle`, and `/heater/on`
-  require HTTP Basic Auth (`requireAuth()`, credentials from the
-  `WWW_USERNAME`/`WWW_PASSWORD` build-time macros); `/health` stays open.
-  `/heater/on` calls `thermostat.forceTransition(&HeatingState)` and always
-  replies `204 No Content`.
+  `/lamp/toggle`, `/co2/toggle` HTTP routes on `wifiManager.server`.
+  `/lamp/toggle` and `/co2/toggle` require HTTP Basic Auth (`requireAuth()`,
+  credentials from the `WWW_USERNAME`/`WWW_PASSWORD` build-time macros);
+  `/health` stays open.
 - `src/cron_setup` — `initCron()`: registers the four lamp/CO2 ON/OFF cron
   schedules, gating the ON crons on `safeCron`/`isClockSynced()`.
 - `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
@@ -36,7 +34,7 @@ Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
   `intToStr`, `floatToStr`, `loadingDelay`, `waitWifi`).
 - `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
   (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
-  `HeatingState`; `forceTransition(ThermostatState*)` forces any target state,
+  `HeatingState`; `transitionTo(ThermostatState*)` switches state,
   idempotent when already there), interfaces `Actuator` and `TemperatureSensor`.
   Also the pure free function `validateThermostatConfig` (safety rules for the
   persisted thermostat parameters; testable in `native`).
