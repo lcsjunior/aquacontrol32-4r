@@ -52,4 +52,4 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [ ] Log file
 - [x] Save mqttPubTopic
 - [x] Refactor `main.cpp`: extract `init*()` functions into a separate module (initWifi, initOta, initHttpServer, initCron)
-- [ ] Wifi reconnecting
+- [x] Wifi reconnecting

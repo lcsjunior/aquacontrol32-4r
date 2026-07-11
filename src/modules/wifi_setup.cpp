@@ -110,6 +110,7 @@ void initWifi() {
   wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_S);
   wifiManager.setHostname(DEVICE_HOSTNAME);
   wifiManager.setSaveParamsCallback(onWifiManagerSaveParams);
+  wifiManager.setWiFiAutoReconnect(true);
   wifiManager.autoConnect(getApName(), AP_PASSWORD);
   wifiManager.startWebPortal();
   waitWifi(WIFI_CONNECT_TIMEOUT_MS);
