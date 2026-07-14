@@ -1,17 +1,4 @@
 {
-	"permissions": {
-		"allow": [
-			"WebSearch",
-			"mcp__context7__resolve-library-id",
-			"mcp__context7__query-docs",
-			"Skill(embedded-cpp)",
-			"Skill(platformio-build)",
-			"Bash(pio run *)",
-			"Bash(pio test *)",
-			"Bash(g++ *)",
-			"Bash(clang-format *)"
-		]
-	},
 	"hooks": {
 		"PostToolUse": [
 			{
