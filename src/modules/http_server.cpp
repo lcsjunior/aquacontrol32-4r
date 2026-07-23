@@ -23,7 +23,7 @@ void initHttpServer() {
   wifiManager.server->on("/health", HTTP_GET, []() {
     char buf[192];
     snprintf(buf, sizeof(buf),
-             "{\"status\":\"UP\",\"datetime\":\"%s\",\"temperatureC\":%.1f,"
+             "{\"status\":\"UP\",\"datetime\":\"%s\",\"ds18b20\":%.1f,"
              "\"relays\":{\"heater\":%s,\"lamp\":%s,\"co2\":%s}}",
              formatLocalDateTime(), temperatureSensor.temperatureC(),
              heater.activeText(), lamp.activeText(), co2.activeText());
