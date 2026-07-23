@@ -1,70 +1,53 @@
 # CLAUDE.md
 
-## Spec-Driven Development (SDD)
-
-This project **strictly** follows a Spec-Driven Development flow driven by agents.
-Artifacts for each feature live in `tasks/prd-<feature-name>/`.
+Guidance for Claude Code (claude.ai/code) when working in this repository.
 
 ## Overview
 
-ESP32 firmware for a planted aquarium controller, on a LILYGO T-Relay board.
-Hardware (pinout) and ThingSpeak field mapping: see `README.md`.
+ESP32 firmware (`esp32dev`, LILYGO T-Relay board) for a planted aquarium
+controller: DS18B20 thermostat, cron-scheduled lamp and CO2, MQTT telemetry to
+ThingSpeak. Pinout, ThingSpeak fields and HTTP endpoints — see `README.md`.
 
 ## Architecture (where things live)
 
-- `src/main.cpp` — wiring only: initializes sensors, relays, and thermostat;
-  calls `initWifi()`, `OTA.begin()`, `initHttpServer()`, `initCron()`; connects
-  MQTT; owns the telemetry payload build and publish-on-interval
-  (`buildPayload()`/`mqttPublish()`); runs the main loop.
-- `src/wifi_setup` — `initWifi()`: brings up the `WiFiManager` captive portal
-  (owns the `wifiManager` instance and its custom parameters for MQTT, cron,
-  and thermostat config) and its save-parameters callback; configures NTP.
-- `src/modules/http_server` — `initHttpServer()`: registers the `/health`,
-  `/lamp/toggle`, `/co2/toggle` HTTP routes on `wifiManager.server`.
-  `/lamp/toggle` and `/co2/toggle` require HTTP Basic Auth (`requireAuth()`,
-  credentials from the `WWW_USERNAME`/`WWW_PASSWORD` build-time macros);
-  `/health` stays open.
-- `src/cron_setup` — `initCron()`: registers the four lamp/CO2 ON/OFF cron
-  schedules, gating the ON crons on `safeCron`/`isClockSynced()`.
-- `lib/commons/` — platform utilities: `clock.h` (`Clock` interface),
-  `arduino_clock` (`ArduinoClockImpl` + extern `ArduinoClock` singleton; free
-  functions `formatLocalDateTime()`, `isClockSynced()` / `isClockSynced(time_t)`,
-  and the template `safeCron(obj, action)` that only invokes `action` on `obj`
-  if the clock is synced), `utilities` (helpers: `getChipId`, `getApName`,
-  `intToStr`, `floatToStr`, `loadingDelay`, `waitWifi`).
-- `lib/devices/` — hardware abstractions: `Relay` (GPIO actuator), `DallasTemperatureSensor`
-  (DS18B20), `Thermostat` + `ThermostatState` (state machine: `IdleState`,
-  `HeatingState`; `transitionTo(ThermostatState*)` switches state,
-  idempotent when already there), interfaces `Actuator` and `TemperatureSensor`.
-  Also the pure free function `validateThermostatConfig` (safety rules for the
-  persisted thermostat parameters; testable in `native`).
-- `lib/mqtt/` — `MQTTClient` (publishes/subscribes to MQTT broker; configurable via
-  `Config` or explicit parameters; auto-reconnect).
-- `lib/ota/` — `OTAClient` + extern `OTA` singleton: wraps `ArduinoOTA`
-  (`begin(hostname, password)` at setup, `handle()` every loop iteration),
-  following the same singleton pattern as `lib/mqtt`.
-- `lib/logger/` — `TelnetLogger` + extern `TelnetLog` singleton: streams ESP-IDF
-  `log_*` output over TCP (port 23). Captured via linker wrap of `log_printfv`
-  (see `platformio.ini`), so all `log_*` calls in the codebase reach Telnet
-  clients transparently.
-- `lib/fs/` — `Config` (OTA password, MQTT connection settings, 4 cron schedules,
-  4 thermostat parameters: setpoint, hysteresis, lower/upper limit) persisted in
-  LittleFS. Thermostat parameters are editable via the captive portal and validated
-  by `validateThermostatConfig` before being persisted.
+- `src/main.cpp` — wiring only: devices, `init*()` calls, MQTT publish, `loop()`.
+- `src/modules/` — application wiring: `wifi_setup` (captive portal, custom
+  fields, save callback, NTP), `ota_setup`, `http_server` (routes on
+  `wifiManager.server`), `cron_setup` (lamp/CO2 schedules).
+- `lib/devices/` — hardware abstractions: `Relay`, `DallasTemperatureSensor`,
+  `Thermostat` + its states, behind the `Actuator`/`TemperatureSensor`
+  interfaces so they can be faked in `native` tests.
+- `lib/fs/` — `AppConfig`: LittleFS + ArduinoJson persistence of `/config.json`.
+- `lib/mqtt/`, `lib/logger/` — `MQTT` broker client and `TelnetLog`, a Telnet
+  sink for `log_*` output (port 23, via the `log_printfv` linker wrap in
+  `platformio.ini`).
+- `lib/commons/` — helpers shared across modules: clock, formatting, WiFi waits.
 
-Details that change (cron schedules, HTTP endpoints, MQTT fields, lib versions)
-live in the code (`src/main.cpp`) and `platformio.ini` — do not duplicate here.
+Anything user-configurable belongs in the portal plus `Config`, not in build
+flags. Details that change (cron schedules, endpoints, MQTT fields, lib
+versions) live in the code and `platformio.ini` — do not duplicate here.
+
+## Build, Test, Upload
+
+```bash
+pio run                 # compile
+pio test -e native      # host tests
+pio run --target upload # flash
+pio device monitor      # serial monitor @ 115200 baud
+```
+
+- **Always ask for explicit user confirmation before any upload/flash** — it
+  writes to physical hardware.
+- The upload path is OTA (`espota`) via the untracked `local_settings.ini`;
+  removing it falls back to USB.
+
+## Spec-Driven Development (SDD)
+
+This project **strictly** follows an agent-driven SDD flow. Artifacts for each
+feature live in `tasks/prd-<feature-name>/`.
 
 ## Conventions
 
-**All code in this repository must follow `.claude/rules/code-conventions.md`.**
-This file is the single source of truth for naming, class structure, logging,
-constants, control flow, and the hardware-first tie-breaker rule. Read it
-before writing or reviewing code — deviations break the consistency that
-makes the codebase predictable across libs and reviewable in small diffs.
-
-<!-- SPECKIT START -->
-Active plan: `specs/001-extract-main-modules/plan.md`. For additional
-context about technologies to be used, project structure, shell commands,
-and other important information for the feature in progress, read that plan.
-<!-- SPECKIT END -->
+**All code must follow `.claude/rules/code-conventions.md`** — the single source
+of truth for naming, class structure, logging, constants, control flow, and the
+hardware-first tie-breaker rule. Read it before writing or reviewing.
