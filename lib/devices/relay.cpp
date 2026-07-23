@@ -19,6 +19,10 @@ bool Relay::isOn() const {
   return isOn_;
 }
 
+const char* Relay::activeText() const {
+  return isOn_ ? "true" : "false";
+}
+
 void Relay::turnOn() {
   if (!isOn_) {
     isOn_ = true;

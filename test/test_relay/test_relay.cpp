@@ -26,6 +26,15 @@ void test_turn_off_clears_is_on() {
   TEST_ASSERT_FALSE(relay.isOn());
 }
 
+void test_is_on_as_text_when_off() {
+  TEST_ASSERT_EQUAL_STRING("false", relay.activeText());
+}
+
+void test_is_on_as_text_when_on() {
+  relay.turnOn();
+  TEST_ASSERT_EQUAL_STRING("true", relay.activeText());
+}
+
 void test_toggle_turns_on_when_off() {
   relay.toggle();
   TEST_ASSERT_TRUE(relay.isOn());
@@ -63,6 +72,8 @@ int main() {
   RUN_TEST(test_begin_configures_pin);
   RUN_TEST(test_turn_on_sets_is_on);
   RUN_TEST(test_turn_off_clears_is_on);
+  RUN_TEST(test_is_on_as_text_when_off);
+  RUN_TEST(test_is_on_as_text_when_on);
   RUN_TEST(test_toggle_turns_on_when_off);
   RUN_TEST(test_toggle_turns_off_when_on);
   RUN_TEST(test_turn_on_idempotent);
