@@ -8,6 +8,7 @@ class Relay : public Actuator {
   void begin(const byte pin) override;
   void begin(const byte pin, const char* label);
   bool isOn() const override;
+  const char* activeText() const;
   void turnOn() override;
   void turnOff() override;
   void toggle();

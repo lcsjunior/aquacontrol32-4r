@@ -8,10 +8,10 @@ constexpr int NTP_SYNC_MIN_YEAR = 2024;
 ArduinoClockImpl ArduinoClock;
 
 const char* formatLocalDateTime() {
-  static char dateTimeBuf[20];
+  static char buf[20];
   time_t now = time(nullptr);
-  strftime(dateTimeBuf, sizeof(dateTimeBuf), DATETIME_FORMAT, localtime(&now));
-  return dateTimeBuf;
+  strftime(buf, sizeof(buf), DATETIME_FORMAT, localtime(&now));
+  return buf;
 }
 
 bool isClockSynced() {

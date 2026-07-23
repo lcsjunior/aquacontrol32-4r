@@ -20,7 +20,7 @@ The goal is to preserve the health of the aquarium and its fish — black tetras
 
 | Endpoint         | Method | Auth              | Description                                                |
 |-------------------|--------|--------------------|--------------------------------------------------------------|
-| `/health`         | GET    | none               | Liveness check; returns status and current datetime.          |
+| `/health`         | GET    | none               | Liveness check; returns status, datetime, water temperature and relay states. |
 | `/lamp/toggle`    | GET    | HTTP Basic         | Toggles the LED bar relay.                                    |
 | `/co2/toggle`     | GET    | HTTP Basic         | Toggles the CO2 solenoid relay.                                |
 
@@ -47,7 +47,7 @@ This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 
 - [x] Remote log via telnet
 - [x] Persist thermostat parameters in config
 - [ ] Generate OpenAPI spec for the REST API
-- [ ] Add more metrics to the health check endpoint
+- [x] Add more metrics to the health check endpoint
 - [x] Bug: lamp turned on after cron
 - [ ] Log file
 - [x] Save mqttPubTopic

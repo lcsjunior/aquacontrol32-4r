@@ -2,10 +2,13 @@
 #include "wifi_setup.h"
 
 #include <arduino_clock.h>
+#include <dallas_temperature_sensor.h>
 #include <relay.h>
 
 constexpr const char* APPLICATION_JSON = "application/json";
 
+extern DallasTemperatureSensor temperatureSensor;
+extern Relay heater;
 extern Relay lamp;
 extern Relay co2;
 
@@ -18,10 +21,13 @@ static bool requireAuth() {
 
 void initHttpServer() {
   wifiManager.server->on("/health", HTTP_GET, []() {
-    char healthBuf[64];
-    snprintf(healthBuf, sizeof(healthBuf),
-             "{\"status\":\"UP\",\"datetime\":\"%s\"}", formatLocalDateTime());
-    wifiManager.server->send(200, APPLICATION_JSON, healthBuf);
+    char buf[192];
+    snprintf(buf, sizeof(buf),
+             "{\"status\":\"UP\",\"datetime\":\"%s\",\"temperatureC\":%.1f,"
+             "\"relays\":{\"heater\":%s,\"lamp\":%s,\"co2\":%s}}",
+             formatLocalDateTime(), temperatureSensor.temperatureC(),
+             heater.activeText(), lamp.activeText(), co2.activeText());
+    wifiManager.server->send(200, APPLICATION_JSON, buf);
   });
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {
@@ -37,8 +43,8 @@ void initHttpServer() {
     if (!requireAuth())
       return;
     co2.toggle();
-    wifiManager.server->send(
-        200, APPLICATION_JSON,
-        co2.isOn() ? "{\"active\":true}" : "{\"active\":false}");
+    char buf[24];
+    snprintf(buf, sizeof(buf), "{\"active\":%s}", co2.activeText());
+    wifiManager.server->send(200, APPLICATION_JSON, buf);
   });
 }
