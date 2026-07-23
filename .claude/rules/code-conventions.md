@@ -1,84 +1,86 @@
 # Project Conventions
 
-## Language
+Target is the **ESP32** (`esp32dev`, LILYGO T-Relay) plus the `native` host test
+environment.
 
-- Code, identifiers, comments, and log strings: **English**.
+When a rule here conflicts with a hardware constraint (pinout, timing, memory),
+the hardware wins.
 
-## Naming
+## Memory
 
-Follows the Arduino convention, which overrides the naming recommended in skills:
-
-- `PascalCase` — classes/types (e.g.: `Relay`, `Thermostat`, `DSTempSensor`).
-- `camelCase` — methods, functions, variables, and attributes (e.g.: `turnOn`, `getCTemp`).
-- `UPPER_SNAKE_CASE` — macros and pin definitions (e.g.: `K1_PIN`, `DS18B20_PIN_1`).
-
-### Interfaces (pure abstract classes)
-
-- Use idiomatic C++ style: direct name **without `I` prefix** (e.g.: `TemperatureSensor`, `ThermostatState`).
-- When the interface name collides with a concrete class, the **concrete class receives the `Impl` suffix** (e.g.: `ThermostatImpl`).
-
-### Global singletons
-
-Following the style of Arduino core libs (`Serial`, `Wire`, `SPI`, `EEPROM`), unique global
-instances use **PascalCase** (not camelCase).
-
-Declaration/definition pattern:
-
-- In the **header** (`.h`): declare with `extern` after the class declaration
-  (e.g.: `extern TelnetLogger TelnetLog;`).
-- In the **source** (`.cpp`): define the instance at the **top of the file**,
-  right after the `#include`s and any file-level macros, before method
-  implementations (e.g.: `TelnetLogger TelnetLog;`).
-
-In all other cases, follow the conventions recommended in the skills.
-
-## Class structure
-
-Section order in every class declaration:
-
-1. `public:` — constructor/destructor, then public methods.
-2. `private:` — attributes, then private methods.
-
-`protected:` follows the same logic when needed (between `public:` and `private:`).
-
-## Dependencies
-
-- Libraries are pinned by version in `platformio.ini`.
-- Do not add, remove, or update dependencies without explicit approval.
-
-## Code comments
-
-- Do not add comments to code. Well-named identifiers are sufficient.
-- Method, function, variable, and **object** names must be **descriptive**: reveal intent and behavior without requiring additional explanation.
-- Object names must be suggestive of their role — `temperatureSensor` or `heaterRelay` instead of generic `obj` or `v`.
-
-## Logging
-
-- Use ESP-IDF macros (`log_i`, `log_w`, `log_e`, `log_d`) instead of `Serial.print`/`Serial.println`.
-- Never use `Serial` directly for logging.
-- Never call `log_*` macros from inside `TelnetLogger` (`lib/logger/`). Telnet
-  streaming captures all `log_*` output via linker wrap of `log_printfv`, so
-  logging from within the logger itself would cause infinite recursion.
+- Never use Arduino `String` — `char[]` + `snprintf`.
+- Fixed-size buffers, sized from the protocol/payload.
+- No `malloc()`/`new` at runtime; allocate in global constructors only.
+- The Arduino loop task gets ~8 KB of stack: large buffers must be global or
+  `static`, never locals.
 
 ## Constants
 
-- Constants in general should be declared as `constexpr const char*` (or equivalent type, e.g.: `constexpr int`), to guarantee compile-time evaluation and pointer/value immutability.
-- Exceptions allowed as `#define` (`UPPER_SNAKE_CASE`):
-  - **Pins** (e.g.: `#define K1_PIN 21`).
-  - **Timeouts and time intervals**: `_MS` suffix and `UL` literal (e.g.: `#define MQTT_CONN_TIMEOUT_MS 5000UL`).
+- Default to `constexpr` (`constexpr const char*`, `constexpr int`, …).
+- `#define` (`UPPER_SNAKE_CASE`) only for pins and for timeouts/intervals, the
+  latter with a `_MS` suffix and `UL` literal.
 
-## Control flow
+## Timing
 
-- Prefer early return and the ternary operator over nested `if/else` blocks.
+- Never `delay()` in `loop()`; use `NoDelay` or elapsed-time checks against
+  `millis()`.
+- Keep `loop()` iterations short so the loop task yields and the watchdog stays
+  fed.
 
-## Hardware as source of truth
+## ISR / callbacks
 
-When a C++ guideline conflicts with a hardware constraint (pinout,
-timing, ESP32 memory), the hardware constraint takes precedence.
+- Handlers set flags or toggle outputs, nothing else. No `delay()`, `Serial`,
+  or sensor reads.
+- Mark them `IRAM_ATTR`.
+- `Wire`, `SPI` and `Serial` only from the main loop.
 
-## Project documentation
+## Hardware access
 
-- `README.md`, `CLAUDE.md`, and `AGENTS.md` must always be kept up to date.
-- Whenever a change affects architecture, conventions, hardware wiring, dependencies,
-  or any information already documented in these files, update them in the same
-  change set.
+- Reach sensors and actuators through their abstraction layer (`lib/devices`),
+  never the driver directly; assume throttling lives inside it.
+- A direct call outside that layer needs a comment saying why.
+
+## Naming
+
+Arduino convention, which overrides any naming recommended in skills:
+
+- `PascalCase` — classes and types.
+- `camelCase` — methods, functions, variables, attributes.
+- `UPPER_SNAKE_CASE` — macros and pins.
+- Interfaces take the plain name (`TemperatureSensor`, no `I` prefix); when it
+  collides with a concrete class, that class gets the `Impl` suffix.
+- Global singletons are `PascalCase` like the Arduino core libs (`Serial`,
+  `Wire`): `extern TelnetLogger TelnetLog;` in the header, defined at the top of
+  the `.cpp`, right after the includes.
+
+## Testability
+
+- Singletons are for stateless utilities only. Logic covered by `native` tests
+  takes its collaborators by interface through the constructor, so a fake can be
+  injected.
+
+## Style
+
+- Code, identifiers and log strings in **English**.
+- No comments — names must reveal intent (`heaterRelay`, not `obj`).
+- Class sections in order: `public:` (constructor first), `protected:`,
+  `private:` (attributes before methods).
+- Prefer early return and the ternary over nested `if/else`.
+
+## Logging
+
+- Log via the ESP-IDF macros (`log_e`, `log_w`, `log_i`, `log_d`), never
+  `Serial` directly. Exception: code that runs before WiFi and Telnet are up
+  (e.g. `waitWifi()`) may use `Serial`.
+- Never call a `log_*` macro from inside `TelnetLogger` (`lib/logger/`) —
+  `log_printfv` is linker-wrapped into it, so that recurses forever.
+
+## Dependencies
+
+Pinned by version in `platformio.ini`. Do not add, remove or update one without
+explicit approval.
+
+## Documentation
+
+Keep `README.md` (the product) and `CLAUDE.md` (how to work in the repo) current
+in the same change set, without overlap between them.
