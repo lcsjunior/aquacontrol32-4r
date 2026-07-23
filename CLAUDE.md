@@ -10,22 +10,18 @@ ThingSpeak. Pinout, ThingSpeak fields and HTTP endpoints — see `README.md`.
 
 ## Architecture (where things live)
 
-- `src/main.cpp` — wiring only: devices, `init*()` calls, MQTT publish, `loop()`.
+- `src/main.cpp` — boot sequence, MQTT publish and `loop()`.
 - `src/modules/` — application wiring: `wifi_setup` (captive portal, custom
-  fields, save callback, NTP), `ota_setup`, `http_server` (routes on
-  `wifiManager.server`), `cron_setup` (lamp/CO2 schedules).
-- `lib/devices/` — hardware abstractions: `Relay`, `DallasTemperatureSensor`,
-  `Thermostat` + its states, behind the `Actuator`/`TemperatureSensor`
-  interfaces so they can be faked in `native` tests.
+  fields, save callback, NTP), `ota_setup`, `http_server` and `cron_setup`.
+- `lib/devices/` — hardware abstractions behind the `Actuator` and
+  `TemperatureSensor` interfaces, so they can be faked in `native` tests.
 - `lib/fs/` — `AppConfig`: LittleFS + ArduinoJson persistence of `/config.json`.
-- `lib/mqtt/`, `lib/logger/` — `MQTT` broker client and `TelnetLog`, a Telnet
-  sink for `log_*` output (port 23, via the `log_printfv` linker wrap in
-  `platformio.ini`).
-- `lib/commons/` — helpers shared across modules: clock, formatting, WiFi waits.
+- `lib/mqtt/`, `lib/logger/` — broker client and `TelnetLog`, a Telnet sink for
+  `log_*` output.
+- `lib/commons/` — helpers shared across modules.
 
 Anything user-configurable belongs in the portal plus `Config`, not in build
-flags. Details that change (cron schedules, endpoints, MQTT fields, lib
-versions) live in the code and `platformio.ini` — do not duplicate here.
+flags.
 
 ## Build, Test, Upload
 
