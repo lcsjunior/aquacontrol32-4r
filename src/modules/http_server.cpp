@@ -43,8 +43,8 @@ void initHttpServer() {
     if (!requireAuth())
       return;
     co2.toggle();
-    char buf[24];
-    snprintf(buf, sizeof(buf), "{\"active\":%s}", co2.activeText());
-    wifiManager.server->send(200, APPLICATION_JSON, buf);
+    wifiManager.server->send(
+        200, APPLICATION_JSON,
+        co2.isOn() ? "{\"active\":true}" : "{\"active\":false}");
   });
 }
