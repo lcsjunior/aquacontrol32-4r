@@ -20,7 +20,7 @@ The goal is to preserve the health of the aquarium and its fish — black tetras
 
 | Endpoint         | Method | Auth              | Description                                                |
 |-------------------|--------|--------------------|--------------------------------------------------------------|
-| `/health`         | GET    | none               | Liveness check; returns status and current datetime.          |
+| `/health`         | GET    | none               | Liveness check; returns status, datetime, water temperature and relay states. |
 | `/lamp/toggle`    | GET    | HTTP Basic         | Toggles the LED bar relay.                                    |
 | `/co2/toggle`     | GET    | HTTP Basic         | Toggles the CO2 solenoid relay.                                |
 
