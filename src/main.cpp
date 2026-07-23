@@ -5,13 +5,13 @@
 #include <config.h>
 #include <dallas_temperature_sensor.h>
 #include <mqtt_client.h>
-#include <ota_client.h>
 #include <relay.h>
 #include <telnet_logger.h>
 #include <thermostat.h>
 
 #include "modules/cron_setup.h"
 #include "modules/http_server.h"
+#include "modules/ota_setup.h"
 #include "modules/wifi_setup.h"
 
 #define LED_PIN 25
@@ -54,7 +54,7 @@ void setup() {
 
   initWifi();
   TelnetLog.begin();
-  OTA.begin(DEVICE_HOSTNAME, AppConfig.otaPass());
+  initOta();
 
   MQTT.begin(AppConfig.mqttHost(), AppConfig.mqttPort(),
              AppConfig.mqttClientId(), AppConfig.mqttUser(),
@@ -71,7 +71,7 @@ void loop() {
   thermostat.update(temperatureSensor.temperatureC());
 
   wifiManager.process();
-  OTA.handle();
+  ArduinoOTA.handle();
   Cron.delay();
 
   MQTT.loop();
