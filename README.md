@@ -24,12 +24,6 @@ The goal is to preserve the health of the aquarium and its fish — black tetras
 | `/lamp/toggle`    | GET    | HTTP Basic         | Toggles the LED bar relay.                                    |
 | `/co2/toggle`     | GET    | HTTP Basic         | Toggles the CO2 solenoid relay.                                |
 
-`/lamp/toggle` and `/co2/toggle` require HTTP Basic Auth
-credentials, provided at build time via the `ESP_WWW_USERNAME`/
-`ESP_WWW_PASSWORD` environment variables (see `platformio.ini`, same pattern
-as `ESP_AP_PASSWORD`/`ESP_OTA_PASSWORD`). A request without valid credentials
-gets `401 Unauthorized` with a `WWW-Authenticate` header.
-
 ## Screenshots
 
 This DIY build is housed in a Shako HT200 plastic box (90x140x180mm) and uses a 4x4 socket panel, [ESP32 T-Relay](https://lilygo.cc/en-us/products/t-relay), waterproof DS18B20 sensors, a 12V supply, wires and wago connectors.
