@@ -31,7 +31,7 @@ Thermostat thermostat(&heater, &ArduinoClock);
 noDelay pubInterval(MQTT_PUB_INTERVAL_MS);
 char payload[255];
 
-void mqttPublish();
+void publish();
 
 void setup() {
   Serial.begin(SERIAL_BAUD_RATE);
@@ -49,15 +49,14 @@ void setup() {
 
   initWifi();
   TelnetLog.begin();
+  initHttpServer();
+  initCron();
 
   MQTT.begin(AppConfig.mqttHost(), AppConfig.mqttPort(),
              AppConfig.mqttClientId(), AppConfig.mqttUser(),
              AppConfig.mqttPass(), AppConfig.mqttSubTopic(),
              AppConfig.mqttPubTopic());
   MQTT.connect();
-
-  initHttpServer();
-  initCron();
 }
 
 void loop() {
@@ -68,12 +67,12 @@ void loop() {
   Cron.delay();
 
   MQTT.loop();
-  mqttPublish();
+  publish();
 
   TelnetLog.loop();
 }
 
-void mqttPublish() {
+void publish() {
   if (!pubInterval.update())
     return;
   snprintf(payload, sizeof(payload),
