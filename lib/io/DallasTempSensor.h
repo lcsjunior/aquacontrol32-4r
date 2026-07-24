@@ -1,11 +1,11 @@
-#ifndef DALLAS_TEMPERATURE_SENSOR_H
-#define DALLAS_TEMPERATURE_SENSOR_H
+#ifndef DALLAS_TEMP_SENSOR_H
+#define DALLAS_TEMP_SENSOR_H
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
-#include "temperature_sensor.h"
+#include "TemperatureSensor.h"
 
-class DallasTemperatureSensor : public TemperatureSensor {
+class DallasTempSensor : public TemperatureSensor {
  public:
   void begin(const byte pin) override;
   void requestTemperatures() override;
@@ -18,4 +18,4 @@ class DallasTemperatureSensor : public TemperatureSensor {
   float lastTemperatureC_ = DEVICE_DISCONNECTED_C;
 };
 
-#endif  // DALLAS_TEMPERATURE_SENSOR_H
+#endif  // DALLAS_TEMP_SENSOR_H

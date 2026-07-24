@@ -1,13 +1,13 @@
 #include <unity.h>
-#include "dallas_temperature_sensor.h"
+#include "DallasTempSensor.h"
 
-static DallasTemperatureSensor sensor;
+static DallasTempSensor sensor;
 
 void setUp() {
   stubMillis_ = 0;
   logECallCount_ = 0;
   DallasTemperature::stubTemperatureC(25.0f);
-  sensor = DallasTemperatureSensor{};
+  sensor = DallasTempSensor{};
   sensor.begin(22);
 }
 

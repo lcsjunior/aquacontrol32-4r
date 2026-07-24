@@ -1,7 +1,7 @@
 #ifndef RELAY_H
 #define RELAY_H
 
-#include "actuator.h"
+#include "Actuator.h"
 
 class Relay : public Actuator {
  public:
@@ -11,7 +11,7 @@ class Relay : public Actuator {
   const char* activeText() const;
   void turnOn() override;
   void turnOff() override;
-  void toggle();
+  void toggle() override;
 
  private:
   byte pin_;

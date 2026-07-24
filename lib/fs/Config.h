@@ -4,11 +4,16 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+constexpr int LAMP_ON_CRON_IDX = 0;
+constexpr int LAMP_OFF_CRON_IDX = 1;
+constexpr int CO2_ON_CRON_IDX = 2;
+constexpr int CO2_OFF_CRON_IDX = 3;
+
 class Config {
  public:
-  bool mount();
-  bool load();
-  bool save();
+  void mount();
+  void load();
+  void save();
 
   const char* otaPass() const;
   const char* mqttHost() const;
@@ -56,6 +61,8 @@ class Config {
   float thermostatUpperLimit_;
 
   void applyDefaults();
+  bool readFile(JsonDocument& doc);
+  bool writeFile(const JsonDocument& doc);
   void convertFromJson(const JsonDocument& doc);
   void convertToJson(JsonDocument& doc) const;
 };

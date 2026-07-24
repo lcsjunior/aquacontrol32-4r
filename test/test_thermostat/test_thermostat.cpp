@@ -1,18 +1,18 @@
 #include <unity.h>
-#include "thermostat.h"
-#include "heating_state.h"
-#include "fake_actuator.h"
-#include "fake_clock.h"
+#include "Thermostat.h"
+#include "HeatingState.h"
+#include "FakeActuator.h"
+#include "FakeClock.h"
 
 static FakeActuator actuator;
-static FakeClock clock;
+static FakeClock fakeClock;
 static Thermostat* thermostat;
 
 void setUp() {
   actuator = FakeActuator{};
-  clock = FakeClock{};
-  clock.advance(60000);
-  thermostat = new Thermostat(&actuator, &clock);
+  fakeClock = FakeClock{};
+  fakeClock.advance(60000);
+  thermostat = new Thermostat(&actuator, &fakeClock);
   thermostat->begin(24.0f, 0.5f, 0.0f, 40.0f);
 }
 
@@ -44,7 +44,7 @@ void test_second_transition_within_debounce_is_suppressed() {
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 
-  clock.advance(30000);
+  fakeClock.advance(30000);
   thermostat->update(25.0f);
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
@@ -55,7 +55,7 @@ void test_transition_allowed_after_exactly_60000ms() {
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 
-  clock.advance(60000);
+  fakeClock.advance(60000);
   thermostat->update(25.0f);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
@@ -92,7 +92,7 @@ void test_safety_force_bypasses_update_interval() {
   thermostat->update(23.0f);
   TEST_ASSERT_TRUE(actuator.isOn());
 
-  clock.advance(1000);
+  fakeClock.advance(1000);
   thermostat->update(-1.0f);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
@@ -137,7 +137,7 @@ void test_idle_turns_off_actuator() {
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 
-  clock.advance(60000);
+  fakeClock.advance(60000);
   thermostat->update(25.0f);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_GREATER_THAN(0, actuator.turnOffCount_);
@@ -152,12 +152,12 @@ void test_full_cycle_idle_heating_idle() {
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());
 
-  clock.advance(60000);
+  fakeClock.advance(60000);
   thermostat->update(25.0f);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 
-  clock.advance(60000);
+  fakeClock.advance(60000);
   thermostat->update(23.0f);
   TEST_ASSERT_TRUE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Heating", thermostat->stateName());

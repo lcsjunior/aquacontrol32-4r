@@ -1,5 +1,6 @@
-#include "thermostat.h"
-#include "idle_state.h"
+#include "Thermostat.h"
+
+#include "IdleState.h"
 
 #define THERMOSTAT_UPDATE_INTERVAL_MS 60000UL
 

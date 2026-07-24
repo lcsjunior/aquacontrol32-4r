@@ -2,14 +2,9 @@
 
 #include <CronAlarms.h>
 
-#include <arduino_clock.h>
-#include <config.h>
-#include <relay.h>
-
-constexpr int LAMP_ON_CRON_IDX = 0;
-constexpr int LAMP_OFF_CRON_IDX = 1;
-constexpr int CO2_ON_CRON_IDX = 2;
-constexpr int CO2_OFF_CRON_IDX = 3;
+#include <Clock.h>
+#include <Config.h>
+#include <Relay.h>
 
 extern Relay lamp;
 extern Relay co2;

@@ -1,4 +1,4 @@
-#include <mqtt_client.h>
+#include "MQTTClient.h"
 
 #define MQTT_CONN_TIMEOUT_MS 10000UL
 
@@ -26,6 +26,7 @@ void MQTTClient::connect() {
           MQTT_CONN_TIMEOUT_MS);
     return;
   }
+
   log_i("Connected to broker %s", server_);
   subscribe();
 }
@@ -35,6 +36,7 @@ void MQTTClient::subscribe() {
     log_w("Subscribe called with empty topic, skipping");
     return;
   }
+
   pubSubClient_.subscribe(subscribedTopic_);
   log_i("Subscribed to %s", subscribedTopic_);
 }
@@ -44,6 +46,7 @@ void MQTTClient::publish(const char* payload) {
     log_w("Publish called with empty topic, skipping");
     return;
   }
+
   const size_t len = strlen(payload);
   log_i("Publishing to %s (%u bytes)", publishTopic_, (unsigned)len);
   pubSubClient_.publish(publishTopic_, payload);

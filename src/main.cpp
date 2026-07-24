@@ -1,30 +1,28 @@
 #include <Arduino.h>
+#include <ArduinoClock.h>
+#include <Clock.h>
+#include <Config.h>
 #include <CronAlarms.h>
+#include <DallasTempSensor.h>
+#include <MQTTClient.h>
 #include <NoDelay.h>
-#include <arduino_clock.h>
-#include <config.h>
-#include <dallas_temperature_sensor.h>
-#include <mqtt_client.h>
-#include <relay.h>
-#include <telnet_logger.h>
-#include <thermostat.h>
+#include <Relay.h>
+#include <TelnetLogger.h>
+#include <Thermostat.h>
 
 #include "modules/cron_setup.h"
 #include "modules/http_server.h"
-#include "modules/ota_setup.h"
 #include "modules/wifi_setup.h"
 
-#define LED_PIN 25
+#define SERIAL_BAUD_RATE 115200
 #define K1_PIN 21
 #define K2_PIN 19
 #define K4_PIN 5
 #define DS18B20_PIN 22
 
-#define SERIAL_BAUD_RATE 115200
-
 #define MQTT_PUB_INTERVAL_MS 60000UL
 
-DallasTemperatureSensor temperatureSensor;
+DallasTempSensor temperatureSensor;
 Relay heater;
 Relay lamp;
 Relay co2;
@@ -41,9 +39,6 @@ void setup() {
   AppConfig.mount();
   AppConfig.load();
 
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-
   temperatureSensor.begin(DS18B20_PIN);
   heater.begin(K1_PIN, "heater");
   lamp.begin(K2_PIN, "lamp");
@@ -54,7 +49,6 @@ void setup() {
 
   initWifi();
   TelnetLog.begin();
-  initOta();
 
   MQTT.begin(AppConfig.mqttHost(), AppConfig.mqttPort(),
              AppConfig.mqttClientId(), AppConfig.mqttUser(),
@@ -70,8 +64,7 @@ void loop() {
   temperatureSensor.requestTemperatures();
   thermostat.update(temperatureSensor.temperatureC());
 
-  wifiManager.process();
-  ArduinoOTA.handle();
+  handleWifi();
   Cron.delay();
 
   MQTT.loop();
@@ -86,7 +79,7 @@ void mqttPublish() {
   snprintf(payload, sizeof(payload),
            "field1=%.1f&field3=%d&field5=%d&field6=%d&status=PUB %s",
            temperatureSensor.temperatureC(), heater.isOn(), lamp.isOn(),
-           co2.isOn(), formatLocalDateTime());
+           co2.isOn(), formatDateTime());
   log_i("%s", payload);
   MQTT.publish(payload);
 }

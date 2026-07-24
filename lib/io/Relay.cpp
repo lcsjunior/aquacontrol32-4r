@@ -1,4 +1,4 @@
-#include "relay.h"
+#include "Relay.h"
 
 void Relay::write() {
   digitalWrite(pin_, isOn_ ? HIGH : LOW);

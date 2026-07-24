@@ -1,18 +1,18 @@
 #include <unity.h>
-#include "idle_state.h"
-#include "thermostat.h"
-#include "fake_actuator.h"
-#include "fake_clock.h"
+#include "IdleState.h"
+#include "Thermostat.h"
+#include "FakeActuator.h"
+#include "FakeClock.h"
 
 static FakeActuator actuator;
-static FakeClock clock;
+static FakeClock fakeClock;
 static Thermostat* thermostat;
 
 void setUp() {
   actuator = FakeActuator{};
-  clock = FakeClock{};
-  clock.advance(60000);
-  thermostat = new Thermostat(&actuator, &clock);
+  fakeClock = FakeClock{};
+  fakeClock.advance(60000);
+  thermostat = new Thermostat(&actuator, &fakeClock);
   thermostat->begin(24.0f, 0.5f, 0.0f, 40.0f);
 }
 
@@ -23,14 +23,14 @@ void tearDown() {
 
 void test_idle_enter_turns_off_actuator() {
   actuator.turnOn();
-  IdleStateImpl idle;
+  IdleStateClass idle;
   idle.enter(*thermostat);
   TEST_ASSERT_FALSE(actuator.isOn());
   TEST_ASSERT_EQUAL_STRING("Idle", thermostat->stateName());
 }
 
 void test_idle_name_returns_idle() {
-  IdleStateImpl idle;
+  IdleStateClass idle;
   TEST_ASSERT_EQUAL_STRING("Idle", idle.name());
 }
 
