@@ -21,15 +21,15 @@ const char* getApName() {
 }
 
 const char* intToStr(int value) {
-  static char text[12];
-  snprintf(text, sizeof(text), "%d", value);
-  return text;
+  static char value[12];
+  snprintf(value, sizeof(value), "%d", value);
+  return value;
 }
 
 const char* floatToStr(float value) {
-  static char text[12];
-  snprintf(text, sizeof(text), "%.1f", value);
-  return text;
+  static char value[12];
+  snprintf(value, sizeof(value), "%.1f", value);
+  return value;
 }
 
 void waitWifi(uint32_t timeoutMs) {

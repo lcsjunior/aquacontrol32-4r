@@ -26,6 +26,7 @@ void MQTTClient::connect() {
           MQTT_CONN_TIMEOUT_MS);
     return;
   }
+
   log_i("Connected to broker %s", server_);
   subscribe();
 }
@@ -44,6 +45,7 @@ void MQTTClient::publish(const char* payload) {
     log_w("Publish called with empty topic, skipping");
     return;
   }
+
   const size_t len = strlen(payload);
   log_i("Publishing to %s (%u bytes)", publishTopic_, (unsigned)len);
   pubSubClient_.publish(publishTopic_, payload);

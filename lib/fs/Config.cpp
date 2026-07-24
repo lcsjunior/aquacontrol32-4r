@@ -173,6 +173,7 @@ void Config::setCron(int index, const char* value) {
   if (index < 0 || index >= cronLength) {
     return;
   }
+
   strlcpy(crons_[index], value, sizeof(crons_[index]));
 }
 
