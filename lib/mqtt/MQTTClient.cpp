@@ -36,6 +36,7 @@ void MQTTClient::subscribe() {
     log_w("Subscribe called with empty topic, skipping");
     return;
   }
+
   pubSubClient_.subscribe(subscribedTopic_);
   log_i("Subscribed to %s", subscribedTopic_);
 }

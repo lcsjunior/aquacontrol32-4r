@@ -3,6 +3,7 @@
 #include <LittleFS.h>
 
 constexpr const char* CONFIG_PATH = "/config.json";
+
 constexpr const char* DEFAULT_MQTT_HOST = "mqtt3.thingspeak.com";
 constexpr uint16_t DEFAULT_MQTT_PORT = 1883;
 constexpr float DEFAULT_THERMOSTAT_SETPOINT = 23.5f;

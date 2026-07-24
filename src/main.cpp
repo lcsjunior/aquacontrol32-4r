@@ -14,13 +14,11 @@
 #include "modules/http_server.h"
 #include "modules/wifi_setup.h"
 
-#define LED_PIN 25
+#define SERIAL_BAUD_RATE 115200
 #define K1_PIN 21
 #define K2_PIN 19
 #define K4_PIN 5
 #define DS18B20_PIN 22
-
-#define SERIAL_BAUD_RATE 115200
 
 #define MQTT_PUB_INTERVAL_MS 60000UL
 
@@ -40,9 +38,6 @@ void setup() {
 
   AppConfig.mount();
   AppConfig.load();
-
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
 
   temperatureSensor.begin(DS18B20_PIN);
   heater.begin(K1_PIN, "heater");

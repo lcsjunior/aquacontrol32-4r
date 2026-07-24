@@ -21,13 +21,13 @@ static bool requireAuth() {
 
 void initHttpServer() {
   wifiManager.server->on("/health", HTTP_GET, []() {
-    char buf[192];
-    snprintf(buf, sizeof(buf),
+    char payload[192];
+    snprintf(payload, sizeof(payload),
              "{\"status\":\"UP\",\"datetime\":\"%s\",\"ds18b20\":%.2f,"
              "\"relays\":{\"heater\":%s,\"lamp\":%s,\"co2\":%s}}",
              formatDateTime(), temperatureSensor.temperatureC(),
              heater.activeText(), lamp.activeText(), co2.activeText());
-    wifiManager.server->send(200, APPLICATION_JSON, buf);
+    wifiManager.server->send(200, APPLICATION_JSON, payload);
   });
 
   wifiManager.server->on("/lamp/toggle", HTTP_GET, []() {

@@ -6,8 +6,14 @@
 #include <device.h>
 
 #define WIFI_PORTAL_TIMEOUT_S 300
+
+#ifndef WIFI_CONNECT_TIMEOUT_MS
 #define WIFI_CONNECT_TIMEOUT_MS 30000UL
+#endif
+
+#ifndef NTP_SYNC_TIMEOUT_MS
 #define NTP_SYNC_TIMEOUT_MS 5000UL
+#endif
 
 constexpr const char* TIMEZONE = "<-03>3";
 constexpr const char* NTP_SERVER = "pool.ntp.org";
