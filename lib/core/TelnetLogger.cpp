@@ -33,7 +33,8 @@ extern "C" int __wrap_log_printfv(const char* format, va_list args) {
   if (n <= 0)
     return n;
 
-  size_t len = (size_t)n < sizeof(logMessage) ? (size_t)n : sizeof(logMessage) - 1;
+  size_t len =
+      (size_t)n < sizeof(logMessage) ? (size_t)n : sizeof(logMessage) - 1;
   ets_printf("%s", logMessage);
   TelnetLog.write(reinterpret_cast<const uint8_t*>(logMessage), len);
   return n;
