@@ -1,19 +1,19 @@
 #include "http_server.h"
 #include "wifi_setup.h"
 
-#include <arduino_clock.h>
-#include <dallas_temperature_sensor.h>
-#include <relay.h>
+#include <Clock.h>
+#include <DallasTempSensor.h>
+#include <Relay.h>
 
 constexpr const char* APPLICATION_JSON = "application/json";
 
-extern DallasTemperatureSensor temperatureSensor;
+extern DallasTempSensor temperatureSensor;
 extern Relay heater;
 extern Relay lamp;
 extern Relay co2;
 
 static bool requireAuth() {
-  if (wifiManager.server->authenticate(WWW_USERNAME, WWW_PASSWORD))
+  if (wifiManager.server->authenticate(WWW_USERNAME, WWW_PASS))
     return true;
   wifiManager.server->requestAuthentication();
   return false;
@@ -25,7 +25,7 @@ void initHttpServer() {
     snprintf(buf, sizeof(buf),
              "{\"status\":\"UP\",\"datetime\":\"%s\",\"ds18b20\":%.2f,"
              "\"relays\":{\"heater\":%s,\"lamp\":%s,\"co2\":%s}}",
-             formatLocalDateTime(), temperatureSensor.temperatureC(),
+             formatDateTime(), temperatureSensor.temperatureC(),
              heater.activeText(), lamp.activeText(), co2.activeText());
     wifiManager.server->send(200, APPLICATION_JSON, buf);
   });

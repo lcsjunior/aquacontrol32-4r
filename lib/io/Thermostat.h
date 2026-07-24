@@ -1,9 +1,9 @@
 #ifndef THERMOSTAT_H
 #define THERMOSTAT_H
 
-#include "actuator.h"
-#include "thermostat_state.h"
-#include "clock.h"
+#include "Actuator.h"
+#include "Clock.h"
+#include "ThermostatState.h"
 
 class Thermostat {
  public:

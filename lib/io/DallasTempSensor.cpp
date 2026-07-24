@@ -1,15 +1,15 @@
-#include "dallas_temperature_sensor.h"
+#include "DallasTempSensor.h"
 
 #define TEMPERATURE_POLL_INTERVAL_MS 1000UL
 
-void DallasTemperatureSensor::begin(const byte pin) {
+void DallasTempSensor::begin(const byte pin) {
   oneWire_.begin(pin);
   sensors_.setOneWire(&oneWire_);
   sensors_.begin();
   lastRequestMs_ = millis() - TEMPERATURE_POLL_INTERVAL_MS;
 }
 
-void DallasTemperatureSensor::requestTemperatures() {
+void DallasTempSensor::requestTemperatures() {
   if (millis() - lastRequestMs_ < TEMPERATURE_POLL_INTERVAL_MS)
     return;
   sensors_.requestTemperatures();
@@ -19,6 +19,6 @@ void DallasTemperatureSensor::requestTemperatures() {
   lastRequestMs_ = millis();
 }
 
-float DallasTemperatureSensor::temperatureC() {
+float DallasTempSensor::temperatureC() {
   return lastTemperatureC_;
 }

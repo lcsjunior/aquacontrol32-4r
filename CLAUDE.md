@@ -12,13 +12,16 @@ ThingSpeak. Pinout, ThingSpeak fields and HTTP endpoints — see `README.md`.
 
 - `src/main.cpp` — boot sequence, MQTT publish and `loop()`.
 - `src/modules/` — application wiring: `wifi_setup` (captive portal, custom
-  fields, save callback, NTP), `ota_setup`, `http_server` and `cron_setup`.
-- `lib/devices/` — hardware abstractions behind the `Actuator` and
-  `TemperatureSensor` interfaces, so they can be faked in `native` tests.
+  fields, save callback, NTP and OTA, exposing `handleWifi()`), `http_server`
+  and `cron_setup`.
+- `lib/io/` — hardware abstractions behind the `Actuator`, `TemperatureSensor`
+  and `Clock` interfaces, so they can be faked in `native` tests.
 - `lib/fs/` — `AppConfig`: LittleFS + ArduinoJson persistence of `/config.json`.
-- `lib/mqtt/`, `lib/logger/` — broker client and `TelnetLog`, a Telnet sink for
-  `log_*` output.
-- `lib/commons/` — helpers shared across modules.
+- `lib/mqtt/` — `MQTT`, the broker client.
+- `lib/core/` — cross-cutting helpers: `device` (chip id, AP name, `waitWifi`,
+  `waitNtp`), `Clock` (`formatDateTime`, `isTimeSet`, `safeCron`) and its
+  `ArduinoClock` implementation, and `TelnetLog`, a Telnet sink for `log_*`
+  output.
 
 Anything user-configurable belongs in the portal plus `Config`, not in build
 flags.

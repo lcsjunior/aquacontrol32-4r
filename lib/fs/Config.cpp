@@ -1,7 +1,6 @@
-#include <Arduino.h>
-#include <ArduinoJson.h>
+#include "Config.h"
+
 #include <LittleFS.h>
-#include <config.h>
 
 constexpr const char* CONFIG_PATH = "/config.json";
 constexpr const char* DEFAULT_MQTT_HOST = "mqtt3.thingspeak.com";
@@ -13,26 +12,47 @@ constexpr float DEFAULT_THERMOSTAT_UPPER_LIMIT = 28.0f;
 
 Config AppConfig;
 
-bool Config::mount() {
-  if (!LittleFS.begin(true)) {
-    log_e("Failed to mount LittleFS");
-    return false;
+void Config::mount() {
+  if (LittleFS.begin()) {
+    log_i("LittleFS mounted");
+    return;
   }
-  return true;
+
+  log_w("Failed to mount LittleFS, formatting");
+
+  if (!LittleFS.format() || !LittleFS.begin()) {
+    log_e("Failed to format LittleFS");
+    return;
+  }
+
+  log_i("LittleFS formatted and mounted");
 }
 
-bool Config::load() {
+void Config::load() {
   applyDefaults();
 
+  JsonDocument doc;
+  if (!readFile(doc))
+    return;
+
+  convertFromJson(doc);
+}
+
+void Config::save() {
+  JsonDocument doc;
+  convertToJson(doc);
+  writeFile(doc);
+}
+
+bool Config::readFile(JsonDocument& doc) {
   File file = LittleFS.open(CONFIG_PATH, "r");
   if (!file) {
-    log_e("Failed to open %s", CONFIG_PATH);
+    log_w("No %s yet, keeping defaults", CONFIG_PATH);
     return false;
   }
 
-  JsonDocument doc;
   DeserializationError err = deserializeJson(doc, file);
-  size_t bytesRead = file.size();
+  const size_t bytesRead = file.size();
   file.close();
 
   if (err) {
@@ -41,22 +61,19 @@ bool Config::load() {
   }
 
   log_i("Loaded %u bytes from %s", bytesRead, CONFIG_PATH);
-  convertFromJson(doc);
   return true;
 }
 
-bool Config::save() {
-  JsonDocument doc;
-  convertToJson(doc);
-
+bool Config::writeFile(const JsonDocument& doc) {
   File file = LittleFS.open(CONFIG_PATH, "w");
   if (!file) {
     log_e("Failed to open %s for writing", CONFIG_PATH);
     return false;
   }
 
-  size_t bytesWritten = serializeJson(doc, file);
+  const size_t bytesWritten = serializeJson(doc, file);
   file.close();
+
   if (bytesWritten == 0) {
     log_e("Failed to write to %s", CONFIG_PATH);
     return false;
@@ -176,7 +193,7 @@ void Config::setThermostatUpperLimit(float value) {
 }
 
 void Config::applyDefaults() {
-  setOtaPass(OTA_PASSWORD);
+  setOtaPass(OTA_PASS);
   setMqttHost(DEFAULT_MQTT_HOST);
   setMqttPort(DEFAULT_MQTT_PORT);
   setMqttUser("");
@@ -184,9 +201,10 @@ void Config::applyDefaults() {
   setMqttClientId("");
   setMqttPubTopic("");
   setMqttSubTopic("");
-  for (int i = 0; i < cronLength; ++i) {
-    setCron(i, "");
-  }
+  setCron(LAMP_ON_CRON_IDX, "");
+  setCron(LAMP_OFF_CRON_IDX, "");
+  setCron(CO2_ON_CRON_IDX, "");
+  setCron(CO2_OFF_CRON_IDX, "");
   setThermostatSetpoint(DEFAULT_THERMOSTAT_SETPOINT);
   setThermostatHysteresis(DEFAULT_THERMOSTAT_HYSTERESIS);
   setThermostatLowerLimit(DEFAULT_THERMOSTAT_LOWER_LIMIT);
@@ -194,25 +212,28 @@ void Config::applyDefaults() {
 }
 
 void Config::convertFromJson(const JsonDocument& doc) {
-  setOtaPass(doc["ota_pass"] | OTA_PASSWORD);
-  setMqttHost(doc["mqtt_host"] | DEFAULT_MQTT_HOST);
-  setMqttPort(doc["mqtt_port"] | DEFAULT_MQTT_PORT);
-  setMqttUser(doc["mqtt_user"] | "");
-  setMqttPass(doc["mqtt_pass"] | "");
-  setMqttClientId(doc["mqtt_client_id"] | "");
-  setMqttPubTopic(doc["mqtt_pub_topic"] | "");
-  setMqttSubTopic(doc["mqtt_sub_topic"] | "");
-  for (size_t i = 0; i < cronLength; ++i) {
-    setCron(i, doc["crons"][i] | "");
-  }
-  setThermostatSetpoint(doc["thermostat_setpoint"] |
-                        DEFAULT_THERMOSTAT_SETPOINT);
-  setThermostatHysteresis(doc["thermostat_hysteresis"] |
-                          DEFAULT_THERMOSTAT_HYSTERESIS);
+  setOtaPass(doc["ota_pass"] | otaPass_);
+  setMqttHost(doc["mqtt_host"] | mqttHost_);
+  setMqttPort(doc["mqtt_port"] | mqttPort_);
+  setMqttUser(doc["mqtt_user"] | mqttUser_);
+  setMqttPass(doc["mqtt_pass"] | mqttPass_);
+  setMqttClientId(doc["mqtt_client_id"] | mqttClientId_);
+  setMqttPubTopic(doc["mqtt_pub_topic"] | mqttPubTopic_);
+  setMqttSubTopic(doc["mqtt_sub_topic"] | mqttSubTopic_);
+  setCron(LAMP_ON_CRON_IDX,
+          doc["crons"][LAMP_ON_CRON_IDX] | crons_[LAMP_ON_CRON_IDX]);
+  setCron(LAMP_OFF_CRON_IDX,
+          doc["crons"][LAMP_OFF_CRON_IDX] | crons_[LAMP_OFF_CRON_IDX]);
+  setCron(CO2_ON_CRON_IDX,
+          doc["crons"][CO2_ON_CRON_IDX] | crons_[CO2_ON_CRON_IDX]);
+  setCron(CO2_OFF_CRON_IDX,
+          doc["crons"][CO2_OFF_CRON_IDX] | crons_[CO2_OFF_CRON_IDX]);
+  setThermostatSetpoint(doc["thermostat_setpoint"] | thermostatSetpoint_);
+  setThermostatHysteresis(doc["thermostat_hysteresis"] | thermostatHysteresis_);
   setThermostatLowerLimit(doc["thermostat_lower_limit"] |
-                          DEFAULT_THERMOSTAT_LOWER_LIMIT);
+                          thermostatLowerLimit_);
   setThermostatUpperLimit(doc["thermostat_upper_limit"] |
-                          DEFAULT_THERMOSTAT_UPPER_LIMIT);
+                          thermostatUpperLimit_);
 }
 
 void Config::convertToJson(JsonDocument& doc) const {
@@ -224,9 +245,10 @@ void Config::convertToJson(JsonDocument& doc) const {
   doc["mqtt_client_id"] = mqttClientId_;
   doc["mqtt_pub_topic"] = mqttPubTopic_;
   doc["mqtt_sub_topic"] = mqttSubTopic_;
-  for (int i = 0; i < cronLength; ++i) {
-    doc["crons"].add(crons_[i]);
-  }
+  doc["crons"].add(crons_[LAMP_ON_CRON_IDX]);
+  doc["crons"].add(crons_[LAMP_OFF_CRON_IDX]);
+  doc["crons"].add(crons_[CO2_ON_CRON_IDX]);
+  doc["crons"].add(crons_[CO2_OFF_CRON_IDX]);
   doc["thermostat_setpoint"] = thermostatSetpoint_;
   doc["thermostat_hysteresis"] = thermostatHysteresis_;
   doc["thermostat_lower_limit"] = thermostatLowerLimit_;

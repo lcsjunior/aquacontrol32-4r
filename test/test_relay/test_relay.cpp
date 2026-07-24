@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "relay.h"
+#include "Relay.h"
 
 static Relay relay;
 
