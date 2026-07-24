@@ -20,7 +20,9 @@
 #define K4_PIN 5
 #define DS18B20_PIN 22
 
+#ifndef MQTT_PUB_INTERVAL_MS
 #define MQTT_PUB_INTERVAL_MS 60000UL
+#endif
 
 DallasTempSensor temperatureSensor;
 Relay heater;
